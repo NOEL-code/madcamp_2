@@ -39,7 +39,10 @@ const CreateRoomScreen = ({navigation}) => {
           />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>방 참여</Text>
-        <TouchableOpacity onPress={() => {}}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Main');
+          }}>
           <Text style={styles.headerButton}>다음</Text>
         </TouchableOpacity>
       </View>

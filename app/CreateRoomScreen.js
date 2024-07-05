@@ -10,11 +10,11 @@ import {
 } from 'react-native';
 
 const initialUsers = [
-  {name: '정우성', selected: true},
+  {name: '정우성', selected: false},
   {name: '이수민', selected: false},
   {name: '정재현', selected: false},
   {name: '카리나', selected: false},
-  {name: '윈터', selected: true},
+  {name: '윈터', selected: false},
   {name: '최예나', selected: false},
 ];
 
@@ -42,7 +42,7 @@ const CreateRoomScreen = ({navigation}) => {
         <Text style={styles.headerTitle}>방 생성</Text>
         <TouchableOpacity
           onPress={() => {
-            /* 다음 화면으로 이동하는 로직 */
+            navigation.navigate('CreateRoomName');
           }}>
           <Text style={styles.headerButton}>다음</Text>
         </TouchableOpacity>
