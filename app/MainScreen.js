@@ -37,7 +37,9 @@ const MainScreen = ({navigation}) => {
                 />
                 <Text style={styles.roomName}>{room.name}</Text>
                 <Text style={styles.roomCount}>{room.count}명</Text>
-                <TouchableOpacity style={styles.forwardButton}>
+                <TouchableOpacity
+                  style={styles.forwardButton}
+                  onPress={() => navigation.navigate('Team')}>
                   <Image source={require('./assets/images/next.png')} />
                 </TouchableOpacity>
               </View>
@@ -63,7 +65,9 @@ const MainScreen = ({navigation}) => {
                 />
                 <Text style={styles.roomName}>{room.name}</Text>
                 <Text style={styles.roomCount}>{room.count}명</Text>
-                <TouchableOpacity style={styles.forwardButton}>
+                <TouchableOpacity
+                  style={styles.forwardButton}
+                  onPress={() => navigation.navigate('TeamAdmin')}>
                   <Image source={require('./assets/images/next.png')} />
                 </TouchableOpacity>
               </View>

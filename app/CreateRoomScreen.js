@@ -33,7 +33,7 @@ const CreateRoomScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => navigation.navigate('TeamAdmin')}>
           <Image
             source={require('./assets/images/back.png')}
             style={styles.backIcon}

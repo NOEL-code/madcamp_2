@@ -5,6 +5,10 @@ import MainScreen from './MainScreen'; // 기존 화면
 import CreateRoomScreen from './CreateRoomScreen'; // 새로 추가된 화면
 import JoinRoomScreen from './JoinRoomScreen';
 import CreateRoomName from './CreateRoomName';
+import TeamScreen from './TeamScreen';
+import TeamAdminScreen from './TeamAdminScreen';
+import TeamApplyScreen from './TeamApplyScreen';
+import CameraScreen from './CameraScreen';
 
 const Stack = createStackNavigator();
 
@@ -30,6 +34,26 @@ const App = () => {
         <Stack.Screen
           name="joinRoom"
           component={JoinRoomScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="Team"
+          component={TeamScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="TeamAdmin"
+          component={TeamAdminScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="CameraAdmin"
+          component={CameraScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="TeamApply"
+          component={TeamApplyScreen}
           options={{headerShown: false}}
         />
       </Stack.Navigator>
