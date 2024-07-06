@@ -174,6 +174,12 @@ const TeamAdminScreen = ({navigation}) => {
                 </View>
               ))}
             </View>
+            <View style={styles.teamListContainer}>
+              <Text style={styles.teamText}>팀 명단</Text>
+              <TouchableOpacity style={styles.button}>
+                <Text style={styles.buttonText}>+ 학생초대</Text>
+              </TouchableOpacity>
+            </View>
             {usersState.map((user, index) => (
               <View key={index} style={styles.userItem}>
                 <Image
@@ -195,11 +201,7 @@ const TeamAdminScreen = ({navigation}) => {
                 </TouchableOpacity>
               </View>
             ))}
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText}>학생 초대하기</Text>
-              </TouchableOpacity>
-            </View>
+
             <View style={styles.buttonContainer}>
               <TouchableOpacity style={styles.deleteButton}>
                 <Text style={styles.deleteButtonText}>팀 삭제하기</Text>
@@ -230,7 +232,13 @@ const styles = StyleSheet.create({
   waitingText: {
     fontWeight: 'bold',
     fontSize: 20,
-    marginTop: 15,
+    marginTop: 19,
+    marginBottom: 15,
+  },
+  teamText: {
+    fontWeight: 'bold',
+    fontSize: 20,
+    marginTop: 19,
     marginBottom: 15,
   },
   accept: {
@@ -243,9 +251,9 @@ const styles = StyleSheet.create({
     color: '#2A99FF',
   },
   buttonContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: 10,
+    // justifyContent: 'center',
+    // alignItems: 'center',
+    // marginVertical: 10,
   },
   cameraContainer: {
     flexDirection: 'row',
@@ -259,10 +267,16 @@ const styles = StyleSheet.create({
     height: 50,
   },
   buttonText: {
-    fontSize: 17,
+    fontSize: 12,
     fontWeight: 'bold',
     color: 'white',
     textAlign: 'center',
+  },
+  teamListContainer: {
+    flexDirection: 'row',
+    alignItems: 'center', // 수직 정렬을 맞추기 위해 추가
+    justifyContent: 'space-between', // 수평 공간을 균등하게 배치하기 위해 추가
+    marginBottom: 10,
   },
   header: {
     flexDirection: 'row',
@@ -328,12 +342,10 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   button: {
-    backgroundColor: '#03CF5D', // 버튼 배경색상 추가
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    width: 170,
+    backgroundColor: '#6DDD5B',
+    width: 100,
     borderRadius: 20,
-    marginTop: 20,
+    padding: 10,
   },
   deleteButton: {
     backgroundColor: '#FF0000', // 버튼 배경색상 추가
