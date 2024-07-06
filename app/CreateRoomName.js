@@ -42,25 +42,9 @@ const CreateRoomScreen = ({navigation}) => {
           />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>방 생성</Text>
-        <TouchableOpacity
-          onPress={handleSubmit}
-          disabled={!roomName.trim()}
-          style={[
-            styles.headerButton,
-            !roomName.trim() && styles.headerButtonDisabled,
-          ]}>
-          <Text
-            style={
-              roomName.trim()
-                ? styles.headerButtonText
-                : styles.headerButtonTextDisabled
-            }>
-            완료
-          </Text>
-        </TouchableOpacity>
       </View>
       <View style={styles.content}>
-        <Text style={styles.config}>방 이름 설정</Text>
+        <Text style={styles.config}>방 이름을 작성해 주세요.</Text>
         <TextInput
           style={styles.roomInput}
           placeholder="방 이름"
@@ -69,6 +53,13 @@ const CreateRoomScreen = ({navigation}) => {
           onChangeText={handleInputChange}
         />
         <Text style={styles.charCount}>{charCount}/9</Text>
+
+        <TouchableOpacity
+          style={[styles.button, !roomName.trim() && styles.buttonDisabled]}
+          onPress={handleSubmit}
+          disabled={!roomName.trim()}>
+          <Text style={styles.create}>방 생성하기</Text>
+        </TouchableOpacity>
       </View>
 
       <Modal
@@ -78,7 +69,7 @@ const CreateRoomScreen = ({navigation}) => {
         onRequestClose={handleCloseModal}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalText}>생성 완료</Text>
+            <Text style={styles.modalText}>방 생성이 완료 되었습니다.</Text>
             <TouchableOpacity onPress={handleCloseModal}>
               <Text style={styles.modalButton}>확인</Text>
             </TouchableOpacity>
@@ -94,33 +85,34 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  create: {
+    color: '#FFFFFF',
+  },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    padding: 20,
   },
   backIcon: {
     width: 24,
     height: 24,
   },
-  headerButton: {
-    fontSize: 18,
-  },
-  headerButtonText: {
-    color: 'black',
-  },
-  headerButtonDisabled: {
-    opacity: 0.5,
-  },
-  headerButtonTextDisabled: {
-    color: '#888',
-  },
   headerTitle: {
+    marginLeft: 130,
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  button: {
+    marginTop: 30,
+    width: 150,
+    height: 50,
+    backgroundColor: '#6DDD5B',
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonDisabled: {
+    backgroundColor: '#6DDD5B80', // lighter green color to indicate disabled state
   },
   content: {
     flex: 1,
@@ -133,10 +125,13 @@ const styles = StyleSheet.create({
     width: '80%',
     fontSize: 16,
     marginBottom: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
     marginLeft: '13%', // You can adjust this value to position it precisely as needed
   },
   roomInput: {
-    width: '80%',
+    width: '60%',
     margin: 15,
     padding: 10,
     borderRadius: 10,

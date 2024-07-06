@@ -27,12 +27,7 @@ const JoinRoomScreen = ({navigation}) => {
 
   const handleSelect = index => {
     setSelectedRoomIndex(index);
-  };
-
-  const handleSubmit = () => {
-    if (selectedRoomIndex !== null) {
-      setModalVisible(true);
-    }
+    setModalVisible(true); // Show the modal when a room is selected
   };
 
   const handleCloseModal = () => {
@@ -53,49 +48,37 @@ const JoinRoomScreen = ({navigation}) => {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>참여 신청</Text>
         <TouchableOpacity
-          onPress={handleSubmit}
-          disabled={selectedRoomIndex === null}
+          onPress={() => {}}
           style={[
             styles.headerButton,
             selectedRoomIndex === null && styles.headerButtonDisabled,
-          ]}>
-          <Text
-            style={
-              selectedRoomIndex === null
-                ? styles.headerButtonTextDisabled
-                : styles.headerButtonText
-            }>
-            신청
-          </Text>
-        </TouchableOpacity>
+          ]}
+        />
       </View>
-      <TextInput
-        style={styles.searchInput}
-        placeholder="방 검색"
-        placeholderTextColor="#888"
-        value={search}
-        onChangeText={text => setSearch(text)}
-      />
-      <ScrollView>
+      <View style={styles.searchBox}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="방 검색"
+          placeholderTextColor="#888"
+          value={search}
+          onChangeText={text => setSearch(text)}
+        />
+      </View>
+      <ScrollView style={styles.list}>
         {filteredRooms.map((room, index) => (
           <View key={index} style={styles.roomItem}>
             <Image
-              source={require('./assets/images/person.png')}
+              source={require('./assets/images/joinRoomProfile.png')}
               style={styles.profileIcon}
             />
             <Text style={styles.roomName}>{room.name}</Text>
             <TouchableOpacity
-              style={styles.selectButton}
+              style={[
+                styles.selectButton,
+                selectedRoomIndex === index && styles.selectedButton,
+              ]}
               onPress={() => handleSelect(index)}>
-              <View
-                style={[
-                  styles.selectIndicator,
-                  {
-                    backgroundColor:
-                      selectedRoomIndex === index ? '#03CF5D' : 'gray',
-                  },
-                ]}
-              />
+              <Text style={styles.joinText}>참여</Text>
             </TouchableOpacity>
           </View>
         ))}
@@ -128,7 +111,7 @@ const JoinRoomScreen = ({navigation}) => {
         onRequestClose={handleCloseModal}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalText}>신청완료</Text>
+            <Text style={styles.modalText}>참여 신청이 완료 되었습니다.</Text>
             <TouchableOpacity onPress={handleCloseModal}>
               <Text style={styles.modalButton}>확인</Text>
             </TouchableOpacity>
@@ -144,17 +127,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  list: {
+    padding: 15,
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    padding: 20,
   },
   backIcon: {
     width: 24,
     height: 24,
+  },
+  searchBox: {
+    padding: 15,
   },
   headerButton: {
     fontSize: 18,
@@ -175,6 +162,7 @@ const styles = StyleSheet.create({
   searchInput: {
     margin: 15,
     padding: 10,
+    paddingLeft: 20,
     borderRadius: 10,
     backgroundColor: '#f0f0f0',
     fontSize: 16,
@@ -188,7 +176,6 @@ const styles = StyleSheet.create({
   profileIcon: {
     width: 50,
     height: 50,
-    borderRadius: 25,
   },
   roomName: {
     flex: 1,
@@ -196,12 +183,17 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   selectButton: {
-    padding: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: '#6DDD5B',
+    borderRadius: 10,
   },
-  selectIndicator: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+  selectedButton: {
+    backgroundColor: '#03CF5D',
+  },
+  joinText: {
+    fontWeight: 'bold',
+    color: '#FFFFFF',
   },
   navbar: {
     flexDirection: 'row',

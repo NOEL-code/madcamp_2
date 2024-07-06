@@ -36,6 +36,23 @@ const TeamScreen = ({navigation}) => {
       </View>
       <Text style={styles.headerTitle}>팀이름</Text>
       <Text style={styles.subTitle}>팀 한 줄 소개</Text>
+
+      <View style={styles.separator} />
+      <Text style={styles.sectionTitle}>나의 상태</Text>
+      <View style={styles.userItem}>
+        <Image
+          source={require('./assets/images/person.png')}
+          style={styles.profileIcon}
+        />
+        <Text style={styles.userName}>정우성</Text>
+        <View
+          style={[
+            styles.statusIndicator,
+            {backgroundColor: statusStyles[1].color},
+          ]}
+        />
+        <Text style={styles.statusText}>{statusStyles[1].text}</Text>
+      </View>
       <Text style={styles.sectionTitle}>학생 20명</Text>
       <ScrollView>
         {users.map((user, index) => (
@@ -88,6 +105,11 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     color: '#888',
     marginBottom: 15,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: 'black',
+    marginTop: 10,
   },
   sectionTitle: {
     marginTop: 20,

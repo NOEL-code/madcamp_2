@@ -67,14 +67,16 @@ const CreateRoomScreen = ({navigation}) => {
           </Text>
         </TouchableOpacity>
       </View>
-      <TextInput
-        style={styles.searchInput}
-        placeholder="이름 검색"
-        placeholderTextColor="#888"
-        value={search}
-        onChangeText={text => setSearch(text)}
-      />
-      <ScrollView>
+      <View style={styles.padding}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="이름 검색"
+          placeholderTextColor="#888"
+          value={search}
+          onChangeText={text => setSearch(text)}
+        />
+      </View>
+      <ScrollView style={styles.view}>
         {filteredUsers.map((user, index) => (
           <View key={index} style={styles.userItem}>
             <Image
@@ -129,18 +131,18 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    margin: 10,
   },
   backIcon: {
     width: 24,
     height: 24,
   },
   headerButton: {
-    fontSize: 18,
+    fontSize: 20,
   },
   headerButtonText: {
     color: 'black',
+    fontSize: 20,
   },
   headerButtonDisabled: {
     opacity: 0.5,
@@ -149,15 +151,22 @@ const styles = StyleSheet.create({
     color: '#888',
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: 24,
+    color: 'black',
     fontWeight: 'bold',
+  },
+  padding: {
+    padding: 10,
   },
   searchInput: {
     margin: 15,
     padding: 10,
-    borderRadius: 10,
+    borderRadius: 20,
     backgroundColor: '#f0f0f0',
     fontSize: 16,
+  },
+  view: {
+    padding: 15,
   },
   userItem: {
     flexDirection: 'row',

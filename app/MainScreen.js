@@ -8,31 +8,53 @@ import {
   ScrollView,
 } from 'react-native';
 
-const rooms = [
-  {name: '1분반', count: 20},
-  {name: '우히히', count: 5},
-  {name: '메렁', count: 13},
+const participatingRooms = [
+  {name: '카이부캠방', count: 80},
+  {name: '우히히 방', count: 20},
+  {name: '메렁', count: 5},
+];
+
+const managingRooms = [
+  {name: '우히히 방', count: 20},
+  {name: '메렁', count: 5},
 ];
 
 const MainScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
       <ScrollView>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>너 어디있니?</Text>
+          <View style={styles.headerButtons}>
+            <TouchableOpacity
+              style={styles.headerButtonLeft}
+              onPress={() => navigation.navigate('CreateRoom')}>
+              <Image
+                source={require('./assets/images/roomCreate.png')}
+                style={styles.headerButtonIcon}
+              />
+              <Text style={styles.headerButtonText}>방 생성</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.headerButtonRight}
+              onPress={() => navigation.navigate('joinRoom')}>
+              <Image
+                source={require('./assets/images/joinRoom.png')}
+                style={styles.headerButtonIcon}
+              />
+              <Text style={styles.headerButtonText}>기존 방 합류</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>참여 중인 방</Text>
-          <TouchableOpacity style={styles.addButton}>
-            <Text
-              style={styles.addButtonText}
-              onPress={() => navigation.navigate('joinRoom')}>
-              +
-            </Text>
-          </TouchableOpacity>
           <View style={styles.separator} />
           <View style={styles.profileContainer}>
-            {rooms.map((room, index) => (
+            {participatingRooms.map((room, index) => (
               <View key={index} style={styles.roomItem}>
                 <Image
-                  source={require('./assets/images/person.png')}
+                  source={require('./assets/images/roomProfile.png')}
                   style={styles.profileIcon}
                 />
                 <Text style={styles.roomName}>{room.name}</Text>
@@ -40,7 +62,10 @@ const MainScreen = ({navigation}) => {
                 <TouchableOpacity
                   style={styles.forwardButton}
                   onPress={() => navigation.navigate('Team')}>
-                  <Image source={require('./assets/images/next.png')} />
+                  <Image
+                    source={require('./assets/images/next.png')}
+                    style={styles.forwardIcon}
+                  />
                 </TouchableOpacity>
               </View>
             ))}
@@ -49,18 +74,12 @@ const MainScreen = ({navigation}) => {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>관리 중인 방</Text>
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => navigation.navigate('CreateRoom')}>
-            <Text style={styles.addButtonText}>+</Text>
-          </TouchableOpacity>
           <View style={styles.separator} />
-
           <View style={styles.profileContainer}>
-            {rooms.map((room, index) => (
+            {managingRooms.map((room, index) => (
               <View key={index} style={styles.roomItem}>
                 <Image
-                  source={require('./assets/images/person.png')}
+                  source={require('./assets/images/roomProfile.png')}
                   style={styles.profileIcon}
                 />
                 <Text style={styles.roomName}>{room.name}</Text>
@@ -68,7 +87,10 @@ const MainScreen = ({navigation}) => {
                 <TouchableOpacity
                   style={styles.forwardButton}
                   onPress={() => navigation.navigate('TeamAdmin')}>
-                  <Image source={require('./assets/images/next.png')} />
+                  <Image
+                    source={require('./assets/images/next.png')}
+                    style={styles.forwardIcon}
+                  />
                 </TouchableOpacity>
               </View>
             ))}
@@ -78,7 +100,7 @@ const MainScreen = ({navigation}) => {
       <View style={styles.navbar}>
         <TouchableOpacity onPress={() => navigation.navigate('Statistic')}>
           <Image
-            source={require('./assets/images/statistics.png')}
+            source={require('./assets/images/staticsNotSelected.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>
@@ -90,7 +112,7 @@ const MainScreen = ({navigation}) => {
         </TouchableOpacity>
         <TouchableOpacity>
           <Image
-            source={require('./assets/images/myPage.png')}
+            source={require('./assets/images/myPageNotSelected.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>
@@ -103,39 +125,72 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    paddingTop: 15,
+    paddingLeft: 15,
+    paddingRight: 15,
+  },
+  header: {
+    padding: 20,
+  },
+  headerTitle: {
+    fontSize: 30,
+    fontWeight: 'bold',
+  },
+  headerButtons: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 20,
+  },
+  headerButtonLeft: {
+    marginLeft: 15,
+    alignItems: 'center',
+    backgroundColor: '#FAFAFA',
+    width: 150,
+    height: 100,
+    paddingTop: 15,
+    paddingBottom: 10,
+    borderRadius: 20,
+  },
+  headerButtonRight: {
+    marginLeft: 35,
+    alignItems: 'center',
+    backgroundColor: '#FAFAFA',
+    width: 150,
+    height: 100,
+    paddingTop: 15,
+    paddingBottom: 10,
+    borderRadius: 20,
+  },
+  headerButtonIcon: {
+    width: 50,
+    height: 50,
+  },
+  headerButtonText: {
+    marginTop: 10,
+    fontSize: 16,
   },
   section: {
     margin: 20,
-    marginTop: 50,
+    marginTop: 20,
   },
   separator: {
-    height: 1,
-    backgroundColor: '#ddd',
-    marginTop: 20,
+    height: 2,
+    backgroundColor: 'black',
+    marginTop: 10,
   },
   sectionTitle: {
     fontSize: 18,
-    marginLeft: 6,
     fontWeight: 'bold',
-  },
-  addButton: {
-    position: 'absolute',
-    right: 20,
-    top: 0,
-  },
-  addButtonText: {
-    fontSize: 24,
-    color: '#03CF5D',
+    color: 'black',
   },
   roomItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 6,
+    marginVertical: 15,
   },
   profileIcon: {
     width: 50,
     height: 50,
-    borderRadius: 20,
   },
   roomName: {
     flex: 1,
@@ -149,14 +204,14 @@ const styles = StyleSheet.create({
   forwardButton: {
     width: 50,
     height: 30,
-    backgroundColor: '#03CF5D',
     borderRadius: 15,
+    backgroundColor: '#6DDD5B',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  forwardButtonText: {
-    color: '#fff',
-    fontSize: 18,
+  forwardIcon: {
+    width: 30,
+    height: 30,
   },
   navbar: {
     flexDirection: 'row',
@@ -170,7 +225,7 @@ const styles = StyleSheet.create({
     height: 30,
   },
   profileContainer: {
-    marginTop: 20,
+    marginTop: 10,
   },
 });
 
