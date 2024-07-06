@@ -14,8 +14,12 @@ const initialUsers = [
   {name: '정우성', status: 1},
   {name: '이수민', status: 1},
   {name: '박종민', status: 3},
-  {name: '김사랑', status: 4},
-  {name: '윈터', status: 2},
+  {name: '이선주', status: 4},
+];
+
+const initialWaitingUsers = [
+  {name: '정우성', status: 1},
+  {name: '이수민', status: 1},
 ];
 
 const statusStyles = {
@@ -26,19 +30,16 @@ const statusStyles = {
 };
 
 const TeamAdminScreen = ({navigation}) => {
-  const [isTitleEditMode, setIsTitleEditMode] = useState(false);
-  const [isSubTitleEditMode, setIsSubTitleEditMode] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [isStatusEditMode, setIsStatusEditMode] = useState(false);
-  const [title, setTitle] = useState('팀 이름');
-  const [subTitle, setSubTitle] = useState('한 줄 소개');
+  const [title, setTitle] = useState('카이부캠 방');
+  const [subTitle, setSubTitle] = useState('한 달만에 왕짱이되는 방');
   const [usersState, setUsersState] = useState(initialUsers);
+  const [waitingUsers, setWaitingUsers] = useState(initialWaitingUsers);
+  const [selectedTab, setSelectedTab] = useState('현황');
 
-  const toggleTitleEditMode = () => {
-    setIsTitleEditMode(!isTitleEditMode);
-  };
-
-  const toggleSubTitleEditMode = () => {
-    setIsSubTitleEditMode(!isSubTitleEditMode);
+  const toggleEditMode = () => {
+    setIsEditMode(!isEditMode);
   };
 
   const handleStatusChange = (value, index) => {
@@ -63,7 +64,7 @@ const TeamAdminScreen = ({navigation}) => {
         </TouchableOpacity>
       </View>
       <View style={styles.titleContainer}>
-        {isTitleEditMode ? (
+        {isEditMode ? (
           <TextInput
             style={styles.headerTitleInput}
             value={title}
@@ -72,8 +73,8 @@ const TeamAdminScreen = ({navigation}) => {
         ) : (
           <Text style={styles.headerTitle}>{title}</Text>
         )}
-        <TouchableOpacity onPress={toggleTitleEditMode}>
-          {isTitleEditMode ? (
+        <TouchableOpacity onPress={toggleEditMode}>
+          {isEditMode ? (
             <Text style={styles.complete}>완료</Text>
           ) : (
             <Image
@@ -84,7 +85,7 @@ const TeamAdminScreen = ({navigation}) => {
         </TouchableOpacity>
       </View>
       <View style={styles.subTitleContainer}>
-        {isSubTitleEditMode ? (
+        {isEditMode ? (
           <TextInput
             style={styles.subTitleInput}
             value={subTitle}
@@ -93,35 +94,86 @@ const TeamAdminScreen = ({navigation}) => {
         ) : (
           <Text style={styles.subTitle}>{subTitle}</Text>
         )}
-        <TouchableOpacity onPress={toggleSubTitleEditMode}>
-          <Image
-            source={require('./assets/images/pencil.png')}
-            style={styles.editIcon}
-          />
-        </TouchableOpacity>
       </View>
-      <View style={styles.separator} />
-
-      <View style={styles.studentContainer}>
-        <Text style={styles.sectionTitle}>학생 20명</Text>
+      <View style={styles.tabContainer}>
         <TouchableOpacity
-          onPress={() => setIsStatusEditMode(!isStatusEditMode)}>
-          <Image
-            source={require('./assets/images/pencil.png')}
-            style={styles.editIcon}
-          />
-        </TouchableOpacity>
-        <View style={styles.joinTextContainer}>
+          onPress={() => setSelectedTab('현황')}
+          style={[styles.tab, selectedTab === '현황' && styles.selectedTab]}>
           <Text
-            style={styles.joinText}
-            onPress={() => navigation.navigate('TeamApply')}>
-            참가 신청(1)
+            style={[
+              styles.tabText,
+              selectedTab === '현황' && styles.selectedTabText,
+            ]}>
+            팀 현황
           </Text>
-        </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setSelectedTab('편집')}
+          style={[styles.tab, selectedTab === '편집' && styles.selectedTab]}>
+          <Text
+            style={[
+              styles.tabText,
+              selectedTab === '편집' && styles.selectedTabText,
+            ]}>
+            팀 편집
+          </Text>
+        </TouchableOpacity>
       </View>
-      <ScrollView>
-        {isStatusEditMode ? (
-          <View>
+      {selectedTab === '현황' ? (
+        <>
+          <ScrollView>
+            {usersState.map((user, index) => (
+              <View key={index} style={styles.userItem}>
+                <Image
+                  source={require('./assets/images/person.png')}
+                  style={styles.profileIcon}
+                />
+                <Text style={styles.userName}>{user.name}</Text>
+                <View
+                  style={[
+                    styles.statusIndicator,
+                    {backgroundColor: statusStyles[user.status].color},
+                  ]}
+                />
+                <Text style={styles.statusText}>
+                  {statusStyles[user.status].text}
+                </Text>
+              </View>
+            ))}
+            <View style={styles.cameraContainer}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('CameraAdmin')}>
+                <Image
+                  style={styles.camera}
+                  source={require('./assets/images/camera.png')}
+                />
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </>
+      ) : (
+        <>
+          <ScrollView>
+            <View style={styles.waitingContainer}>
+              <Text style={styles.waitingText}>대기 명단</Text>
+              {waitingUsers.map((waitingUser, index) => (
+                <View key={index} style={styles.userItem}>
+                  <Image
+                    source={require('./assets/images/person.png')}
+                    style={styles.profileIcon}
+                  />
+                  <Text style={styles.userName}>{waitingUser.name}</Text>
+
+                  <TouchableOpacity style={styles.refuse}>
+                    <Text style={styles.refuseText}>거절</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity style={styles.accept}>
+                    <Text style={styles.acceptText}>승인</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
             {usersState.map((user, index) => (
               <View key={index} style={styles.userItem}>
                 <Image
@@ -148,40 +200,14 @@ const TeamAdminScreen = ({navigation}) => {
                 <Text style={styles.buttonText}>학생 초대하기</Text>
               </TouchableOpacity>
             </View>
-          </View>
-        ) : (
-          <View>
-            <View>
-              {usersState.map((user, index) => (
-                <View key={index} style={styles.userItem}>
-                  <Image
-                    source={require('./assets/images/person.png')}
-                    style={styles.profileIcon}
-                  />
-                  <Text style={styles.userName}>{user.name}</Text>
-                  <View
-                    style={[
-                      styles.statusIndicator,
-                      {backgroundColor: statusStyles[user.status].color},
-                    ]}
-                  />
-                  <Text style={styles.statusText}>
-                    {statusStyles[user.status].text}
-                  </Text>
-                </View>
-              ))}
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.deleteButton}>
+                <Text style={styles.deleteButtonText}>팀 삭제하기</Text>
+              </TouchableOpacity>
             </View>
-          </View>
-        )}
-        <View style={styles.cameraContainer}>
-          <TouchableOpacity onPress={() => navigation.navigate('CameraAdmin')}>
-            <Image
-              style={styles.camera}
-              source={require('./assets/images/camera.png')}
-            />
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+          </ScrollView>
+        </>
+      )}
     </View>
   );
 };
@@ -192,9 +218,34 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 20,
   },
+  refuse: {
+    backgroundColor: '#FFE2E2',
+    padding: 9,
+    borderRadius: 15,
+    marginRight: 10,
+  },
+  refuseText: {
+    color: '#FF0000',
+  },
+  waitingText: {
+    fontWeight: 'bold',
+    fontSize: 20,
+    marginTop: 15,
+    marginBottom: 15,
+  },
+  accept: {
+    backgroundColor: '#BEE0FF',
+    padding: 9,
+    borderRadius: 15,
+    marginRight: 10,
+  },
+  acceptText: {
+    color: '#2A99FF',
+  },
   buttonContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+    marginVertical: 10,
   },
   cameraContainer: {
     flexDirection: 'row',
@@ -262,6 +313,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: 'black',
   },
   headerTitleInput: {
     fontSize: 24,
@@ -273,7 +325,7 @@ const styles = StyleSheet.create({
   },
   subTitle: {
     fontSize: 16,
-    color: '#888',
+    color: 'black',
   },
   button: {
     backgroundColor: '#03CF5D', // 버튼 배경색상 추가
@@ -282,6 +334,20 @@ const styles = StyleSheet.create({
     width: 170,
     borderRadius: 20,
     marginTop: 20,
+  },
+  deleteButton: {
+    backgroundColor: '#FF0000', // 버튼 배경색상 추가
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    width: 170,
+    borderRadius: 20,
+    marginTop: 20,
+  },
+  deleteButtonText: {
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: 'white',
+    textAlign: 'center',
   },
   subTitleInput: {
     fontSize: 16,
@@ -332,6 +398,29 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#ddd',
     marginTop: 10,
+  },
+  tabContainer: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  selectedTab: {
+    borderBottomWidth: 3,
+    borderBottomColor: '#03CF5D',
+  },
+  tabText: {
+    fontSize: 16,
+    color: '#888',
+    fontWeight: 'bold',
+  },
+  selectedTabText: {
+    color: '#000',
+    fontWeight: 'bold',
   },
 });
 

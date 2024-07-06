@@ -96,6 +96,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: 15,
   },
+  separator: {
+    height: 2,
+    backgroundColor: 'black',
+    marginTop: 10,
+  },
   backIcon: {
     width: 24,
     height: 24,
@@ -119,11 +124,6 @@ const styles = StyleSheet.create({
   subTitle: {
     fontSize: 16,
     color: '#888',
-  },
-  separator: {
-    height: 1,
-    backgroundColor: '#ddd',
-    marginTop: 10,
   },
   userItem: {
     flexDirection: 'row',
