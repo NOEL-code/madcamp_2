@@ -23,6 +23,13 @@ const statusStyles = {
   4: {color: '#D9D9D9', text: '퇴근'},
 };
 
+const statusBoxStyles = {
+  1: {backgroundColor: '#DFF5E9'},
+  2: {backgroundColor: '#FFE2E2'},
+  3: {backgroundColor: '#FFF4D5'},
+  4: {backgroundColor: '#F4F4F4'},
+};
+
 const TeamScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
@@ -45,13 +52,15 @@ const TeamScreen = ({navigation}) => {
           style={styles.profileIcon}
         />
         <Text style={styles.userName}>정우성</Text>
-        <View
-          style={[
-            styles.statusIndicator,
-            {backgroundColor: statusStyles[1].color},
-          ]}
-        />
-        <Text style={styles.statusText}>{statusStyles[1].text}</Text>
+        <View style={[styles.statusIndicatorBox, statusBoxStyles[1]]}>
+          <View
+            style={[
+              styles.statusIndicator,
+              {backgroundColor: statusStyles[1].color},
+            ]}
+          />
+          <Text style={styles.statusText}>{statusStyles[1].text}</Text>
+        </View>
       </View>
       <Text style={styles.sectionTitle}>학생 20명</Text>
       <ScrollView>
@@ -63,14 +72,17 @@ const TeamScreen = ({navigation}) => {
             />
             <Text style={styles.userName}>{user.name}</Text>
             <View
-              style={[
-                styles.statusIndicator,
-                {backgroundColor: statusStyles[user.status].color},
-              ]}
-            />
-            <Text style={styles.statusText}>
-              {statusStyles[user.status].text}
-            </Text>
+              style={[styles.statusIndicatorBox, statusBoxStyles[user.status]]}>
+              <View
+                style={[
+                  styles.statusIndicator,
+                  {backgroundColor: statusStyles[user.status].color},
+                ]}
+              />
+              <Text style={styles.statusText}>
+                {statusStyles[user.status].text}
+              </Text>
+            </View>
           </View>
         ))}
       </ScrollView>
@@ -133,6 +145,13 @@ const styles = StyleSheet.create({
   userName: {
     flex: 1,
     fontSize: 18,
+  },
+  statusIndicatorBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 20,
   },
   statusIndicator: {
     width: 12,
