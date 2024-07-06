@@ -6,17 +6,30 @@ import {
   TouchableOpacity,
   TextInput,
   StyleSheet,
+  Modal,
 } from 'react-native';
 
 const CreateRoomScreen = ({navigation}) => {
   const [roomName, setRoomName] = useState('');
   const [charCount, setCharCount] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const handleInputChange = text => {
     if (text.length <= 9) {
       setRoomName(text);
       setCharCount(text.length);
     }
+  };
+
+  const handleSubmit = () => {
+    if (roomName.trim()) {
+      setModalVisible(true);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setModalVisible(false);
+    navigation.navigate('Main');
   };
 
   return (
@@ -30,10 +43,20 @@ const CreateRoomScreen = ({navigation}) => {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>방 생성</Text>
         <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('Main');
-          }}>
-          <Text style={styles.headerButton}>완료</Text>
+          onPress={handleSubmit}
+          disabled={!roomName.trim()}
+          style={[
+            styles.headerButton,
+            !roomName.trim() && styles.headerButtonDisabled,
+          ]}>
+          <Text
+            style={
+              roomName.trim()
+                ? styles.headerButtonText
+                : styles.headerButtonTextDisabled
+            }>
+            완료
+          </Text>
         </TouchableOpacity>
       </View>
       <View style={styles.content}>
@@ -47,6 +70,21 @@ const CreateRoomScreen = ({navigation}) => {
         />
         <Text style={styles.charCount}>{charCount}/9</Text>
       </View>
+
+      <Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={handleCloseModal}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>생성 완료</Text>
+            <TouchableOpacity onPress={handleCloseModal}>
+              <Text style={styles.modalButton}>확인</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -70,7 +108,15 @@ const styles = StyleSheet.create({
   },
   headerButton: {
     fontSize: 18,
+  },
+  headerButtonText: {
     color: 'black',
+  },
+  headerButtonDisabled: {
+    opacity: 0.5,
+  },
+  headerButtonTextDisabled: {
+    color: '#888',
   },
   headerTitle: {
     fontSize: 18,
@@ -101,6 +147,27 @@ const styles = StyleSheet.create({
   charCount: {
     fontSize: 16,
     color: '#888',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    width: 300,
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    fontSize: 18,
+    marginBottom: 20,
+  },
+  modalButton: {
+    fontSize: 18,
+    color: '#03CF5D',
   },
 });
 

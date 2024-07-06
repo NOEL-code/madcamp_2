@@ -9,6 +9,7 @@ import TeamScreen from './TeamScreen';
 import TeamAdminScreen from './TeamAdminScreen';
 import TeamApplyScreen from './TeamApplyScreen';
 import CameraScreen from './CameraScreen';
+import StatisticsScreen from './StatisticsScreen';
 
 const Stack = createStackNavigator();
 
@@ -54,6 +55,11 @@ const App = () => {
         <Stack.Screen
           name="TeamApply"
           component={TeamApplyScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="Statistic"
+          component={StatisticsScreen}
           options={{headerShown: false}}
         />
       </Stack.Navigator>

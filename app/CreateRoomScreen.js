@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -21,12 +21,18 @@ const initialUsers = [
 const CreateRoomScreen = ({navigation}) => {
   const [users, setUsers] = useState(initialUsers);
   const [search, setSearch] = useState('');
+  const [selectedCount, setSelectedCount] = useState(0);
 
   const handleSelect = index => {
     const newUsers = [...users];
     newUsers[index].selected = !newUsers[index].selected;
     setUsers(newUsers);
   };
+
+  useEffect(() => {
+    const count = users.filter(user => user.selected).length;
+    setSelectedCount(count);
+  }, [users]);
 
   const filteredUsers = users.filter(user => user.name.includes(search));
 
@@ -42,9 +48,23 @@ const CreateRoomScreen = ({navigation}) => {
         <Text style={styles.headerTitle}>방 생성</Text>
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate('CreateRoomName');
-          }}>
-          <Text style={styles.headerButton}>다음</Text>
+            if (selectedCount > 0) {
+              navigation.navigate('CreateRoomName');
+            }
+          }}
+          disabled={selectedCount === 0}
+          style={[
+            styles.headerButton,
+            selectedCount === 0 && styles.headerButtonDisabled,
+          ]}>
+          <Text
+            style={
+              selectedCount > 0
+                ? styles.headerButtonText
+                : styles.headerButtonTextDisabled
+            }>
+            다음
+          </Text>
         </TouchableOpacity>
       </View>
       <TextInput
@@ -118,7 +138,15 @@ const styles = StyleSheet.create({
   },
   headerButton: {
     fontSize: 18,
+  },
+  headerButtonText: {
     color: 'black',
+  },
+  headerButtonDisabled: {
+    opacity: 0.5,
+  },
+  headerButtonTextDisabled: {
+    color: '#888',
   },
   headerTitle: {
     fontSize: 18,

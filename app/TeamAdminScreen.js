@@ -73,10 +73,14 @@ const TeamAdminScreen = ({navigation}) => {
           <Text style={styles.headerTitle}>{title}</Text>
         )}
         <TouchableOpacity onPress={toggleTitleEditMode}>
-          <Image
-            source={require('./assets/images/pencil.png')}
-            style={styles.editIcon}
-          />
+          {isTitleEditMode ? (
+            <Text style={styles.complete}>완료</Text>
+          ) : (
+            <Image
+              source={require('./assets/images/pencil.png')}
+              style={styles.editIcon}
+            />
+          )}
         </TouchableOpacity>
       </View>
       <View style={styles.subTitleContainer}>
@@ -221,6 +225,10 @@ const styles = StyleSheet.create({
   joinText: {
     color: '#03CF5D',
     textDecorationLine: 'underline',
+  },
+  complete: {
+    fontSize: 11,
+    color: '#2400FF',
   },
   delete: {
     textDecorationLine: 'underline',
