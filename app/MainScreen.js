@@ -98,7 +98,7 @@ const MainScreen = ({navigation}) => {
         </View>
       </ScrollView>
       <View style={styles.navbar}>
-        <TouchableOpacity onPress={() => navigation.navigate('Statistic')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Stat')}>
           <Image
             source={require('./assets/images/staticsNotSelected.png')}
             style={styles.navIcon}
@@ -110,7 +110,7 @@ const MainScreen = ({navigation}) => {
             style={styles.navIcon}
           />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
           <Image
             source={require('./assets/images/myPageNotSelected.png')}
             style={styles.navIcon}

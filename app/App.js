@@ -9,7 +9,10 @@ import TeamScreen from './TeamScreen';
 import TeamAdminScreen from './TeamAdminScreen';
 import TeamApplyScreen from './TeamApplyScreen';
 import CameraScreen from './CameraScreen';
-import StatisticsScreen from './StatisticsScreen';
+import StatisticsScreen from './Statistics';
+import LogInScreen from './LogIn';
+import SignUpScreen from './SignUp';
+import ProfileScreen from './Profile';
 
 const Stack = createStackNavigator();
 
@@ -58,8 +61,23 @@ const App = () => {
           options={{headerShown: false}}
         />
         <Stack.Screen
-          name="Statistic"
+          name="LogIn"
+          component={LogInScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="SignUp"
+          component={SignUpScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="Stat"
           component={StatisticsScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="Profile"
+          component={ProfileScreen}
           options={{headerShown: false}}
         />
       </Stack.Navigator>
