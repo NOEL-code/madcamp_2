@@ -12,7 +12,7 @@ import { Calendar } from 'react-native-calendars';
 const workDays = [
   { date: '2024-07-04', on: '10:30:00', off: '22:00:00', away: [{ start: '14:00:00', end: '15:00:00' }] },
   { date: '2024-07-06', on: '10:30:00', off: '22:00:00', away: [{ start: '14:00:00', end: '15:00:00' }] },
-  { date: '2024-07-25', on: '13:30:00', off: '22:00:00', away: [{ start: '14:00:00', end: '15:00:00' }, { start: '16:00:00', end: '16:30:00' }] },
+  { date: '2024-07-25', on: '13:30:00', off: '24:00:00', away: [{ start: '14:00:00', end: '15:00:00' }, { start: '16:00:00', end: '16:30:00' }, { start: '18:00:00', end: '21:00:00' }] },
 ];
 
 const getMarkedDates = (workDays, selected) => {
@@ -108,26 +108,54 @@ const Stat = ({ navigation }) => {
               </View>
               <View style={styles.progressBarContainer}>
                 <View style={styles.progressBar}>
+                  {/* 출근부터 첫 외출 전까지 */}
                   <View
                     style={[
                       styles.timeSegment,
                       {
                         left: `${calculatePercentage(selectedWorkDay.on)}%`,
                         width: `${calculatePercentage(selectedWorkDay.away[0].start) - calculatePercentage(selectedWorkDay.on)}%`,
+                        backgroundColor: '#03CF5D'
                       },
                     ]}
                   />
+                  {/* 외출 복귀 후 다음 외출 전까지 */}
                   {selectedWorkDay.away.map((period, index) => (
-                    <View
-                      key={index}
-                      style={[
-                        styles.timeSegment,
-                        {
-                          left: `${calculatePercentage(period.end)}%`,
-                          width: `${calculatePercentage(selectedWorkDay.off) - calculatePercentage(period.end)}%`,
-                        },
-                      ]}
-                    />
+                    <React.Fragment key={index}>
+                      <View
+                        style={[
+                          styles.timeSegment,
+                          {
+                            left: `${calculatePercentage(period.start)}%`,
+                            width: `${calculatePercentage(period.end) - calculatePercentage(period.start)}%`,
+                            backgroundColor: '#DFDFDF'
+                          },
+                        ]}
+                      />
+                      {index < selectedWorkDay.away.length - 1 ? (
+                        <View
+                          style={[
+                            styles.timeSegment,
+                            {
+                              left: `${calculatePercentage(period.end)}%`,
+                              width: `${calculatePercentage(selectedWorkDay.away[index + 1].start) - calculatePercentage(period.end)}%`,
+                              backgroundColor: '#03CF5D'
+                            },
+                          ]}
+                        />
+                      ) : (
+                        <View
+                          style={[
+                            styles.timeSegment,
+                            {
+                              left: `${calculatePercentage(period.end)}%`,
+                              width: `${calculatePercentage(selectedWorkDay.off) - calculatePercentage(period.end)}%`,
+                              backgroundColor: '#03CF5D'
+                            },
+                          ]}
+                        />
+                      )}
+                    </React.Fragment>
                   ))}
                 </View>
               </View>
@@ -237,21 +265,20 @@ const styles = StyleSheet.create({
     width: '80%',
     height: 20,
     borderRadius: 10,
-    backgroundColor: '#d3d3d3',
+    backgroundColor: '#dfdfdf',
     marginBottom: 10,
     position: 'relative',
   },
   progressBar: {
     height: '100%',
     borderRadius: 10,
-    backgroundColor: '#d3d3d3',
+    backgroundColor: '#dfdfdf',
     position: 'relative',
   },
   timeSegment: {
     position: 'absolute',
     height: '100%',
-    backgroundColor: '#03CF5D',
-    borderRadius: 10
+    borderRadius: 10,
   },
   legendContainer: {
     flexDirection: 'row',
