@@ -76,13 +76,13 @@ const MainScreen = ({navigation}) => {
         </View>
       </ScrollView>
       <View style={styles.navbar}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Statistic')}>
           <Image
             source={require('./assets/images/statistics.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Main')}>
           <Image
             source={require('./assets/images/home.png')}
             style={styles.navIcon}
