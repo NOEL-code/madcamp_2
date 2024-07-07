@@ -20,6 +20,7 @@ const LogIn = ({navigation}) => {
         userEmail: email,
         userPassword: password,
       });
+      console.log(response);
       const {accessToken, refreshToken} = response.data;
       await AsyncStorage.setItem('accessToken', accessToken);
       await AsyncStorage.setItem('refreshToken', refreshToken);

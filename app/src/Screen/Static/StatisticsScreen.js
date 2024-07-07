@@ -64,19 +64,19 @@ const StatisticsScreen = ({navigation}) => {
       <View style={styles.navbar}>
         <TouchableOpacity onPress={() => navigation.navigate('Statistic')}>
           <Image
-            source={require('./assets/images/statistics.png')}
+            source={require('../../../assets/images/statistics.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Main')}>
           <Image
-            source={require('./assets/images/HomeNotSelected.png')}
+            source={require('../../../assets/images/HomeNotSelected.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>
         <TouchableOpacity>
           <Image
-            source={require('./assets/images/myPageNotSelected.png')}
+            source={require('../../../assets/images/myPageNotSelected.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>

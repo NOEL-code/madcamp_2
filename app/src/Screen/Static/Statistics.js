@@ -231,19 +231,19 @@ const Stat = ({navigation}) => {
             navigation.navigate('Main');
           }}>
           <Image
-            source={require('./assets/images/statistics.png')}
+            source={require('../../../assets/images/statistics.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Main')}>
           <Image
-            source={require('./assets/images/home.png')}
+            source={require('../../../assets/images/home.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
           <Image
-            source={require('./assets/images/myPage.png')}
+            source={require('../../../assets/images/myPage.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>

@@ -112,9 +112,6 @@ exports.getUsers = async () => {
   return resUsers;
 };
 
-const mongoose = require("mongoose");
-const { User } = require("../models/User");
-
 exports.updateProfileImage = async (userId, imageUrl) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(userId)) {

@@ -102,7 +102,9 @@ const Profile = ({navigation}) => {
           <View style={styles.imageContainer}>
             <Image
               style={styles.profileImage}
-              source={photo ? photo : require('./assets/images/person.png')}
+              source={
+                photo ? photo : require('../../../assets/images/person.png')
+              }
               resizeMode="cover"
             />
             <TouchableOpacity
@@ -130,7 +132,7 @@ const Profile = ({navigation}) => {
             {waitRooms.map((room, index) => (
               <View key={index} style={styles.roomItem}>
                 <Image
-                  source={require('./assets/images/person.png')}
+                  source={require('../../../assets/images/person.png')}
                   style={styles.profileIcon}
                 />
                 <Text style={styles.roomName}>{room.name}</Text>
@@ -148,7 +150,7 @@ const Profile = ({navigation}) => {
             {ingRooms.map((room, index) => (
               <View key={index} style={styles.roomItem}>
                 <Image
-                  source={require('./assets/images/person.png')}
+                  source={require('../../../assets/images/person.png')}
                   style={styles.profileIcon}
                 />
                 <Text style={styles.roomName}>{room.name}</Text>
@@ -166,19 +168,19 @@ const Profile = ({navigation}) => {
       <View style={styles.navbar}>
         <TouchableOpacity onPress={() => navigation.navigate('Stat')}>
           <Image
-            source={require('./assets/images/statistics.png')}
+            source={require('../../../assets/images/statistics.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Main')}>
           <Image
-            source={require('./assets/images/home.png')}
+            source={require('../../../assets/images/home.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
           <Image
-            source={require('./assets/images/myPage.png')}
+            source={require('../../../assets/images/myPage.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>

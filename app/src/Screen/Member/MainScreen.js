@@ -45,7 +45,7 @@ const MainScreen = ({navigation}) => {
               style={styles.headerButtonLeft}
               onPress={() => navigation.navigate('CreateRoom')}>
               <Image
-                source={require('./assets/images/roomCreate.png')}
+                source={require('../../../assets/images/roomCreate.png')}
                 style={styles.headerButtonIcon}
               />
               <Text style={styles.headerButtonText}>방 생성</Text>
@@ -54,7 +54,7 @@ const MainScreen = ({navigation}) => {
               style={styles.headerButtonRight}
               onPress={() => navigation.navigate('joinRoom')}>
               <Image
-                source={require('./assets/images/joinRoom.png')}
+                source={require('../../../assets/images/joinRoom.png')}
                 style={styles.headerButtonIcon}
               />
               <Text style={styles.headerButtonText}>기존 방 합류</Text>
@@ -69,7 +69,7 @@ const MainScreen = ({navigation}) => {
             {participatingRooms.map((room, index) => (
               <View key={index} style={styles.roomItem}>
                 <Image
-                  source={require('./assets/images/roomProfile.png')}
+                  source={require('../../../assets/images/roomProfile.png')}
                   style={styles.profileIcon}
                 />
                 <Text style={styles.roomName}>{room.name}</Text>
@@ -78,7 +78,7 @@ const MainScreen = ({navigation}) => {
                   style={styles.forwardButton}
                   onPress={() => navigation.navigate('Team')}>
                   <Image
-                    source={require('./assets/images/next.png')}
+                    source={require('../../../assets/images/next.png')}
                     style={styles.forwardIcon}
                   />
                 </TouchableOpacity>
@@ -94,7 +94,7 @@ const MainScreen = ({navigation}) => {
             {managingRooms.map((room, index) => (
               <View key={index} style={styles.roomItem}>
                 <Image
-                  source={require('./assets/images/roomProfile.png')}
+                  source={require('../../../assets/images/roomProfile.png')}
                   style={styles.profileIcon}
                 />
                 <Text style={styles.roomName}>{room.name}</Text>
@@ -103,7 +103,7 @@ const MainScreen = ({navigation}) => {
                   style={styles.forwardButton}
                   onPress={() => navigation.navigate('TeamAdmin')}>
                   <Image
-                    source={require('./assets/images/next.png')}
+                    source={require('../../../assets/images/next.png')}
                     style={styles.forwardIcon}
                   />
                 </TouchableOpacity>
@@ -115,19 +115,19 @@ const MainScreen = ({navigation}) => {
       <View style={styles.navbar}>
         <TouchableOpacity onPress={() => navigation.navigate('Stat')}>
           <Image
-            source={require('./assets/images/staticsNotSelected.png')}
+            source={require('../../../assets/images/staticsNotSelected.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Main')}>
           <Image
-            source={require('./assets/images/home.png')}
+            source={require('../../../assets/images/home.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
           <Image
-            source={require('./assets/images/myPageNotSelected.png')}
+            source={require('../../../assets/images/myPageNotSelected.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>
