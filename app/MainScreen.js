@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
+import api from './api'; // api 설정 파일 불러오기
 
 const participatingRooms = [
   {name: '카이부캠방', count: 80},
@@ -19,7 +20,21 @@ const managingRooms = [
   {name: '메렁', count: 5},
 ];
 
-const MainScreen = ({navigation}) => {
+const MainScreen = ({ navigation }) => {
+  useEffect(() => {
+    const checkToken = async () => {
+      try {
+        const response = await api.get('/users/me');
+        console.log('User data:', response.data);
+      } catch (error) {
+        console.error("Failed to fetch user data", error);
+        navigation.navigate('LogIn');
+      }
+    };
+
+    checkToken();
+  }, [navigation]);
+
   return (
     <View style={styles.container}>
       <ScrollView>
@@ -98,7 +113,7 @@ const MainScreen = ({navigation}) => {
         </View>
       </ScrollView>
       <View style={styles.navbar}>
-        <TouchableOpacity onPress={() => navigation.navigate('Statistic')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Stat')}>
           <Image
             source={require('./assets/images/staticsNotSelected.png')}
             style={styles.navIcon}
@@ -110,7 +125,7 @@ const MainScreen = ({navigation}) => {
             style={styles.navIcon}
           />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
           <Image
             source={require('./assets/images/myPageNotSelected.png')}
             style={styles.navIcon}
