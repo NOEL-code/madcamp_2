@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
+import api from './api'; // api 설정 파일 불러오기
 
 const participatingRooms = [
   {name: '카이부캠방', count: 80},
@@ -19,7 +20,21 @@ const managingRooms = [
   {name: '메렁', count: 5},
 ];
 
-const MainScreen = ({navigation}) => {
+const MainScreen = ({ navigation }) => {
+  useEffect(() => {
+    const checkToken = async () => {
+      try {
+        const response = await api.get('/users/me');
+        console.log('User data:', response.data);
+      } catch (error) {
+        console.error("Failed to fetch user data", error);
+        navigation.navigate('LogIn');
+      }
+    };
+
+    checkToken();
+  }, [navigation]);
+
   return (
     <View style={styles.container}>
       <ScrollView>

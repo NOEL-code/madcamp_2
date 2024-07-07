@@ -42,7 +42,9 @@ exports.registerUser = async ({ userEmail, userPassword, name, phoneNumber, phot
 
 exports.loginUser = async ({ userEmail, userPassword }) => {
   let user = await User.findOne({ userEmail });
+  console.log(user)
   if (!user) {
+    console.log("여기서 .. ", userEmail) // userEmail은 잘 전달됨 .. 
     throw new Error("가입된 id가 아님");
   }
 
@@ -56,6 +58,8 @@ exports.loginUser = async ({ userEmail, userPassword }) => {
       id: user.id,
     },
   };
+
+  console.log('Received login request:', userEmail, userPassword);
 
   const accessToken = makeAccessToken(payload);
   const refreshToken = makeRefreshToken(payload);
