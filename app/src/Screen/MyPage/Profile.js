@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -6,36 +6,92 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Alert,
 } from 'react-native';
+import {launchImageLibrary} from 'react-native-image-picker';
+import {PERMISSIONS, request, check, RESULTS} from 'react-native-permissions';
+import api from '../../utils/api';
 
-<<<<<<< HEAD:app/src/Screen/myPage/Profile.js
 const initialWaitRooms = [{name: '카이부캠방'}, {name: '키키'}];
 const initialIngRooms = [
   {name: '1분반', count: 20},
   {name: '우히히', count: 5},
-  {name: '메렁', count: 12},
-=======
-const initialWaitRooms = [
-  { name: '카이부캠방' },
-  { name: '키키' }
->>>>>>> parent of 5cfeb04 (Remove cached files):app/Profile.js
+  {name: '메렁', count: 13},
 ];
 
-const initialIngRooms = [
-  { name: '1분반', count: 20 },
-  { name: '우히히', count: 5 },
-  { name: '메렁', count: 13 },
-];
-
-const Profile = ({ navigation }) => {
+const Profile = ({navigation}) => {
   const [waitRooms, setWaitRooms] = useState(initialWaitRooms);
   const [ingRooms, setIngRooms] = useState(initialIngRooms);
+  const [photo, setPhoto] = useState(null);
 
-  const handleCancel = (roomName) => {
+  useEffect(() => {
+    requestPermissions();
+  }, []);
+
+  const requestPermissions = async () => {
+    const result = await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
+    if (result !== RESULTS.GRANTED) {
+      Alert.alert(
+        'Permission denied',
+        'You need to grant storage permissions to change the profile image.',
+      );
+    }
+  };
+
+  const handleImageChange = async () => {
+    const permission = await check(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
+    if (permission === RESULTS.GRANTED) {
+      launchImageLibrary(
+        {
+          mediaType: 'photo',
+          maxWidth: 300,
+          maxHeight: 300,
+          quality: 1,
+        },
+        async response => {
+          if (response.didCancel) {
+            console.log('User cancelled image picker');
+          } else if (response.error) {
+            console.log('ImagePicker Error: ', response.error);
+          } else if (response.assets && response.assets.length > 0) {
+            const source = {uri: response.assets[0].uri};
+            setPhoto(source);
+
+            // 서버로 이미지 업로드
+            const formData = new FormData();
+            formData.append('image', {
+              uri: response.assets[0].uri,
+              type: response.assets[0].type,
+              name: response.assets[0].fileName,
+            });
+            formData.append('userId', '사용자 ID'); // 적절한 사용자 ID를 여기에 추가
+
+            try {
+              const res = await api.post('/update/image', formData, {
+                headers: {
+                  'Content-Type': 'multipart/form-data',
+                },
+              });
+              console.log('Image uploaded successfully: ', res.data);
+            } catch (error) {
+              console.error('Error uploading image: ', error);
+            }
+          }
+        },
+      );
+    } else {
+      Alert.alert(
+        'Permission denied',
+        'You need to grant storage permissions to change the profile image.',
+      );
+    }
+  };
+
+  const handleCancel = roomName => {
     setWaitRooms(waitRooms.filter(room => room.name !== roomName));
   };
 
-  const handleExit = (roomName) => {
+  const handleExit = roomName => {
     setIngRooms(ingRooms.filter(room => room.name !== roomName));
   };
 
@@ -46,24 +102,25 @@ const Profile = ({ navigation }) => {
           <View style={styles.imageContainer}>
             <Image
               style={styles.profileImage}
-<<<<<<< HEAD:app/src/Screen/myPage/Profile.js
               source={
                 photo ? photo : require('../../../assets/images/person.png')
               }
-=======
-              source={require('./assets/images/person.png')} // Placeholder 이미지 사용
->>>>>>> parent of 5cfeb04 (Remove cached files):app/Profile.js
               resizeMode="cover"
             />
-            <TouchableOpacity style={styles.cameraButton}>
-              <Text style={styles.cameraIcon}>욥</Text>
+            <TouchableOpacity
+              style={styles.cameraButton}
+              onPress={handleImageChange}>
+              <Text style={styles.cameraIcon}>이미지 변경</Text>
             </TouchableOpacity>
           </View>
 
           <View style={styles.profileText}>
             <Text style={styles.name}>이수민</Text>
             <Text style={styles.userId}>ID smo1111</Text>
-            <TouchableOpacity onPress={() => {/* 로그아웃 기능 구현 */ }}>
+            <TouchableOpacity
+              onPress={() => {
+                /* 로그아웃 기능 구현 */
+              }}>
               <Text style={styles.logoutText}>로그아웃</Text>
             </TouchableOpacity>
           </View>
@@ -109,22 +166,19 @@ const Profile = ({ navigation }) => {
       </ScrollView>
 
       <View style={styles.navbar}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Stat')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Stat')}>
           <Image
             source={require('../../../assets/images/statistics.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Main')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Main')}>
           <Image
             source={require('../../../assets/images/home.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Profile')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
           <Image
             source={require('../../../assets/images/myPage.png')}
             style={styles.navIcon}
@@ -148,7 +202,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
     marginBottom: 20,
     position: 'relative',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   profileImage: {
     width: 150,
@@ -161,7 +215,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     right: 130,
     backgroundColor: '#00C853',
-    width: 40,
+    width: 100,
     height: 40,
     borderRadius: 20,
     justifyContent: 'center',
@@ -172,7 +226,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   profileText: {
-    alignItems: 'center'
+    alignItems: 'center',
   },
   name: {
     fontSize: 24,
@@ -189,7 +243,7 @@ const styles = StyleSheet.create({
     color: '#5F5F5F',
     marginTop: 10,
     borderBottomColor: '#5F5F5F',
-    borderBottomWidth: 1
+    borderBottomWidth: 1,
   },
   roomsContainer: {
     flex: 1,

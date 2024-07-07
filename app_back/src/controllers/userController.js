@@ -1,10 +1,6 @@
 const { registerUser } = require("../services/userService");
 const { getUsers, updateProfileImage } = require("../services/userService");
 const { loginUser } = require("../services/userService");
-<<<<<<< HEAD
-=======
-const { getUsers } = require("../services/userService");
->>>>>>> parent of 5cfeb04 (Remove cached files)
 const { refreshAccessToken } = require("../services/userService");
 const { getCurrentUser } = require("../services/userService");
 const { logoutUser } = require("../services/userService");
@@ -32,10 +28,6 @@ exports.registerUser = async (req, res) => {
 
 // 로그인
 exports.loginUser = async (req, res) => {
-<<<<<<< HEAD
-  console.log("123");
-=======
->>>>>>> parent of 5cfeb04 (Remove cached files)
   const { userEmail, userPassword } = req.body;
 
   try {
@@ -102,7 +94,6 @@ exports.updateImage = async (req, res) => {
   const imageUrl = req.file.location; // S3에 저장된 이미지의 URL
 
   try {
-<<<<<<< HEAD
     console.log("Updating image for user:", userId);
     const resImageUrl = await updateProfileImage(userId, imageUrl);
     if (!resImageUrl) {
@@ -111,11 +102,6 @@ exports.updateImage = async (req, res) => {
     res.status(200).json({ imageUrl: resImageUrl });
   } catch (err) {
     console.error("Error updating profile image:", err);
-=======
-    const resImageUrl = await updateProfileImage(userId, imageUrl);
-    res.status(200).json({ imageUrl: resImageUrl });
-  } catch (err) {
->>>>>>> parent of 5cfeb04 (Remove cached files)
     res.status(500).json({ message: "Error updating profile image" });
   }
 };

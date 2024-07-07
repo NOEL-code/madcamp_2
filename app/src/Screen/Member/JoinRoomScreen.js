@@ -98,7 +98,7 @@ const JoinRoomScreen = ({navigation}) => {
         </TouchableOpacity>
         <TouchableOpacity>
           <Image
-            source={require('./assets/images/myPage.png')}
+            source={require('../../../assets/images/myPage.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -8,9 +8,9 @@ import {
   Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import api from './api'; // api 설정 파일 불러오기
+import api from '../../utils/api'; // api 설정 파일 불러오기
 
-const LogIn = ({ navigation }) => {
+const LogIn = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -20,29 +20,31 @@ const LogIn = ({ navigation }) => {
         userEmail: email,
         userPassword: password,
       });
-<<<<<<< HEAD:app/src/Screen/myPage/LogIn.js
       console.log(response);
       const {accessToken, refreshToken} = response.data;
-=======
-      const { accessToken, refreshToken } = response.data;
->>>>>>> parent of 5cfeb04 (Remove cached files):app/LogIn.js
       await AsyncStorage.setItem('accessToken', accessToken);
       await AsyncStorage.setItem('refreshToken', refreshToken);
       navigation.navigate('Main');
     } catch (error) {
       if (error.response) {
         console.log('Error response data:', error.response.data); // 오류 응답 데이터 로그
-        Alert.alert('로그인 실패', error.response.data.message || '이메일 또는 비밀번호가 잘못되었습니다.');
+        Alert.alert(
+          '로그인 실패',
+          error.response.data.message ||
+            '이메일 또는 비밀번호가 잘못되었습니다.',
+        );
       } else {
         Alert.alert('로그인 실패', '서버와의 통신에 문제가 발생했습니다.');
       }
-      console.error("Login error", error);
+      console.error('Login error', error);
     }
   };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={styles.backButton}>
         <Text style={styles.backButtonText}>{'<'}</Text>
       </TouchableOpacity>
       <Text style={styles.title}>로그인</Text>
