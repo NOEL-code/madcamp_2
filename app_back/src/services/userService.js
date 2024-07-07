@@ -42,3 +42,18 @@ exports.registerUser = async ({
 
   return token;
 };
+
+exports.getUsers = async () => {
+  let users = await User.find();
+
+  if (!users || users.length === 0) {
+    throw new Error("There are no users");
+  }
+
+  const resUsers = users.map((user) => ({
+    id: user._id,
+    userName: user.name,
+  }));
+
+  return resUsers;
+};
