@@ -10,7 +10,7 @@ import {
 import { Calendar } from 'react-native-calendars';
 
 const workDays = [
-  { date: '2024-07-04', on: '10:30:00', off: '22:00:00', away: [{ start: '14:00:00', end: '15:00:00' }] },
+  { date: '2024-07-07', on: '10:30:00', off: '22:00:00', away: [{ start: '14:00:00', end: '15:00:00' }] },
   { date: '2024-07-06', on: '10:30:00', off: '22:00:00', away: [{ start: '14:00:00', end: '15:00:00' }] },
   { date: '2024-07-25', on: '13:30:00', off: '24:00:00', away: [{ start: '14:00:00', end: '15:00:00' }, { start: '16:00:00', end: '16:30:00' }, { start: '18:00:00', end: '21:00:00' }] },
 ];
