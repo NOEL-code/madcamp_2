@@ -13,6 +13,7 @@ import StatisticsScreen from './Statistics';
 import LogInScreen from './LogIn';
 import SignUpScreen from './SignUp';
 import ProfileScreen from './Profile';
+import InviteRoomScreen from './InviteRoomScreen';
 
 const Stack = createStackNavigator();
 
@@ -78,6 +79,10 @@ const App = () => {
         <Stack.Screen
           name="Profile"
           component={ProfileScreen}
+          />
+        <Stack.Screen
+          name="inviteRoom"
+          component={InviteRoomScreen}
           options={{headerShown: false}}
         />
       </Stack.Navigator>
