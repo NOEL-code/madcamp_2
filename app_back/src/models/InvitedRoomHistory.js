@@ -5,22 +5,24 @@ const InvitedRoomHistorySchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
-  rooms: {
-    type: [
-      {
-        userId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "room",
-        },
-        status: {
-          type: Number,
-          default: 1,
-        },
+  rooms: [
+    {
+      RoomId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Room",
       },
-    ],
-  },
+      status: {
+        // 1은 수락 대기, 2는 수락, 3은 거절
+        type: Number,
+        default: 1,
+      },
+    },
+  ],
 });
 
-const User = mongoose.model("InvitedRoomHistory", InvitedRoomHistorySchema);
+const InvitedRoomHistory = mongoose.model(
+  "InvitedRoomHistory",
+  InvitedRoomHistorySchema
+);
 
 module.exports = { InvitedRoomHistory };
