@@ -1,6 +1,8 @@
 const { registerUser } = require("../services/userService");
 const { loginUser } = require("../services/userService");
 const { getUsers } = require("../services/userService");
+const { refreshAccessToken } = require('../services/userService');
+const { getCurrentUser } = require('../services/userService');
 
 exports.registerUser = async (req, res) => {
   const { userEmail, userPassword, name, phoneNumber, photoUrl } = req.body;
@@ -39,6 +41,21 @@ exports.loginUser = async (req, res) => {
     }
     console.error(err.message);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.refreshToken = async (req, res) => {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) {
+    return res.status(401).json({ message: "리프레시 토큰이 필요합니다." });
+  }
+
+  try {
+    const { accessToken } = await refreshAccessToken(refreshToken);
+    res.status(200).json({ accessToken });
+  } catch (err) {
+    res.status(403).json({ message: err.message });
   }
 };
 

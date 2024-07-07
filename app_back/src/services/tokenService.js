@@ -2,13 +2,13 @@ const { Token } = require('../models/Token'); // 실제 경로에 맞게 수정
 
 const TokenModel = {
   async findToken(userId) {
-    const userToken = await Token.findOne({ _id: userId });
+    const userToken = await Token.findOne({ user_id: userId });
     return userToken;
   },
 
-  async updateRefresh({ _id, refreshToken }) {
+  async updateRefresh({ user_id, refreshToken }) {
     const update = await Token.updateOne(
-      { _id },
+      { user_id },
       { refreshToken },
       { upsert: true }
     );

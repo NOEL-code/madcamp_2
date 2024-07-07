@@ -1,13 +1,13 @@
-const express = require("express");
-const { registerUser, getUsers, loginUser } = require("../controllers/userController");
+const express = require('express');
+const { registerUser, loginUser, getUsers, refreshToken } = require('../controllers/userController');
+const authenticateToken = require('../middlewares/authenticateToken');
 
 const router = express.Router();
 
-// 회원가입 라우트
-router.post("/register", registerUser);
+router.post('/register', registerUser);
+router.post('/login', loginUser);
+router.post('/refresh-token', refreshToken); // 리프레시 토큰 엔드포인트
 
-router.post("/login", loginUser);
 
-router.get("/", getUsers);
 
 module.exports = router;

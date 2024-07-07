@@ -1,4 +1,5 @@
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const { User } = require("../models/User");
 const { makeAccessToken, makeRefreshToken } = require("../utils/makeToken");
 const TokenModel = require("../services/tokenService");
@@ -29,10 +30,10 @@ exports.registerUser = async ({ userEmail, userPassword, name, phoneNumber, phot
   };
 
   const accessToken = makeAccessToken(payload);
-  const refreshToken = makeRefreshToken();
+  const refreshToken = makeRefreshToken(payload);
 
   await TokenModel.updateRefresh({
-    _id: user.id,
+    user_id: user.id,
     refreshToken
   });
 
@@ -57,14 +58,42 @@ exports.loginUser = async ({ userEmail, userPassword }) => {
   };
 
   const accessToken = makeAccessToken(payload);
-  const refreshToken = makeRefreshToken();
+  const refreshToken = makeRefreshToken(payload);
 
   await TokenModel.updateRefresh({
-    _id: user.id,
+    user_id: user.id,
     refreshToken
   });
 
   return { accessToken, refreshToken };
+};
+
+exports.refreshAccessToken = async (refreshToken) => {
+  try {
+    console.log("리프레시 토큰 검증 시작:", refreshToken);
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    console.log("리프레시 토큰 디코딩 완료:", decoded);
+
+    const userToken = await TokenModel.findToken(decoded.user.id);
+    console.log("데이터베이스에서 찾은 토큰:", userToken);
+
+    if (!userToken || userToken.refreshToken !== refreshToken) {
+      throw new Error("유효하지 않은 리프레시 토큰");
+    }
+
+    const payload = {
+      user: {
+        id: decoded.user.id,
+      },
+    };
+
+    const newAccessToken = makeAccessToken(payload);
+    console.log("새로운 액세스 토큰 생성 완료:", newAccessToken);
+    return { accessToken: newAccessToken };
+  } catch (error) {
+    console.error("토큰 갱신 중 오류 발생:", error.message);
+    throw new Error("유효하지 않은 리프레시 토큰");
+  }
 };
 
 exports.getUsers = async () => {

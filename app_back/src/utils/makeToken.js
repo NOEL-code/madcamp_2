@@ -1,12 +1,15 @@
 const jwt = require("jsonwebtoken");
-const dotenv = require("dotenv");
 
 exports.makeAccessToken = (payload) => {
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
-    return token;
-}
+  console.log("액세스 토큰 생성 시작:", payload);
+  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
+  console.log("액세스 토큰 생성 완료:", token);
+  return token;
+};
 
-exports.makeRefreshToken = () => {
-    const refreshToken = jwt.sign({}, process.env.JWT_SECRET, {expiresIn: "14d"});
-    return refreshToken;
-}
+exports.makeRefreshToken = (payload) => {
+  console.log("리프레시 토큰 생성 시작:", payload);
+  const token = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: "7d" });
+  console.log("리프레시 토큰 생성 완료:", token);
+  return token;
+};
