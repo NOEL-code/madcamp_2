@@ -1,9 +1,9 @@
 const { registerUser } = require("../services/userService");
+const { getUsers, updateProfileImage } = require("../services/userService");
 const { loginUser } = require("../services/userService");
-const { getUsers } = require("../services/userService");
-const { refreshAccessToken } = require('../services/userService');
-const { getCurrentUser } = require('../services/userService');
-const { logoutUser } = require('../services/userService');
+const { refreshAccessToken } = require("../services/userService");
+const { getCurrentUser } = require("../services/userService");
+const { logoutUser } = require("../services/userService");
 
 exports.registerUser = async (req, res) => {
   const { userEmail, userPassword, name, phoneNumber, photoUrl } = req.body;
@@ -28,16 +28,20 @@ exports.registerUser = async (req, res) => {
 
 // 로그인
 exports.loginUser = async (req, res) => {
+  console.log("123");
   const { userEmail, userPassword } = req.body;
 
   try {
-    const {accessToken, refreshToken} = await loginUser({
+    const { accessToken, refreshToken } = await loginUser({
       userEmail,
       userPassword,
     });
-    res.status(201).json({accessToken, refreshToken} );
+    res.status(201).json({ accessToken, refreshToken });
   } catch (err) {
-    if (err.message === "가입된 id가 아님" || err.message === "비밀번호가 일치하지 않습니다.") {
+    if (
+      err.message === "가입된 id가 아님" ||
+      err.message === "비밀번호가 일치하지 않습니다."
+    ) {
       return res.status(400).json({ message: err.message });
     }
     console.error(err.message);
@@ -48,7 +52,7 @@ exports.loginUser = async (req, res) => {
 exports.logoutUser = async (req, res) => {
   try {
     await logoutUser(req.user.id);
-    res.status(200).json({ message: 'Logged out successfully' });
+    res.status(200).json({ message: "Logged out successfully" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -73,12 +77,33 @@ exports.refreshToken = async (req, res) => {
 exports.getUsers = async (req, res) => {
   try {
     const users = await getUsers();
-    // 여기 있느 200은 정해져있는 오류 코드임. 404는 페이직 ㅏㅇ벗다건 ㅏ.. 요런거 
-    // 응답을 json으로 줄거고 그 안에 users라는 객체를 넣어줄겅.ㅁ 
+    // 여기 있느 200은 정해져있는 오류 코드임. 404는 페이직 ㅏㅇ벗다건 ㅏ.. 요런거
+    // 응답을 json으로 줄거고 그 안에 users라는 객체를 넣어줄겅.ㅁ
     res.status(200).json(users);
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.updateImage = async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
+  const { userId } = req.body;
+  const imageUrl = req.file.location; // S3에 저장된 이미지의 URL
+
+  try {
+    console.log("Updating image for user:", userId);
+    const resImageUrl = await updateProfileImage(userId, imageUrl);
+    if (!resImageUrl) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json({ imageUrl: resImageUrl });
+  } catch (err) {
+    console.error("Error updating profile image:", err);
+    res.status(500).json({ message: "Error updating profile image" });
   }
 };
 

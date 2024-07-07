@@ -1,10 +1,17 @@
+// src/services/userService.js
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/User");
 const { makeAccessToken, makeRefreshToken } = require("../utils/makeToken");
 const TokenModel = require("../services/tokenService");
 
-exports.registerUser = async ({ userEmail, userPassword, name, phoneNumber, photoUrl }) => {
+exports.registerUser = async ({
+  userEmail,
+  userPassword,
+  name,
+  phoneNumber,
+  photoUrl,
+}) => {
   let user = await User.findOne({ userEmail });
   if (user) {
     throw new Error("User already exists");
@@ -34,7 +41,7 @@ exports.registerUser = async ({ userEmail, userPassword, name, phoneNumber, phot
 
   await TokenModel.updateRefresh({
     user_id: user.id,
-    refreshToken
+    refreshToken,
   });
 
   return { accessToken, refreshToken };
@@ -42,9 +49,7 @@ exports.registerUser = async ({ userEmail, userPassword, name, phoneNumber, phot
 
 exports.loginUser = async ({ userEmail, userPassword }) => {
   let user = await User.findOne({ userEmail });
-  console.log(user)
   if (!user) {
-    console.log("여기서 .. ", userEmail) // userEmail은 잘 전달됨 .. 
     throw new Error("가입된 id가 아님");
   }
 
@@ -59,14 +64,12 @@ exports.loginUser = async ({ userEmail, userPassword }) => {
     },
   };
 
-  console.log('Received login request:', userEmail, userPassword);
-
   const accessToken = makeAccessToken(payload);
   const refreshToken = makeRefreshToken(payload);
 
   await TokenModel.updateRefresh({
     user_id: user.id,
-    refreshToken
+    refreshToken,
   });
 
   return { accessToken, refreshToken };
@@ -74,12 +77,9 @@ exports.loginUser = async ({ userEmail, userPassword }) => {
 
 exports.refreshAccessToken = async (refreshToken) => {
   try {
-    console.log("리프레시 토큰 검증 시작:", refreshToken);
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-    console.log("리프레시 토큰 디코딩 완료:", decoded);
 
     const userToken = await TokenModel.findToken(decoded.user.id);
-    console.log("데이터베이스에서 찾은 토큰:", userToken);
 
     if (!userToken || userToken.refreshToken !== refreshToken) {
       throw new Error("유효하지 않은 리프레시 토큰");
@@ -92,10 +92,8 @@ exports.refreshAccessToken = async (refreshToken) => {
     };
 
     const newAccessToken = makeAccessToken(payload);
-    console.log("새로운 액세스 토큰 생성 완료:", newAccessToken);
     return { accessToken: newAccessToken };
   } catch (error) {
-    console.error("토큰 갱신 중 오류 발생:", error.message);
     throw new Error("유효하지 않은 리프레시 토큰");
   }
 };
@@ -114,14 +112,46 @@ exports.getUsers = async () => {
   return resUsers;
 };
 
+const mongoose = require("mongoose");
+const { User } = require("../models/User");
+
+exports.updateProfileImage = async (userId, imageUrl) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      throw new Error("Invalid user ID");
+    }
+
+    console.log(
+      "Updating profile image for userId:",
+      userId,
+      "with imageUrl:",
+      imageUrl
+    );
+
+    const user = await User.findByIdAndUpdate(
+      mongoose.Types.ObjectId(userId),
+      { photoUrl: imageUrl },
+      { new: true }
+    );
+
+    if (!user) {
+      console.error("User not found for userId:", userId);
+      return null;
+    }
+
+    console.log("Updated user:", user);
+    return user.photoUrl;
+  } catch (err) {
+    console.error("Error in updateProfileImage:", err);
+    throw new Error("Error updating profile image");
+  }
+};
+
 exports.getCurrentUser = async (userId) => {
-  console.log("Fetching user with ID:", userId);
-  const user = await User.findById(userId).select('-userPassword'); // 비밀번호 제외
+  const user = await User.findById(userId).select("-userPassword"); // 비밀번호 제외
   if (!user) {
-    console.log("User not found with ID:", userId);
     throw new Error("User not found");
   }
-  console.log("User found:", user);
   return {
     id: user._id,
     userName: user.name,
@@ -134,4 +164,3 @@ exports.getCurrentUser = async (userId) => {
 exports.logoutUser = async (userId) => {
   await TokenModel.deleteToken(userId);
 };
-
