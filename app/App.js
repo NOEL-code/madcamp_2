@@ -1,19 +1,19 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import MainScreen from './src/Screen/Member/MainScreen'; // 기존 화면
-import CreateRoomScreen from './src/Screen/Admin/CreateRoomScreen'; // 새로 추가된 화면
-import JoinRoomScreen from './src/Screen/Member/JoinRoomScreen';
-import CreateRoomName from './src/Screen/Admin/CreateRoomName';
-import TeamScreen from './src/Screen/myPage/TeamScreen';
-import TeamAdminScreen from './src/Screen/Admin/TeamAdminScreen';
-import TeamApplyScreen from './src/Screen/Member/TeamApplyScreen';
-import CameraScreen from './src/Screen/Admin/CameraScreen';
-import StatisticsScreen from './src/Screen/Static/Statistics';
-import LogInScreen from './src/Screen/myPage/LogIn';
-import SignUpScreen from './src/Screen/myPage/SignUp';
-import ProfileScreen from './src/Screen/myPage/Profile';
-import InviteRoomScreen from './src/Screen/Admin/InviteRoomScreen';
+import MainScreen from './MainScreen'; // 기존 화면
+import CreateRoomScreen from './CreateRoomScreen'; // 새로 추가된 화면
+import JoinRoomScreen from './JoinRoomScreen';
+import CreateRoomName from './CreateRoomName';
+import TeamScreen from './TeamScreen';
+import TeamAdminScreen from './TeamAdminScreen';
+import TeamApplyScreen from './TeamApplyScreen';
+import CameraScreen from './CameraScreen';
+import StatisticsScreen from './Statistics';
+import LogInScreen from './LogIn';
+import SignUpScreen from './SignUp';
+import ProfileScreen from './Profile';
+import InviteRoomScreen from './InviteRoomScreen';
 
 const Stack = createStackNavigator();
 
@@ -76,7 +76,10 @@ const App = () => {
           component={StatisticsScreen}
           options={{headerShown: false}}
         />
-        <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen
+          name="Profile"
+          component={ProfileScreen}
+          />
         <Stack.Screen
           name="inviteRoom"
           component={InviteRoomScreen}

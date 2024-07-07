@@ -16,7 +16,10 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var app = express();
 var indexRouter = require("./src/routes/index");
+<<<<<<< HEAD
 var usersRouter = require("./src/routes/usersRouter")
+=======
+>>>>>>> parent of 5cfeb04 (Remove cached files)
 
 const corsMiddleware = require("./src/middlewares/cors");
 const connectDB = require("./src/utils/mongodb");
@@ -47,7 +50,10 @@ app.use("/api/apply", require("./src/routes/applyRoomRouter"));
 //end point ? api 이면 indexrouter에서 잡아가는거야 
 
 app.use("/api/users", usersRouter);
+<<<<<<< HEAD
 app.use("/api/attendance", require("./src/routes/attendanceRouter"))
+=======
+>>>>>>> parent of 5cfeb04 (Remove cached files)
 
 
 // catch 404 and forward to error handler

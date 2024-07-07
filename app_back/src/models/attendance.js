@@ -13,11 +13,16 @@ const AttendanceSchema = new mongoose.Schema({
     {
       date: {
         // 각 기록의 날짜
+<<<<<<< HEAD
         type: String,
+=======
+        type: Date,
+>>>>>>> parent of 5cfeb04 (Remove cached files)
         required: true,
       },
       arriveTime: {
         // 출근시간
+<<<<<<< HEAD
         type: String,
       },
       leaveTime: {
@@ -32,6 +37,22 @@ const AttendanceSchema = new mongoose.Schema({
           },
           comeBack: {
             type: String,
+=======
+        type: Date,
+      },
+      departTime: {
+        // 퇴근시간
+        type: Date,
+      },
+      leave: [
+        // 외출 기록
+        {
+          goOut: {
+            type: Date,
+          },
+          comeBack: {
+            type: Date,
+>>>>>>> parent of 5cfeb04 (Remove cached files)
           },
         },
       ],
