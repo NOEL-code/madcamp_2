@@ -39,9 +39,11 @@ exports.registerUser = async ({
     },
   };
 
-  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
+  //회원가입 할 때도 acces Token이랑 refreshToken 추가해주기
+  const accessToken = makeAccessToken(payload);
+  const refreshToken = makeRefreshToken();
 
-  return token;
+  return {accessToken, refreshToken};
 };
 
 
@@ -68,10 +70,10 @@ exports.loginUser = async ({
   const accessToken = makeAccessToken(payload);
   const refreshToken = makeRefreshToken();
 
-  await TokenModel.updateRefresh({
-    _id: user.id,
-    refreshToken
-  })
+  // await TokenModel.updateRefresh({
+  //   _id: user.id,
+  //   refreshToken
+  // })
   
   return {accessToken, refreshToken};
 };

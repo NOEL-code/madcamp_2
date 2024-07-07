@@ -10,9 +10,9 @@ const TokenSchema = mongoose.Schema({
     required: true,
   },
 },
-  {
-    timestamp: true,
-  }
+  // {
+  //   timestamp: true,
+  // }
 );
 
 const Token = mongoose.model("Token", TokenSchema);
