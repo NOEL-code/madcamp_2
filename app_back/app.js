@@ -47,6 +47,7 @@ app.use("/api/apply", require("./src/routes/applyRoomRouter"));
 //end point ? api 이면 indexrouter에서 잡아가는거야 
 
 app.use("/api/users", usersRouter);
+app.use("/api/attendance", require("./src/routes/attendanceRouter"))
 
 
 // catch 404 and forward to error handler
