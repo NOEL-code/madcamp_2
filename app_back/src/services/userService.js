@@ -127,3 +127,7 @@ exports.getCurrentUser = async (userId) => {
   };
 };
 
+exports.logoutUser = async (userId) => {
+  await TokenModel.deleteToken(userId);
+};
+

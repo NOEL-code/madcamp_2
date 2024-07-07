@@ -13,6 +13,10 @@ const TokenModel = {
       { upsert: true }
     );
     return update;
+  },
+
+  async deleteToken(userId) {
+    await Token.deleteOne({ user_id: userId });
   }
 };
 

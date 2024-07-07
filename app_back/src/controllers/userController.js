@@ -3,6 +3,7 @@ const { loginUser } = require("../services/userService");
 const { getUsers } = require("../services/userService");
 const { refreshAccessToken } = require('../services/userService');
 const { getCurrentUser } = require('../services/userService');
+const { logoutUser } = require('../services/userService');
 
 exports.registerUser = async (req, res) => {
   const { userEmail, userPassword, name, phoneNumber, photoUrl } = req.body;
@@ -41,6 +42,15 @@ exports.loginUser = async (req, res) => {
     }
     console.error(err.message);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.logoutUser = async (req, res) => {
+  try {
+    await logoutUser(req.user.id);
+    res.status(200).json({ message: 'Logged out successfully' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
