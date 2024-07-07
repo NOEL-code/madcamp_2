@@ -24,9 +24,16 @@ const initialWaitingUsers = [
 
 const statusStyles = {
   1: {color: '#03CF5D', text: '출석'},
-  2: {color: '#FF0000', text: '결석'},
+  2: {color: '#B1B1B1', text: '결석'},
   3: {color: '#FFE600', text: '자리비움'},
   4: {color: '#D9D9D9', text: '퇴근'},
+};
+
+const statusStylesBox = {
+  1: {backgroundColor: '#DFF5E9'},
+  2: {backgroundColor: '#FFE2E2'},
+  3: {backgroundColor: '#FFF4D5'},
+  4: {backgroundColor: '#F4F4F4'},
 };
 
 const TeamAdminScreen = ({navigation}) => {
@@ -74,14 +81,10 @@ const TeamAdminScreen = ({navigation}) => {
           <Text style={styles.headerTitle}>{title}</Text>
         )}
         <TouchableOpacity onPress={toggleEditMode}>
-          {isEditMode ? (
-            <Text style={styles.complete}>완료</Text>
-          ) : (
-            <Image
-              source={require('./assets/images/pencil.png')}
-              style={styles.editIcon}
-            />
-          )}
+          <Image
+            source={require('./assets/images/pencil.png')}
+            style={styles.editIcon}
+          />
         </TouchableOpacity>
       </View>
       <View style={styles.subTitleContainer}>
@@ -131,13 +134,22 @@ const TeamAdminScreen = ({navigation}) => {
                 <Text style={styles.userName}>{user.name}</Text>
                 <View
                   style={[
-                    styles.statusIndicator,
-                    {backgroundColor: statusStyles[user.status].color},
-                  ]}
-                />
-                <Text style={styles.statusText}>
-                  {statusStyles[user.status].text}
-                </Text>
+                    styles.statusIndicatorBox,
+                    {
+                      backgroundColor:
+                        statusStylesBox[user.status].backgroundColor,
+                    },
+                  ]}>
+                  <View
+                    style={[
+                      styles.statusIndicator,
+                      {backgroundColor: statusStyles[user.status].color},
+                    ]}
+                  />
+                  <Text style={styles.statusText}>
+                    {statusStyles[user.status].text}
+                  </Text>
+                </View>
               </View>
             ))}
             <View style={styles.cameraContainer}>
@@ -163,16 +175,22 @@ const TeamAdminScreen = ({navigation}) => {
                     style={styles.profileIcon}
                   />
                   <Text style={styles.userName}>{waitingUser.name}</Text>
-
                   <TouchableOpacity style={styles.refuse}>
                     <Text style={styles.refuseText}>거절</Text>
                   </TouchableOpacity>
-
                   <TouchableOpacity style={styles.accept}>
                     <Text style={styles.acceptText}>승인</Text>
                   </TouchableOpacity>
                 </View>
               ))}
+            </View>
+            <View style={styles.teamListContainer}>
+              <Text style={styles.teamText}>팀 명단</Text>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => navigation.navigate('inviteRoom')}>
+                <Text style={styles.buttonText}>+ 학생초대</Text>
+              </TouchableOpacity>
             </View>
             {usersState.map((user, index) => (
               <View key={index} style={styles.userItem}>
@@ -195,11 +213,6 @@ const TeamAdminScreen = ({navigation}) => {
                 </TouchableOpacity>
               </View>
             ))}
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText}>학생 초대하기</Text>
-              </TouchableOpacity>
-            </View>
             <View style={styles.buttonContainer}>
               <TouchableOpacity style={styles.deleteButton}>
                 <Text style={styles.deleteButtonText}>팀 삭제하기</Text>
@@ -230,7 +243,13 @@ const styles = StyleSheet.create({
   waitingText: {
     fontWeight: 'bold',
     fontSize: 20,
-    marginTop: 15,
+    marginTop: 19,
+    marginBottom: 15,
+  },
+  teamText: {
+    fontWeight: 'bold',
+    fontSize: 20,
+    marginTop: 19,
     marginBottom: 15,
   },
   accept: {
@@ -245,11 +264,10 @@ const styles = StyleSheet.create({
   buttonContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 10,
   },
   cameraContainer: {
     flexDirection: 'row',
-    justifyContent: 'flex-end', // Align to the right
+    justifyContent: 'flex-end',
     padding: 10,
     marginRight: 30,
     marginTop: 30,
@@ -259,10 +277,15 @@ const styles = StyleSheet.create({
     height: 50,
   },
   buttonText: {
-    fontSize: 17,
+    fontSize: 12,
     fontWeight: 'bold',
     color: 'white',
     textAlign: 'center',
+  },
+  teamListContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
   },
   header: {
     flexDirection: 'row',
@@ -271,7 +294,7 @@ const styles = StyleSheet.create({
   },
   joinTextContainer: {
     flex: 1,
-    alignItems: 'flex-end', // Added to align text to the right
+    alignItems: 'flex-end',
   },
   joinText: {
     color: '#03CF5D',
@@ -328,23 +351,23 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   button: {
-    backgroundColor: '#03CF5D', // 버튼 배경색상 추가
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    width: 170,
+    backgroundColor: '#6DDD5B',
+    width: 100,
     borderRadius: 20,
-    marginTop: 20,
+    marginLeft: 30,
+    padding: 10,
   },
   deleteButton: {
-    backgroundColor: '#FF0000', // 버튼 배경색상 추가
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    width: 170,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FF0000',
+    width: 120,
     borderRadius: 20,
+    padding: 10,
     marginTop: 20,
   },
   deleteButtonText: {
-    fontSize: 17,
+    fontSize: 15,
     fontWeight: 'bold',
     color: 'white',
     textAlign: 'center',
@@ -391,8 +414,16 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginRight: 10,
   },
+  statusIndicatorBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 20,
+  },
   statusText: {
     fontSize: 16,
+    marginLeft: 5,
   },
   separator: {
     height: 1,

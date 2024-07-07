@@ -10,6 +10,7 @@ import TeamAdminScreen from './TeamAdminScreen';
 import TeamApplyScreen from './TeamApplyScreen';
 import CameraScreen from './CameraScreen';
 import StatisticsScreen from './StatisticsScreen';
+import InviteRoomScreen from './InviteRoomScreen';
 
 const Stack = createStackNavigator();
 
@@ -60,6 +61,11 @@ const App = () => {
         <Stack.Screen
           name="Statistic"
           component={StatisticsScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="inviteRoom"
+          component={InviteRoomScreen}
           options={{headerShown: false}}
         />
       </Stack.Navigator>
