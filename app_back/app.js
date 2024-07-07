@@ -16,6 +16,7 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var app = express();
 var indexRouter = require("./src/routes/index");
+var usersRouter = require("./src/routes/usersRouter")
 
 const corsMiddleware = require("./src/middlewares/cors");
 const connectDB = require("./src/utils/mongodb");

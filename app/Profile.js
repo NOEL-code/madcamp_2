@@ -16,7 +16,7 @@ const initialWaitRooms = [
 const initialIngRooms = [
   { name: '1분반', count: 20 },
   { name: '우히히', count: 5 },
-  { name: '메렁', count: 13 },
+  { name: '메렁', count: 12 },
 ];
 
 const Profile = ({ navigation }) => {
