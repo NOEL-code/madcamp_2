@@ -1,6 +1,6 @@
 const { Token } = require('../models/Token'); // 실제 경로에 맞게 수정
 
-exports.TokenModel = {
+const TokenModel = {
   async findToken(userId) {
     const userToken = await Token.findOne({ _id: userId });
     return userToken;
@@ -15,3 +15,5 @@ exports.TokenModel = {
     return update;
   }
 };
+
+module.exports = TokenModel;
