@@ -109,3 +109,21 @@ exports.getUsers = async () => {
 
   return resUsers;
 };
+
+exports.getCurrentUser = async (userId) => {
+  console.log("Fetching user with ID:", userId);
+  const user = await User.findById(userId).select('-userPassword'); // 비밀번호 제외
+  if (!user) {
+    console.log("User not found with ID:", userId);
+    throw new Error("User not found");
+  }
+  console.log("User found:", user);
+  return {
+    id: user._id,
+    userName: user.name,
+    userEmail: user.userEmail,
+    phoneNumber: user.phoneNumber,
+    photoUrl: user.photoUrl,
+  };
+};
+

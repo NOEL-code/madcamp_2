@@ -71,3 +71,14 @@ exports.getUsers = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+exports.getCurrentUser = async (req, res) => {
+  try {
+    console.log("Current user ID:", req.user.id);
+    const user = await getCurrentUser(req.user.id);
+    res.status(200).json(user);
+  } catch (err) {
+    console.log("Error fetching current user:", err.message);
+    res.status(500).json({ message: err.message });
+  }
+};
