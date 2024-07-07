@@ -57,3 +57,17 @@ exports.getUsers = async () => {
 
   return resUsers;
 };
+
+const updateProfileImage = async (userId, imageUrl) => {
+  try {
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { photoUrl: imageUrl },
+      { new: true }
+    );
+    return user.photoUrl;
+  } catch (err) {
+    throw new Error("Error updating profile image");
+  }
+};
+module.exports = { updateProfileImage };
