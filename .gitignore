@@ -115,4 +115,3 @@ web-build/
 .vscode/
 app_back/.env
 app_back/.env
-/app_back
