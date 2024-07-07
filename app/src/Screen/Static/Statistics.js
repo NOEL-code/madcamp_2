@@ -11,7 +11,7 @@ import {Calendar} from 'react-native-calendars';
 
 const workDays = [
   {
-    date: '2024-07-04',
+    date: '2024-07-07',
     on: '10:30:00',
     off: '22:00:00',
     away: [{start: '14:00:00', end: '15:00:00'}],
