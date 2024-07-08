@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -6,34 +6,43 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Alert,
 } from 'react-native';
 import api from '../utils/api'; // api 설정 파일 불러오기
-
-const participatingRooms = [
-  {name: '카이부캠방', count: 80},
-  {name: '우히히 방', count: 20},
-  {name: '메렁', count: 5},
-];
-
-const managingRooms = [
-  {name: '우히히 방', count: 20},
-  {name: '메렁', count: 5},
-];
+import NavBar from 'Components/NavBar';
+import {useSelector} from 'react-redux';
+import {useIsFocused} from '@react-navigation/native'; // react-navigation hooks 추가
 
 const MainScreen = ({navigation}) => {
+  const [participatingRooms, setParticipatingRooms] = useState([]);
+  const [managingRooms, setManagingRooms] = useState([]);
+  const currentUser = useSelector(state => state.user);
+  const isFocused = useIsFocused(); // 화면이 포커스될 때마다 리렌더링하도록 하는 hook
+
+  console.log(currentUser);
+
   useEffect(() => {
-    const checkToken = async () => {
+    const fetchRooms = async () => {
       try {
-        const response = await api.get('/users/me');
-        console.log('User data:', response.data);
+        const userRoomsResponse = await api.get(
+          `/rooms/user/${currentUser.id}`,
+        );
+        setParticipatingRooms(userRoomsResponse.data);
+
+        const hostRoomsResponse = await api.get(
+          `/rooms/host/${currentUser.id}`,
+        );
+        setManagingRooms(hostRoomsResponse.data);
       } catch (error) {
-        console.error('Failed to fetch user data', error);
-        navigation.navigate('LogIn');
+        console.error('Failed to fetch rooms:', error);
+        Alert.alert('오류', '방 목록을 가져오는데 실패했습니다.');
       }
     };
 
-    checkToken();
-  }, [navigation]);
+    if (isFocused) {
+      fetchRooms(); // 화면이 포커스될 때마다 방 목록을 다시 불러옴
+    }
+  }, [isFocused, currentUser.id]);
 
   return (
     <View style={styles.container}>
@@ -45,7 +54,7 @@ const MainScreen = ({navigation}) => {
               style={styles.headerButtonLeft}
               onPress={() => navigation.navigate('CreateRoom')}>
               <Image
-                source={require('../../assets/images/roomCreate.png')}
+                source={require('assets/images/roomCreate.png')}
                 style={styles.headerButtonIcon}
               />
               <Text style={styles.headerButtonText}>방 생성</Text>
@@ -54,7 +63,7 @@ const MainScreen = ({navigation}) => {
               style={styles.headerButtonRight}
               onPress={() => navigation.navigate('joinRoom')}>
               <Image
-                source={require('../../assets/images/joinRoom.png')}
+                source={require('assets/images/joinRoom.png')}
                 style={styles.headerButtonIcon}
               />
               <Text style={styles.headerButtonText}>기존 방 합류</Text>
@@ -69,16 +78,18 @@ const MainScreen = ({navigation}) => {
             {participatingRooms.map((room, index) => (
               <View key={index} style={styles.roomItem}>
                 <Image
-                  source={require('../../assets/images/roomProfile.png')}
+                  source={require('assets/images/roomProfile.png')}
                   style={styles.profileIcon}
                 />
-                <Text style={styles.roomName}>{room.name}</Text>
-                <Text style={styles.roomCount}>{room.count}명</Text>
+                <Text style={styles.roomName}>{room.roomName}</Text>
+                <Text style={styles.roomCount}>{room.members.length}명</Text>
                 <TouchableOpacity
                   style={styles.forwardButton}
-                  onPress={() => navigation.navigate('Team')}>
+                  onPress={() =>
+                    navigation.navigate('Team', {roomId: room._id})
+                  }>
                   <Image
-                    source={require('../../assets/images/next.png')}
+                    source={require('assets/images/next.png')}
                     style={styles.forwardIcon}
                   />
                 </TouchableOpacity>
@@ -94,16 +105,18 @@ const MainScreen = ({navigation}) => {
             {managingRooms.map((room, index) => (
               <View key={index} style={styles.roomItem}>
                 <Image
-                  source={require('../../assets/images/roomProfile.png')}
+                  source={require('assets/images/roomProfile.png')}
                   style={styles.profileIcon}
                 />
-                <Text style={styles.roomName}>{room.name}</Text>
-                <Text style={styles.roomCount}>{room.count}명</Text>
+                <Text style={styles.roomName}>{room.roomName}</Text>
+                <Text style={styles.roomCount}>{room.members.length}명</Text>
                 <TouchableOpacity
                   style={styles.forwardButton}
-                  onPress={() => navigation.navigate('TeamAdmin')}>
+                  onPress={() =>
+                    navigation.navigate('TeamAdmin', {roomId: room._id})
+                  }>
                   <Image
-                    source={require('../../assets/images/next.png')}
+                    source={require('assets/images/next.png')}
                     style={styles.forwardIcon}
                   />
                 </TouchableOpacity>
@@ -112,26 +125,7 @@ const MainScreen = ({navigation}) => {
           </View>
         </View>
       </ScrollView>
-      <View style={styles.navbar}>
-        <TouchableOpacity onPress={() => navigation.navigate('Stat')}>
-          <Image
-            source={require('../../assets/images/staticsNotSelected.png')}
-            style={styles.navIcon}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Main')}>
-          <Image
-            source={require('../../assets/images/home.png')}
-            style={styles.navIcon}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-          <Image
-            source={require('../../assets/images/myPageNotSelected.png')}
-            style={styles.navIcon}
-          />
-        </TouchableOpacity>
-      </View>
+      <NavBar navigation={navigation} currentRoute={'Main'} />
     </View>
   );
 };

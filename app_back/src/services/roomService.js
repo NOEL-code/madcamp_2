@@ -1,62 +1,77 @@
 const { Room } = require("../models/Room");
+const { getUserById } = require("./userService");
+const { sendInvite } = require("./invitedRoomService");
+const mongoose = require("mongoose");
 
 exports.getRooms = async () => {
   let rooms = await Room.find();
-
-  if (!rooms || rooms.length === 0) {
-    throw new Error("There are no users");
-  }
-
   return rooms;
 };
 
-exports.getUserRooms = async (memberId) => {
-  let rooms = await Room.find({ "members._id": memberId });
-
-  if (!rooms || rooms.length === 0) {
-    throw new Error("There are no rooms for this user");
-  }
-
+exports.getUserRooms = async (userId) => {
+  let rooms = await Room.find({ "members.userId": userId });
   return rooms;
 };
 
 exports.getHostRooms = async (hostId) => {
   let rooms = await Room.find({ host: hostId });
-
-  if (!rooms || rooms.length === 0) {
-    throw new Error("There are no rooms for this host");
-  }
-
   return rooms;
 };
 
 exports.createRoom = async (roomInfo) => {
   const { roomName, host, members } = roomInfo;
 
-  const newRoom = new Room({
-    roomName,
-    host,
-    members: members.map((member) => ({ userId: member.userId })),
-  });
+  try {
+    // 멤버 유효성 검사
+    const validMembers = [];
+    for (const member of members) {
+      const user = await getUserById(member.userId);
+      if (user) {
+        validMembers.push(new mongoose.Types.ObjectId(member.userId));
+      }
+    }
 
-  await newRoom.save();
-  return newRoom;
+    // 새로운 방 생성
+    const newRoom = new Room({
+      roomName,
+      host: new mongoose.Types.ObjectId(host), // host도 ObjectId로 변환
+      members: validMembers,
+    });
+
+    const createdRoom = await newRoom.save();
+
+    return createdRoom;
+  } catch (error) {
+    console.error("Failed to create room:", error);
+    throw error; // 에러를 호출한 쪽에서 처리할 수 있도록 던짐
+  }
+  // const newRoom = new Room({
+  //   roomName,
+  //   host,
+  //   members: members.map((member) => member.userId),
+  // });
+
+  // const createdRoom = await newRoom.save();
+  // // const createdRoomId = createdRoom._id;
+
+  // const invitingMembersId = members.map((member) => member.userId);
+  // await sendInvite(invitingMembersId, createdRoomId);
+
+  // return createdRoom;
 };
 
 exports.deleteRoomById = async (roomId) => {
-  const deletedRoomId = await Room.findByIdAndDelete(roomId);
-
-  if (!deletedRoomId) {
+  const deletedRoom = await Room.findByIdAndDelete(roomId);
+  if (!deletedRoom) {
     throw new Error("Room not found");
   }
-
-  return deletedRoomId;
+  return deletedRoom;
 };
 
-exports.removeMemberFromRoom = async (roomId, memberId) => {
+exports.removeMemberFromRoom = async (roomId, userId) => {
   const updatedRoom = await Room.findByIdAndUpdate(
     roomId,
-    { $pull: { members: { _id: memberId } } },
+    { $pull: { members: { userId } } },
     { new: true }
   );
 
@@ -64,15 +79,22 @@ exports.removeMemberFromRoom = async (roomId, memberId) => {
     throw new Error("Room not found or member not in room");
   }
 
-  return updatedRoom;
+  const membersWithNames = await Promise.all(
+    updatedRoom.members.map(async (member) => {
+      const user = await getUserById(member.userId);
+      return { userId: member.userId, name: user.name };
+    })
+  );
+
+  return { ...updatedRoom._doc, members: membersWithNames };
 };
 
-exports.addMembersToRoom = async (roomId, memberIds) => {
+exports.addMembersToRoom = async (roomId, userIds) => {
   const updatedRoom = await Room.findByIdAndUpdate(
     roomId,
     {
       $addToSet: {
-        members: { $each: memberIds.map((userId) => ({ userId })) },
+        members: { $each: userIds.map((userId) => ({ userId })) },
       },
     },
     { new: true }
@@ -82,7 +104,14 @@ exports.addMembersToRoom = async (roomId, memberIds) => {
     throw new Error("Room not found");
   }
 
-  return updatedRoom;
+  const membersWithNames = await Promise.all(
+    updatedRoom.members.map(async (member) => {
+      const user = await getUserById(member.userId);
+      return { userId: member.userId, name: user.name };
+    })
+  );
+
+  return { ...updatedRoom._doc, members: membersWithNames };
 };
 
 exports.updateRoomDescription = async (roomId, title, subtitle) => {
@@ -94,4 +123,17 @@ exports.updateRoomDescription = async (roomId, title, subtitle) => {
     },
     { new: true }
   );
+
+  if (!updatedRoom) {
+    throw new Error("Room not found");
+  }
+
+  const membersWithNames = await Promise.all(
+    updatedRoom.members.map(async (member) => {
+      const user = await getUserById(member.userId);
+      return { userId: member.userId, name: user.name };
+    })
+  );
+
+  return { ...updatedRoom._doc, members: membersWithNames };
 };

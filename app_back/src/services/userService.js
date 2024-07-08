@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const { User } = require("../models/User");
 const { makeAccessToken, makeRefreshToken } = require("../utils/makeToken");
 const TokenModel = require("../services/tokenService");
+const mongoose = require("mongoose");
 
 exports.registerUser = async ({
   userEmail,
@@ -127,6 +128,16 @@ exports.getUsers = async () => {
   return resUsers;
 };
 
+exports.getUserById = async (userId) => {
+  try {
+    const user = await User.findById(userId, "name _id");
+    return user ? { id: user._id, name: user.name } : null;
+  } catch (error) {
+    console.error("Error fetching user by ID:", error);
+    throw new Error("Error fetching user");
+  }
+};
+
 exports.updateProfileImage = async (userId, imageUrl) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -141,7 +152,7 @@ exports.updateProfileImage = async (userId, imageUrl) => {
     );
 
     const user = await User.findByIdAndUpdate(
-      mongoose.Types.ObjectId(userId),
+      new mongoose.Types.ObjectId(userId),
       { photoUrl: imageUrl },
       { new: true }
     );
@@ -160,6 +171,7 @@ exports.updateProfileImage = async (userId, imageUrl) => {
 };
 
 exports.getCurrentUser = async (userId) => {
+  console.log(userId);
   const user = await User.findById(userId).select("-userPassword"); // 비밀번호 제외
   if (!user) {
     throw new Error("User not found");
@@ -175,4 +187,26 @@ exports.getCurrentUser = async (userId) => {
 
 exports.logoutUser = async (userId) => {
   await TokenModel.deleteToken(userId);
+};
+
+exports.getUsersById = async (userId) => {
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    throw new Error("Invalid user ID");
+  }
+  let user = await User.findById(userId);
+  return user;
+};
+
+exports.getUsers = async () => {
+  let users = await User.find();
+  if (!users || users.length === 0) {
+    throw new Error("There are no users");
+  }
+
+  const resUsers = users.map((user) => ({
+    id: user._id,
+    userName: user.name,
+  }));
+
+  return resUsers;
 };

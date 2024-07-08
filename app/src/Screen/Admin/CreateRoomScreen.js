@@ -8,25 +8,40 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
+import {useSelector, useDispatch} from 'react-redux';
+import api from '../../utils/api';
+import {setMembers} from '../../redux/createRoomSlice'; // Redux 액션 임포트
 
-const initialUsers = [
-  {name: '정우성', selected: false},
-  {name: '이수민', selected: false},
-  {name: '정재현', selected: false},
-  {name: '카리나', selected: false},
-  {name: '윈터', selected: false},
-  {name: '최예나', selected: false},
-];
+const initialUsers = []; // 초기 사용자 데이터를 빈 배열로 설정
 
 const CreateRoomScreen = ({navigation}) => {
   const [users, setUsers] = useState(initialUsers);
   const [search, setSearch] = useState('');
   const [selectedCount, setSelectedCount] = useState(0);
+  const currentUser = useSelector(state => state.user);
+  const dispatch = useDispatch(); // Redux 디스패치 사용
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await api.get('/users');
+        const usersData = response.data.map(user => ({
+          ...user,
+          selected: false,
+        }));
+        setUsers(usersData);
+      } catch (error) {
+        console.error('Failed to fetch users:', error);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   const handleSelect = index => {
     const newUsers = [...users];
     newUsers[index].selected = !newUsers[index].selected;
     setUsers(newUsers);
+    console.log(newUsers);
   };
 
   useEffect(() => {
@@ -34,24 +49,35 @@ const CreateRoomScreen = ({navigation}) => {
     setSelectedCount(count);
   }, [users]);
 
-  const filteredUsers = users.filter(user => user.name.includes(search));
+  const filteredUsers = users
+    .map((user, index) => ({...user, originalIndex: index}))
+    .filter(
+      user =>
+        user.userName &&
+        user.userName.includes(search) &&
+        user.id !== currentUser.id,
+    );
+
+  const handleNext = () => {
+    const selectedUsers = users
+      .filter(user => user.selected)
+      .map(user => user.id);
+    dispatch(setMembers({memberIds: selectedUsers})); // 선택된 멤버 ID를 Redux에 저장
+    navigation.navigate('CreateRoomName');
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate('TeamAdmin')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Main')}>
           <Image
-            source={require('../../../assets/images/back.png')}
+            source={require('assets/images/back.png')}
             style={styles.backIcon}
           />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>방 생성</Text>
         <TouchableOpacity
-          onPress={() => {
-            if (selectedCount > 0) {
-              navigation.navigate('CreateRoomName');
-            }
-          }}
+          onPress={handleNext}
           disabled={selectedCount === 0}
           style={[
             styles.headerButton,
@@ -79,14 +105,11 @@ const CreateRoomScreen = ({navigation}) => {
       <ScrollView style={styles.view}>
         {filteredUsers.map((user, index) => (
           <View key={index} style={styles.userItem}>
-            <Image
-              source={require('../../../assets/images/person.png')}
-              style={styles.profileIcon}
-            />
-            <Text style={styles.userName}>{user.name}</Text>
+            <Image source={{uri: user.photoUrl}} style={styles.profileIcon} />
+            <Text style={styles.userName}>{user.userName}</Text>
             <TouchableOpacity
               style={styles.selectButton}
-              onPress={() => handleSelect(index)}>
+              onPress={() => handleSelect(user.originalIndex)}>
               <View
                 style={[
                   styles.selectIndicator,
@@ -97,26 +120,6 @@ const CreateRoomScreen = ({navigation}) => {
           </View>
         ))}
       </ScrollView>
-      <View style={styles.navbar}>
-        <TouchableOpacity>
-          <Image
-            source={require('../../../assets/images/statistics.png')}
-            style={styles.navIcon}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Image
-            source={require('../../../assets/images/home.png')}
-            style={styles.navIcon}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Image
-            source={require('../../../assets/images/myPage.png')}
-            style={styles.navIcon}
-          />
-        </TouchableOpacity>
-      </View>
     </View>
   );
 };

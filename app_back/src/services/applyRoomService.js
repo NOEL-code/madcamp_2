@@ -1,9 +1,23 @@
 const { applyRoomHistory } = require("../models/applyRoomHistory");
+const { getUserById } = require("./userService");
 
 exports.getAppliedMember = async (roomId) => {
   let appliedMember = await applyRoomHistory.findOne(roomId);
 
-  return appliedMember;
+  if (!appliedMember) return null;
+
+  const memberDetails = await Promise.all(
+    appliedMember.members.map(async (member) => {
+      const user = await getUserById(member.userId);
+      return {
+        userId: member.userId,
+        name: user.name,
+        status: member.status,
+      };
+    })
+  );
+
+  return { roomId: appliedMember.roomId, members: memberDetails };
 };
 
 exports.applyRoom = async (userId, roomId) => {
@@ -13,7 +27,16 @@ exports.applyRoom = async (userId, roomId) => {
     { new: true, upsert: true }
   );
 
-  return appliedRoom;
+  const user = await getUserById(userId);
+
+  return {
+    roomId: appliedRoom.roomId,
+    members: appliedRoom.members.map((member) => ({
+      userId: member.userId,
+      name: member.userId === userId ? user.name : undefined,
+      status: member.status,
+    })),
+  };
 };
 
 exports.acceptApplication = async (userId, roomId) => {
@@ -23,7 +46,16 @@ exports.acceptApplication = async (userId, roomId) => {
     { new: true }
   );
 
-  return updatedRoom;
+  const user = await getUserById(userId);
+
+  return {
+    roomId: updatedRoom.roomId,
+    members: updatedRoom.members.map((member) => ({
+      userId: member.userId,
+      name: member.userId === userId ? user.name : undefined,
+      status: member.status,
+    })),
+  };
 };
 
 exports.rejectApplication = async (userId, roomId) => {
@@ -33,5 +65,14 @@ exports.rejectApplication = async (userId, roomId) => {
     { new: true }
   );
 
-  return updatedRoom;
+  const user = await getUserById(userId);
+
+  return {
+    roomId: updatedRoom.roomId,
+    members: updatedRoom.members.map((member) => ({
+      userId: member.userId,
+      name: member.userId === userId ? user.name : undefined,
+      status: member.status,
+    })),
+  };
 };

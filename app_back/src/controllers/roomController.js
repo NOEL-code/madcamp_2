@@ -3,8 +3,8 @@ const {
   getUserRooms,
   getHostRooms,
   createRoom,
-  removeMemberFromRoom,
   addMembersToRoom,
+  removeMemberFromRoom,
   updateRoomDescription,
   deleteRoomById,
 } = require("../services/roomService");
@@ -20,10 +20,10 @@ exports.getRooms = async (req, res) => {
 };
 
 exports.getUserRooms = async (req, res) => {
-  const memberId = req.params.userId;
+  const userId = req.params.userId;
 
   try {
-    const userRooms = await getUserRooms(memberId);
+    const userRooms = await getUserRooms(userId);
     res.status(200).json(userRooms);
   } catch (err) {
     console.error(err.message);
@@ -88,7 +88,7 @@ exports.addMembersToRoom = async (req, res) => {
     res.status(200).json(updatedRoom);
   } catch (err) {
     console.error(err.message);
-    res.status(500).json({ message: "Server error" });
+    res.status500.json({ message: "Server error" });
   }
 };
 

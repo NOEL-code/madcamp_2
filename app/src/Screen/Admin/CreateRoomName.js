@@ -8,11 +8,17 @@ import {
   StyleSheet,
   Modal,
 } from 'react-native';
+import {useSelector} from 'react-redux';
+import api from '../../utils/api';
 
-const CreateRoomScreen = ({navigation}) => {
+const CreateRoomNameScreen = ({navigation}) => {
   const [roomName, setRoomName] = useState('');
   const [charCount, setCharCount] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
+  const {memberIds} = useSelector(state => state.createRoom);
+  const currentUser = useSelector(state => state.user); // currentUser를 가져옴
+
+  console.log(memberIds);
 
   const handleInputChange = text => {
     if (text.length <= 9) {
@@ -21,9 +27,18 @@ const CreateRoomScreen = ({navigation}) => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (roomName.trim()) {
-      setModalVisible(true);
+      try {
+        await api.post('/rooms/create', {
+          roomName,
+          host: currentUser.id,
+          members: memberIds.map(id => ({userId: id})),
+        });
+        setModalVisible(true);
+      } catch (error) {
+        console.error('Failed to create room:', error);
+      }
     }
   };
 
@@ -37,7 +52,7 @@ const CreateRoomScreen = ({navigation}) => {
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
-            source={require('../../../assets/images/back.png')}
+            source={require('assets/images/back.png')}
             style={styles.backIcon}
           />
         </TouchableOpacity>
@@ -166,4 +181,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CreateRoomScreen;
+export default CreateRoomNameScreen;

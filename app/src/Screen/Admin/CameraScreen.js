@@ -37,7 +37,7 @@ const CameraScreen = ({navigation}) => {
             <Image source={photo} style={styles.photo} />
           ) : (
             <Image
-              source={require('../../../assets/images/camera.png')}
+              source={require('assets/images/camera.png')}
               style={styles.cameraIcon}
             />
           )}

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -8,26 +8,70 @@ import {
   StyleSheet,
   ScrollView,
   Modal,
+  Alert,
 } from 'react-native';
-
-const initialRoom = [
-  {name: '방1'},
-  {name: '방2'},
-  {name: '방3'},
-  {name: '방4'},
-  {name: '방5'},
-  {name: '방6'},
-];
+import {useDispatch, useSelector} from 'react-redux';
+import api from '../../utils/api';
 
 const JoinRoomScreen = ({navigation}) => {
-  const [rooms, setRooms] = useState(initialRoom);
+  const [rooms, setRooms] = useState([]);
   const [search, setSearch] = useState('');
   const [selectedRoomIndex, setSelectedRoomIndex] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const dispatch = useDispatch();
+  const currentUser = useSelector(state => state.user);
+
+  console.log(currentUser);
+  useEffect(() => {
+    fetchRooms();
+  }, []);
+
+  const fetchRooms = async () => {
+    try {
+      const response = await api.get('/rooms');
+      const allRooms = response.data;
+
+      const userResponse = await api.get(`/rooms/user/${currentUser.id}`);
+      const userRooms = userResponse.data;
+
+      const hostResponse = await api.get(`/rooms/host/${currentUser.id}`);
+      const hostRooms = hostResponse.data;
+
+      const participatingRoomIds = new Set(userRooms.map(room => room._id));
+      const managingRoomIds = new Set(hostRooms.map(room => room._id));
+
+      const filteredRooms = allRooms.filter(
+        room =>
+          !participatingRoomIds.has(room._id) && !managingRoomIds.has(room._id),
+      );
+
+      setRooms(filteredRooms);
+      console.log(filteredRooms);
+    } catch (error) {
+      console.error('Failed to fetch rooms:', error);
+      Alert.alert('오류', '방 목록을 가져오는데 실패했습니다.');
+    }
+  };
 
   const handleSelect = index => {
     setSelectedRoomIndex(index);
-    setModalVisible(true); // Show the modal when a room is selected
+    handleApply(index); // 참여 신청 전송
+  };
+
+  const handleApply = async index => {
+    const selectedRoom = rooms[index];
+    try {
+      const response = await api.post('/apply', {
+        userId: currentUser.id,
+        roomId: selectedRoom._id,
+      });
+      if (response.status === 200) {
+        setModalVisible(true);
+      }
+    } catch (error) {
+      console.error('Failed to apply for room:', error);
+      Alert.alert('신청 실패', '참여 신청을 전송하는데 실패했습니다.');
+    }
   };
 
   const handleCloseModal = () => {
@@ -35,14 +79,14 @@ const JoinRoomScreen = ({navigation}) => {
     navigation.navigate('Main');
   };
 
-  const filteredRooms = rooms.filter(room => room.name.includes(search));
+  const filteredRooms = rooms.filter(room => room.roomName.includes(search));
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
-            source={require('../../../assets/images/back.png')}
+            source={require('assets/images/back.png')}
             style={styles.backIcon}
           />
         </TouchableOpacity>
@@ -68,10 +112,10 @@ const JoinRoomScreen = ({navigation}) => {
         {filteredRooms.map((room, index) => (
           <View key={index} style={styles.roomItem}>
             <Image
-              source={require('../../../assets/images/joinRoomProfile.png')}
+              source={require('assets/images/joinRoomProfile.png')}
               style={styles.profileIcon}
             />
-            <Text style={styles.roomName}>{room.name}</Text>
+            <Text style={styles.roomName}>{room.roomName}</Text>
             <TouchableOpacity
               style={[
                 styles.selectButton,
@@ -86,19 +130,19 @@ const JoinRoomScreen = ({navigation}) => {
       <View style={styles.navbar}>
         <TouchableOpacity>
           <Image
-            source={require('../../../assets/images/statistics.png')}
+            source={require('assets/images/statistics.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>
         <TouchableOpacity>
           <Image
-            source={require('../../../assets/images/home.png')}
+            source={require('assets/images/home.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>
         <TouchableOpacity>
           <Image
-            source={require('../../../assets/images/myPage.png')}
+            source={require('assets/images/myPage.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>
