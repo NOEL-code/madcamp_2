@@ -1,5 +1,6 @@
 const { InvitedRoomHistory } = require("../models/InvitedRoomHistory");
 const { addMembersToRoom } = require("./roomService");
+const { getUserById } = require("./userService");
 
 exports.getInvitedRooms = async (userId) => {
   const invitedRooms = await InvitedRoomHistory.find({ userId });
@@ -8,7 +9,16 @@ exports.getInvitedRooms = async (userId) => {
     throw new Error("There are no invited rooms for this user");
   }
 
-  return invitedRooms;
+  const user = await getUserById(userId);
+
+  return {
+    userId: userId,
+    userName: user.name,
+    invitedRooms: invitedRooms.map((room) => ({
+      roomId: room.roomId,
+      status: room.status,
+    })),
+  };
 };
 
 exports.acceptInvite = async (userId, roomId) => {
@@ -23,7 +33,14 @@ exports.acceptInvite = async (userId, roomId) => {
   }
 
   await addMembersToRoom(roomId, [userId]);
-  return updatedInvite;
+
+  const user = await getUserById(userId);
+
+  return {
+    userId: userId,
+    userName: user.name,
+    updatedInvite: updatedInvite.toObject(),
+  };
 };
 
 exports.rejectInvite = async (userId, roomId) => {
@@ -37,7 +54,13 @@ exports.rejectInvite = async (userId, roomId) => {
     throw new Error("Invite not found");
   }
 
-  return updatedInvite;
+  const user = await getUserById(userId);
+
+  return {
+    userId: userId,
+    userName: user.name,
+    updatedInvite: updatedInvite.toObject(),
+  };
 };
 
 exports.sendInvite = async (userId, roomId) => {
@@ -50,5 +73,11 @@ exports.sendInvite = async (userId, roomId) => {
   invitedRoomHistory.rooms.push({ RoomId: roomId });
   await invitedRoomHistory.save();
 
-  return invitedRoomHistory;
+  const user = await getUserById(userId);
+
+  return {
+    userId: userId,
+    userName: user.name,
+    invitedRoomHistory: invitedRoomHistory.toObject(),
+  };
 };

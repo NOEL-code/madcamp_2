@@ -8,6 +8,8 @@ import {
   ScrollView,
 } from 'react-native';
 
+import {store} from '../../redux/store';
+
 const users = [
   {name: '정우성', status: 1},
   {name: '이수민', status: 1},
@@ -31,6 +33,11 @@ const statusBoxStyles = {
 };
 
 const TeamScreen = ({navigation}) => {
+  const user = store.getState().user;
+
+  console.log(user);
+  console.log(store.getState());
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>

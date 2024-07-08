@@ -10,8 +10,8 @@ import {
 } from 'react-native';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {PERMISSIONS, request, check, RESULTS} from 'react-native-permissions';
-import api from '../../utils/api';
-import NavBar from 'Components/NavBar';
+import {useDispatch, useSelector} from 'react-redux';
+import {fetchImage} from '../../Service/user'; // Adjust the import path as needed
 
 const initialWaitRooms = [{name: '카이부캠방'}, {name: '키키'}];
 const initialIngRooms = [
@@ -24,6 +24,9 @@ const Profile = ({navigation}) => {
   const [waitRooms, setWaitRooms] = useState(initialWaitRooms);
   const [ingRooms, setIngRooms] = useState(initialIngRooms);
   const [photo, setPhoto] = useState(null);
+
+  const user = useSelector(state => state.user);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     requestPermissions();
@@ -65,18 +68,9 @@ const Profile = ({navigation}) => {
               type: response.assets[0].type,
               name: response.assets[0].fileName,
             });
-            formData.append('userId', '사용자 ID'); // 적절한 사용자 ID를 여기에 추가
+            formData.append('userId', user.id); // Redux 상태에서 사용자 ID 가져오기
 
-            try {
-              const res = await api.post('/update/image', formData, {
-                headers: {
-                  'Content-Type': 'multipart/form-data',
-                },
-              });
-              console.log('Image uploaded successfully: ', res.data);
-            } catch (error) {
-              console.error('Error uploading image: ', error);
-            }
+            await fetchImage(formData, user, dispatch); // fetchImage 함수 호출
           }
         },
       );
@@ -103,9 +97,7 @@ const Profile = ({navigation}) => {
           <View style={styles.imageContainer}>
             <Image
               style={styles.profileImage}
-              source={
-                photo ? photo : require('assets/images/person.png')
-              }
+              source={photo ? photo : {uri: user.photoUrl}}
               resizeMode="cover"
             />
             <TouchableOpacity
@@ -116,8 +108,8 @@ const Profile = ({navigation}) => {
           </View>
 
           <View style={styles.profileText}>
-            <Text style={styles.name}>이수민</Text>
-            <Text style={styles.userId}>ID smo1111</Text>
+            <Text style={styles.name}>{user.userName}</Text>
+            <Text style={styles.userId}>{user.userEmail}</Text>
             <TouchableOpacity
               onPress={() => {
                 /* 로그아웃 기능 구현 */
@@ -133,7 +125,7 @@ const Profile = ({navigation}) => {
             {waitRooms.map((room, index) => (
               <View key={index} style={styles.roomItem}>
                 <Image
-                  source={require('assets/images/person.png')}
+                  source={require('../../../assets/images/person.png')}
                   style={styles.profileIcon}
                 />
                 <Text style={styles.roomName}>{room.name}</Text>
@@ -151,7 +143,7 @@ const Profile = ({navigation}) => {
             {ingRooms.map((room, index) => (
               <View key={index} style={styles.roomItem}>
                 <Image
-                  source={require('assets/images/person.png')}
+                  source={require('../../../assets/images/person.png')}
                   style={styles.profileIcon}
                 />
                 <Text style={styles.roomName}>{room.name}</Text>
@@ -166,7 +158,26 @@ const Profile = ({navigation}) => {
         </View>
       </ScrollView>
 
-      <NavBar navigation={navigation} currentRoute={'Profile'}/>
+      <View style={styles.navbar}>
+        <TouchableOpacity onPress={() => navigation.navigate('Stat')}>
+          <Image
+            source={require('../../../assets/images/statistics.png')}
+            style={styles.navIcon}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Main')}>
+          <Image
+            source={require('../../../assets/images/home.png')}
+            style={styles.navIcon}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+          <Image
+            source={require('../../../assets/images/myPage.png')}
+            style={styles.navIcon}
+          />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -266,6 +277,17 @@ const styles = StyleSheet.create({
   },
   rightAlign: {
     marginLeft: 'auto',
+  },
+  navbar: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 18,
+    borderTopWidth: 1,
+    borderTopColor: '#ddd',
+  },
+  navIcon: {
+    width: 30,
+    height: 30,
   },
 });
 
