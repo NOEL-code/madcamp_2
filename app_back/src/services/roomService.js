@@ -1,17 +1,18 @@
 const { Room } = require("../models/Room");
+const { getUserById } = require("./userService");
 
 exports.getRooms = async () => {
   let rooms = await Room.find();
 
   if (!rooms || rooms.length === 0) {
-    throw new Error("There are no users");
+    throw new Error("There are no rooms");
   }
 
   return rooms;
 };
 
-exports.getUserRooms = async (memberId) => {
-  let rooms = await Room.find({ "members._id": memberId });
+exports.getUserRooms = async (userId) => {
+  let rooms = await Room.find({ "members.userId": userId });
 
   if (!rooms || rooms.length === 0) {
     throw new Error("There are no rooms for this user");
@@ -53,10 +54,10 @@ exports.deleteRoomById = async (roomId) => {
   return deletedRoomId;
 };
 
-exports.removeMemberFromRoom = async (roomId, memberId) => {
+exports.removeMemberFromRoom = async (roomId, userId) => {
   const updatedRoom = await Room.findByIdAndUpdate(
     roomId,
-    { $pull: { members: { _id: memberId } } },
+    { $pull: { members: { userId } } },
     { new: true }
   );
 
@@ -67,12 +68,12 @@ exports.removeMemberFromRoom = async (roomId, memberId) => {
   return updatedRoom;
 };
 
-exports.addMembersToRoom = async (roomId, memberIds) => {
+exports.addMembersToRoom = async (roomId, userIds) => {
   const updatedRoom = await Room.findByIdAndUpdate(
     roomId,
     {
       $addToSet: {
-        members: { $each: memberIds.map((userId) => ({ userId })) },
+        members: { $each: userIds.map((userId) => ({ userId })) },
       },
     },
     { new: true }
@@ -94,4 +95,10 @@ exports.updateRoomDescription = async (roomId, title, subtitle) => {
     },
     { new: true }
   );
+
+  if (!updatedRoom) {
+    throw new Error("Room not found");
+  }
+
+  return updatedRoom;
 };

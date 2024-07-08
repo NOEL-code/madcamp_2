@@ -1,6 +1,7 @@
 import api from '../utils/api'; // Adjust the import path as needed
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Alert} from 'react-native';
+import {setUser} from '../redux/userSlice'; // Adjust the import path as needed
 
 export const fetchLogin = async (email, password) => {
   try {
@@ -25,5 +26,26 @@ export const fetchLogin = async (email, password) => {
     }
     console.error('Login error', error);
     return {success: false};
+  }
+};
+
+export const fetchImage = async (formData, user, dispatch) => {
+  try {
+    const res = await api.post('/users/update/image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    console.log('Image uploaded successfully: ', res.data);
+
+    // Redux 상태 업데이트
+    dispatch(
+      setUser({
+        ...user,
+        photoUrl: res.data.imageUrl,
+      }),
+    );
+  } catch (error) {
+    console.error('Error uploading image: ', error);
   }
 };

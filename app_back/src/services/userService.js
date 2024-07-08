@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const { User } = require("../models/User");
 const { makeAccessToken, makeRefreshToken } = require("../utils/makeToken");
 const TokenModel = require("../services/tokenService");
+const mongoose = require("mongoose");
 
 exports.registerUser = async ({
   userEmail,
@@ -127,6 +128,37 @@ exports.getUsers = async () => {
   return resUsers;
 };
 
+exports.findUsersById = async (userIds) => {
+  try {
+    const users = await User.find(
+      {
+        _id: { $in: userIds },
+      },
+      "name _id"
+    );
+
+    const resUsers = users.map((user) => ({
+      id: user._id,
+      name: user.name,
+    }));
+
+    return resUsers;
+  } catch (error) {
+    console.error("Error fetching users by ID:", error);
+    throw new Error("Error fetching users");
+  }
+};
+
+exports.getUserById = async (userId) => {
+  try {
+    const user = await User.findById(userId, "name _id");
+    return user ? { id: user._id, name: user.name } : null;
+  } catch (error) {
+    console.error("Error fetching user by ID:", error);
+    throw new Error("Error fetching user");
+  }
+};
+
 exports.updateProfileImage = async (userId, imageUrl) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -141,7 +173,7 @@ exports.updateProfileImage = async (userId, imageUrl) => {
     );
 
     const user = await User.findByIdAndUpdate(
-      mongoose.Types.ObjectId(userId),
+      new mongoose.Types.ObjectId(userId),
       { photoUrl: imageUrl },
       { new: true }
     );
