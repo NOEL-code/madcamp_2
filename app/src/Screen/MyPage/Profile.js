@@ -11,7 +11,8 @@ import {
 import {launchImageLibrary} from 'react-native-image-picker';
 import {PERMISSIONS, request, check, RESULTS} from 'react-native-permissions';
 import api from '../../utils/api';
-import {useSelector} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
+import {setUser} from '../../redux/userSlice'; // Redux 액션 가져오기
 
 const initialWaitRooms = [{name: '카이부캠방'}, {name: '키키'}];
 const initialIngRooms = [
@@ -24,6 +25,7 @@ const Profile = ({navigation}) => {
   const [waitRooms, setWaitRooms] = useState(initialWaitRooms);
   const [ingRooms, setIngRooms] = useState(initialIngRooms);
   const [photo, setPhoto] = useState(null);
+  const dispatch = useDispatch();
 
   const user = useSelector(state => state.user);
 
@@ -76,6 +78,14 @@ const Profile = ({navigation}) => {
                 },
               });
               console.log('Image uploaded successfully: ', res.data);
+
+              // Redux 상태 업데이트
+              dispatch(
+                setUser({
+                  ...user,
+                  photoUrl: res.data.imageUrl,
+                }),
+              );
             } catch (error) {
               console.error('Error uploading image: ', error);
             }
