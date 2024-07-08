@@ -49,3 +49,15 @@ export const fetchImage = async (formData, user, dispatch) => {
     console.error('Error uploading image: ', error);
   }
 };
+
+export const fetchLogout = async () => {
+  try {
+    await api.get('/users/logout');
+    await AsyncStorage.removeItem('accessToken');
+    await AsyncStorage.removeItem('refreshToken');
+    return {success: true};
+  } catch (error) {
+    console.error('Logout error:', error);
+    return {success: false};
+  }
+};

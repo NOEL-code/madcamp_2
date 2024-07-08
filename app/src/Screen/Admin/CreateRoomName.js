@@ -8,14 +8,13 @@ import {
   StyleSheet,
   Modal,
 } from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
+import {useSelector} from 'react-redux';
 import api from '../../utils/api';
 
 const CreateRoomNameScreen = ({navigation}) => {
   const [roomName, setRoomName] = useState('');
   const [charCount, setCharCount] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
-  const dispatch = useDispatch();
   const {memberIds} = useSelector(state => state.createRoom);
   const currentUser = useSelector(state => state.user); // currentUser를 가져옴
 

@@ -3,8 +3,8 @@ const {
   getUserRooms,
   getHostRooms,
   createRoom,
-  removeMemberFromRoom,
   addMembersToRoom,
+  removeMemberFromRoom,
   updateRoomDescription,
   deleteRoomById,
 } = require("../services/roomService");
@@ -88,7 +88,7 @@ exports.addMembersToRoom = async (req, res) => {
     res.status(200).json(updatedRoom);
   } catch (err) {
     console.error(err.message);
-    res.status(500).json({ message: "Server error" });
+    res.status500.json({ message: "Server error" });
   }
 };
 

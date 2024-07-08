@@ -1,5 +1,5 @@
 const { InvitedRoomHistory } = require("../models/InvitedRoomHistory");
-const { addMembersToRoom } = require("./roomService");
+const { addMembersToRoom } = require("./roomMemberService"); // 별도 모듈로 분리된 함수 임포트
 const { getUserById } = require("./userService");
 
 exports.getInvitedRooms = async (userId) => {
@@ -63,21 +63,21 @@ exports.rejectInvite = async (userId, roomId) => {
   };
 };
 
-exports.sendInvite = async (userId, roomId) => {
-  let invitedRoomHistory = await InvitedRoomHistory.findOne({ userId });
+exports.sendInvite = async (userIds, roomId) => {
+  for (const userId of userIds) {
+    let invitedRoomHistory = await InvitedRoomHistory.findOne({ userId });
 
-  if (!invitedRoomHistory) {
-    invitedRoomHistory = new InvitedRoomHistory({ userId, rooms: [] });
+    if (!invitedRoomHistory) {
+      invitedRoomHistory = new InvitedRoomHistory({ userId, rooms: [] });
+    }
+
+    invitedRoomHistory.rooms.push({ RoomId: roomId });
+    await invitedRoomHistory.save();
+
+    const user = await getUserById(userId);
+
+    // Add code to send notification/email to the user about the invite
+
+    console.log(`Invite sent to ${user.name}`);
   }
-
-  invitedRoomHistory.rooms.push({ RoomId: roomId });
-  await invitedRoomHistory.save();
-
-  const user = await getUserById(userId);
-
-  return {
-    userId: userId,
-    userName: user.name,
-    invitedRoomHistory: invitedRoomHistory.toObject(),
-  };
 };

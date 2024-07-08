@@ -11,18 +11,12 @@ import {
 import {launchImageLibrary} from 'react-native-image-picker';
 import {PERMISSIONS, request, check, RESULTS} from 'react-native-permissions';
 import {useDispatch, useSelector} from 'react-redux';
-import {fetchImage} from '../../Service/user'; // Adjust the import path as needed
-
-const initialWaitRooms = [{name: '카이부캠방'}, {name: '키키'}];
-const initialIngRooms = [
-  {name: '1분반', count: 20},
-  {name: '우히히', count: 5},
-  {name: '메렁', count: 13},
-];
+import {fetchImage, fetchLogout} from '../../Service/user'; // Adjust the import path as needed
+import api from '../../utils/api'; // API 호출을 위한 모듈 임포트
 
 const Profile = ({navigation}) => {
-  const [waitRooms, setWaitRooms] = useState(initialWaitRooms);
-  const [ingRooms, setIngRooms] = useState(initialIngRooms);
+  const [waitRooms, setWaitRooms] = useState([]);
+  const [ingRooms, setIngRooms] = useState([]);
   const [photo, setPhoto] = useState(null);
 
   const user = useSelector(state => state.user);
@@ -30,6 +24,7 @@ const Profile = ({navigation}) => {
 
   useEffect(() => {
     requestPermissions();
+    fetchUserRooms(); // 참여 중인 방 목록 불러오기
   }, []);
 
   const requestPermissions = async () => {
@@ -39,6 +34,16 @@ const Profile = ({navigation}) => {
         'Permission denied',
         'You need to grant storage permissions to change the profile image.',
       );
+    }
+  };
+
+  const fetchUserRooms = async () => {
+    try {
+      const response = await api.get(`/rooms/user/${user.id}`);
+      setIngRooms(response.data);
+    } catch (error) {
+      console.error('Failed to fetch user rooms:', error);
+      Alert.alert('오류', '참여 중인 방 목록을 불러오는 데 실패했습니다.');
     }
   };
 
@@ -82,12 +87,28 @@ const Profile = ({navigation}) => {
     }
   };
 
+  const handleLogout = async () => {
+    const result = await fetchLogout();
+    if (result.success) {
+      navigation.navigate('LogIn');
+    } else {
+      Alert.alert('로그아웃 실패', '로그아웃하는 동안 문제가 발생했습니다.');
+    }
+  };
+
   const handleCancel = roomName => {
     setWaitRooms(waitRooms.filter(room => room.name !== roomName));
   };
 
-  const handleExit = roomName => {
-    setIngRooms(ingRooms.filter(room => room.name !== roomName));
+  const handleExit = async roomId => {
+    try {
+      await api.delete(`/rooms/${roomId}/member/${user.id}`);
+      setIngRooms(ingRooms.filter(room => room._id !== roomId));
+      Alert.alert('방 나가기 성공', '방에서 성공적으로 나갔습니다.');
+    } catch (error) {
+      console.error('Failed to leave room:', error);
+      Alert.alert('방 나가기 실패', '방을 나가는 동안 문제가 발생했습니다.');
+    }
   };
 
   return (
@@ -110,10 +131,7 @@ const Profile = ({navigation}) => {
           <View style={styles.profileText}>
             <Text style={styles.name}>{user.userName}</Text>
             <Text style={styles.userId}>{user.userEmail}</Text>
-            <TouchableOpacity
-              onPress={() => {
-                /* 로그아웃 기능 구현 */
-              }}>
+            <TouchableOpacity onPress={handleLogout}>
               <Text style={styles.logoutText}>로그아웃</Text>
             </TouchableOpacity>
           </View>
@@ -146,10 +164,10 @@ const Profile = ({navigation}) => {
                   source={require('../../../assets/images/person.png')}
                   style={styles.profileIcon}
                 />
-                <Text style={styles.roomName}>{room.name}</Text>
+                <Text style={styles.roomName}>{room.roomName}</Text>
                 <TouchableOpacity
                   style={styles.rightAlign}
-                  onPress={() => handleExit(room.name)}>
+                  onPress={() => handleExit(room._id)}>
                   <Text style={styles.leaveButton}>나가기</Text>
                 </TouchableOpacity>
               </View>
@@ -233,9 +251,9 @@ const styles = StyleSheet.create({
   },
   logoutText: {
     fontSize: 16,
-    color: '#5F5F5F',
+    color: 'red',
     marginTop: 10,
-    borderBottomColor: '#5F5F5F',
+    borderBottomColor: 'red',
     borderBottomWidth: 1,
   },
   roomsContainer: {
