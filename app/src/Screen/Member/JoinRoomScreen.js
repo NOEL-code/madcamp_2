@@ -29,8 +29,24 @@ const JoinRoomScreen = ({navigation}) => {
   const fetchRooms = async () => {
     try {
       const response = await api.get('/rooms');
-      setRooms(response.data);
-      console.log(response.data);
+      const allRooms = response.data;
+
+      const userResponse = await api.get(`/rooms/user/${currentUser.id}`);
+      const userRooms = userResponse.data;
+
+      const hostResponse = await api.get(`/rooms/host/${currentUser.id}`);
+      const hostRooms = hostResponse.data;
+
+      const participatingRoomIds = new Set(userRooms.map(room => room._id));
+      const managingRoomIds = new Set(hostRooms.map(room => room._id));
+
+      const filteredRooms = allRooms.filter(
+        room =>
+          !participatingRoomIds.has(room._id) && !managingRoomIds.has(room._id),
+      );
+
+      setRooms(filteredRooms);
+      console.log(filteredRooms);
     } catch (error) {
       console.error('Failed to fetch rooms:', error);
       Alert.alert('오류', '방 목록을 가져오는데 실패했습니다.');

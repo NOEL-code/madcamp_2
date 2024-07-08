@@ -41,6 +41,7 @@ const CreateRoomScreen = ({navigation}) => {
     const newUsers = [...users];
     newUsers[index].selected = !newUsers[index].selected;
     setUsers(newUsers);
+    console.log(newUsers);
   };
 
   useEffect(() => {
@@ -48,12 +49,14 @@ const CreateRoomScreen = ({navigation}) => {
     setSelectedCount(count);
   }, [users]);
 
-  const filteredUsers = users.filter(
-    user =>
-      user.userName &&
-      user.userName.includes(search) &&
-      user.id !== currentUser.id,
-  );
+  const filteredUsers = users
+    .map((user, index) => ({...user, originalIndex: index}))
+    .filter(
+      user =>
+        user.userName &&
+        user.userName.includes(search) &&
+        user.id !== currentUser.id,
+    );
 
   const handleNext = () => {
     const selectedUsers = users
@@ -106,7 +109,7 @@ const CreateRoomScreen = ({navigation}) => {
             <Text style={styles.userName}>{user.userName}</Text>
             <TouchableOpacity
               style={styles.selectButton}
-              onPress={() => handleSelect(index)}>
+              onPress={() => handleSelect(user.originalIndex)}>
               <View
                 style={[
                   styles.selectIndicator,

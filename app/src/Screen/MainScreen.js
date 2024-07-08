@@ -11,11 +11,13 @@ import {
 import api from '../utils/api'; // api 설정 파일 불러오기
 import NavBar from 'Components/NavBar';
 import {useSelector} from 'react-redux';
+import {useIsFocused} from '@react-navigation/native'; // react-navigation hooks 추가
 
 const MainScreen = ({navigation}) => {
   const [participatingRooms, setParticipatingRooms] = useState([]);
   const [managingRooms, setManagingRooms] = useState([]);
   const currentUser = useSelector(state => state.user);
+  const isFocused = useIsFocused(); // 화면이 포커스될 때마다 리렌더링하도록 하는 hook
 
   console.log(currentUser);
 
@@ -37,8 +39,10 @@ const MainScreen = ({navigation}) => {
       }
     };
 
-    fetchRooms();
-  }, [currentUser.id]);
+    if (isFocused) {
+      fetchRooms(); // 화면이 포커스될 때마다 방 목록을 다시 불러옴
+    }
+  }, [isFocused, currentUser.id]);
 
   return (
     <View style={styles.container}>
