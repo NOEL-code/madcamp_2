@@ -65,7 +65,9 @@ const LogIn = ({navigation}) => {
         <Text style={styles.signUpButtonText}>로그인</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.signUpButton} onPress={() => navigation.navigate('SignUp')}>
+      <TouchableOpacity
+        style={styles.signUpButton}
+        onPress={() => navigation.navigate('SignUp')}>
         <Text style={styles.signUpButtonText}>회원가입</Text>
       </TouchableOpacity>
     </View>

@@ -108,7 +108,7 @@ const Profile = ({navigation}) => {
           </View>
 
           <View style={styles.profileText}>
-            <Text style={styles.name}>{user.name}</Text>
+            <Text style={styles.name}>{user.userName}</Text>
             <Text style={styles.userId}>{user.userEmail}</Text>
             <TouchableOpacity
               onPress={() => {

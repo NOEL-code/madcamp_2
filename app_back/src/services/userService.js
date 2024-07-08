@@ -128,27 +128,6 @@ exports.getUsers = async () => {
   return resUsers;
 };
 
-exports.findUsersById = async (userIds) => {
-  try {
-    const users = await User.find(
-      {
-        _id: { $in: userIds },
-      },
-      "name _id"
-    );
-
-    const resUsers = users.map((user) => ({
-      id: user._id,
-      name: user.name,
-    }));
-
-    return resUsers;
-  } catch (error) {
-    console.error("Error fetching users by ID:", error);
-    throw new Error("Error fetching users");
-  }
-};
-
 exports.getUserById = async (userId) => {
   try {
     const user = await User.findById(userId, "name _id");
@@ -192,6 +171,7 @@ exports.updateProfileImage = async (userId, imageUrl) => {
 };
 
 exports.getCurrentUser = async (userId) => {
+  console.log(userId);
   const user = await User.findById(userId).select("-userPassword"); // 비밀번호 제외
   if (!user) {
     throw new Error("User not found");
@@ -207,4 +187,26 @@ exports.getCurrentUser = async (userId) => {
 
 exports.logoutUser = async (userId) => {
   await TokenModel.deleteToken(userId);
+};
+
+exports.getUsersById = async (userId) => {
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    throw new Error("Invalid user ID");
+  }
+  let user = await User.findById(userId);
+  return user;
+};
+
+exports.getUsers = async () => {
+  let users = await User.find();
+  if (!users || users.length === 0) {
+    throw new Error("There are no users");
+  }
+
+  const resUsers = users.map((user) => ({
+    id: user._id,
+    userName: user.name,
+  }));
+
+  return resUsers;
 };

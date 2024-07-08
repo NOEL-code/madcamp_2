@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -6,35 +6,39 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Alert,
 } from 'react-native';
 import api from '../utils/api'; // api 설정 파일 불러오기
 import NavBar from 'Components/NavBar';
-
-const participatingRooms = [
-  {name: '카이부캠방', count: 80},
-  {name: '우히히 방', count: 20},
-  {name: '메렁', count: 5},
-];
-
-const managingRooms = [
-  {name: '우히히 방', count: 20},
-  {name: '메렁', count: 5},
-];
+import {useSelector} from 'react-redux';
 
 const MainScreen = ({navigation}) => {
+  const [participatingRooms, setParticipatingRooms] = useState([]);
+  const [managingRooms, setManagingRooms] = useState([]);
+  const currentUser = useSelector(state => state.user);
+
+  console.log(currentUser);
+
   useEffect(() => {
-    const checkToken = async () => {
+    const fetchRooms = async () => {
       try {
-        const response = await api.get('/users/me');
-        console.log('User data:', response.data);
+        const userRoomsResponse = await api.get(
+          `/rooms/user/${currentUser.id}`,
+        );
+        setParticipatingRooms(userRoomsResponse.data);
+
+        const hostRoomsResponse = await api.get(
+          `/rooms/host/${currentUser.id}`,
+        );
+        setManagingRooms(hostRoomsResponse.data);
       } catch (error) {
-        console.error('Failed to fetch user data', error);
-        navigation.navigate('LogIn');
+        console.error('Failed to fetch rooms:', error);
+        Alert.alert('오류', '방 목록을 가져오는데 실패했습니다.');
       }
     };
 
-    checkToken();
-  }, [navigation]);
+    fetchRooms();
+  }, [currentUser.id]);
 
   return (
     <View style={styles.container}>
@@ -73,11 +77,13 @@ const MainScreen = ({navigation}) => {
                   source={require('assets/images/roomProfile.png')}
                   style={styles.profileIcon}
                 />
-                <Text style={styles.roomName}>{room.name}</Text>
-                <Text style={styles.roomCount}>{room.count}명</Text>
+                <Text style={styles.roomName}>{room.roomName}</Text>
+                <Text style={styles.roomCount}>{room.members.length}명</Text>
                 <TouchableOpacity
                   style={styles.forwardButton}
-                  onPress={() => navigation.navigate('Team')}>
+                  onPress={() =>
+                    navigation.navigate('Team', {roomId: room._id})
+                  }>
                   <Image
                     source={require('assets/images/next.png')}
                     style={styles.forwardIcon}
@@ -98,11 +104,13 @@ const MainScreen = ({navigation}) => {
                   source={require('assets/images/roomProfile.png')}
                   style={styles.profileIcon}
                 />
-                <Text style={styles.roomName}>{room.name}</Text>
-                <Text style={styles.roomCount}>{room.count}명</Text>
+                <Text style={styles.roomName}>{room.roomName}</Text>
+                <Text style={styles.roomCount}>{room.members.length}명</Text>
                 <TouchableOpacity
                   style={styles.forwardButton}
-                  onPress={() => navigation.navigate('TeamAdmin')}>
+                  onPress={() =>
+                    navigation.navigate('TeamAdmin', {roomId: room._id})
+                  }>
                   <Image
                     source={require('assets/images/next.png')}
                     style={styles.forwardIcon}
@@ -113,7 +121,7 @@ const MainScreen = ({navigation}) => {
           </View>
         </View>
       </ScrollView>
-      <NavBar navigation={navigation} currentRoute={'Main'}/>
+      <NavBar navigation={navigation} currentRoute={'Main'} />
     </View>
   );
 };

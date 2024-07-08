@@ -20,10 +20,10 @@ exports.getRooms = async (req, res) => {
 };
 
 exports.getUserRooms = async (req, res) => {
-  const memberId = req.params.userId;
+  const userId = req.params.userId;
 
   try {
-    const userRooms = await getUserRooms(memberId);
+    const userRooms = await getUserRooms(userId);
     res.status(200).json(userRooms);
   } catch (err) {
     console.error(err.message);

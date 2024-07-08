@@ -1,9 +1,8 @@
 import React from 'react';
-import { View, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import {View, TouchableOpacity, Image, StyleSheet} from 'react-native';
 
-const NavBar = ({ navigation, currentRoute }) => {
-
-  const getIconSource = (route) => {
+const NavBar = ({navigation, currentRoute}) => {
+  const getIconSource = route => {
     switch (route) {
       case 'Stat':
         return currentRoute === 'Stat'
@@ -25,22 +24,13 @@ const NavBar = ({ navigation, currentRoute }) => {
   return (
     <View style={styles.navbar}>
       <TouchableOpacity onPress={() => navigation.navigate('Stat')}>
-        <Image
-          source={getIconSource('Stat')}
-          style={styles.navIcon}
-        />
+        <Image source={getIconSource('Stat')} style={styles.navIcon} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate('Main')}>
-        <Image
-          source={getIconSource('Main')}
-          style={styles.navIcon}
-        />
+        <Image source={getIconSource('Main')} style={styles.navIcon} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-        <Image
-          source={getIconSource('Profile')}
-          style={styles.navIcon}
-        />
+        <Image source={getIconSource('Profile')} style={styles.navIcon} />
       </TouchableOpacity>
     </View>
   );

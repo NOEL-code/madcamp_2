@@ -7,6 +7,7 @@ const {
   refreshToken,
   getCurrentUser,
   updateImage,
+  getUserById,
 } = require("../controllers/userController");
 const authenticateToken = require("../middlewares/authenticateToken");
 
