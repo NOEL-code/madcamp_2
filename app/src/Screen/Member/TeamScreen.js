@@ -75,7 +75,7 @@ const TeamScreen = ({ route, navigation }) => {
                 source={require('assets/images/person.png')}
                 style={styles.profileIcon}
               />
-              <Text style={styles.userName}>{member.userId.name}</Text> {/* 이름 출력 */}
+              <Text style={styles.userName}>{member.userId.name}</Text>
               <View style={[styles.statusIndicatorBox, statusBoxStyle]}>
                 <View
                   style={[
