@@ -1,7 +1,6 @@
 const { Room } = require("../models/Room");
 const { getUserById } = require("./userService");
 const { sendInvite } = require("./invitedRoomService");
-const mongoose = require("mongoose");
 
 exports.getRooms = async () => {
   let rooms = await Room.find();
@@ -27,14 +26,14 @@ exports.createRoom = async (roomInfo) => {
     for (const member of members) {
       const user = await getUserById(member.userId);
       if (user) {
-        validMembers.push(new mongoose.Types.ObjectId(member.userId));
+        validMembers.push({ userId: member.userId }); // 객체 형식으로 저장
       }
     }
 
     // 새로운 방 생성
     const newRoom = new Room({
       roomName,
-      host: new mongoose.Types.ObjectId(host), // host도 ObjectId로 변환
+      host: host, // host의 userId를 그대로 저장
       members: validMembers,
     });
 
@@ -45,19 +44,6 @@ exports.createRoom = async (roomInfo) => {
     console.error("Failed to create room:", error);
     throw error; // 에러를 호출한 쪽에서 처리할 수 있도록 던짐
   }
-  // const newRoom = new Room({
-  //   roomName,
-  //   host,
-  //   members: members.map((member) => member.userId),
-  // });
-
-  // const createdRoom = await newRoom.save();
-  // // const createdRoomId = createdRoom._id;
-
-  // const invitingMembersId = members.map((member) => member.userId);
-  // await sendInvite(invitingMembersId, createdRoomId);
-
-  // return createdRoom;
 };
 
 exports.deleteRoomById = async (roomId) => {
