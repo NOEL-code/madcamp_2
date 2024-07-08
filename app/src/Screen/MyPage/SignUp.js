@@ -8,6 +8,8 @@ import {
   ScrollView,
   TextInput,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import api from '../../utils/api'; // api 설정 파일 불러오기
 
 const SignUp = ({navigation}) => {
   const gotoLogIn = () => {
@@ -20,9 +22,12 @@ const SignUp = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.arrowButton}
-        onPress={gotoLogIn}></TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Image
+            source={require('assets/images/back.png')}
+            style={styles.backIcon}
+          />
+      </TouchableOpacity >
 
       <Text style={styles.title}>회원가입</Text>
 
@@ -57,6 +62,11 @@ const SignUp = ({navigation}) => {
           placeholderTextColor="#D9D9D9"
           secureTextEntry={true}
         />
+      </View>
+
+      <View style={styles.inputWrapper}>
+        <Text style={styles.label}>프로필 사진</Text>
+
       </View>
 
       <TouchableOpacity style={styles.arrowButton} onPress={gotoMain}>

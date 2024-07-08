@@ -35,7 +35,7 @@ const TeamApplyScreen = ({navigation}) => {
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
-            source={require('../../../assets/images/back.png')}
+            source={require('assets/images/back.png')}
             style={styles.backIcon}
           />
         </TouchableOpacity>
@@ -52,7 +52,7 @@ const TeamApplyScreen = ({navigation}) => {
           {usersState.map((user, index) => (
             <View key={index} style={styles.userItem}>
               <Image
-                source={require('../../../assets/images/person.png')}
+                source={require('assets/images/person.png')}
                 style={styles.profileIcon}
               />
               <Text style={styles.userName}>{user.name}</Text>

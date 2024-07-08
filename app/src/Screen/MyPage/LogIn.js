@@ -35,11 +35,6 @@ const LogIn = ({navigation}) => {
   };
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        onPress={() => navigation.goBack()}
-        style={styles.backButton}>
-        <Text style={styles.backButtonText}>{'<'}</Text>
-      </TouchableOpacity>
       <Text style={styles.title}>로그인</Text>
 
       <View style={styles.inputContainer}>
@@ -68,6 +63,10 @@ const LogIn = ({navigation}) => {
 
       <TouchableOpacity style={styles.signUpButton} onPress={handleLogin}>
         <Text style={styles.signUpButtonText}>로그인</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.signUpButton} onPress={() => navigation.navigate('SignUp')}>
+        <Text style={styles.signUpButtonText}>회원가입</Text>
       </TouchableOpacity>
     </View>
   );
