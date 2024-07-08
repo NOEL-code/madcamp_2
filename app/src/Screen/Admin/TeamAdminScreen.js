@@ -65,7 +65,7 @@ const TeamAdminScreen = ({navigation}) => {
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
-            source={require('./assets/images/back.png')}
+            source={require('../../../assets/images/back.png')}
             style={styles.backIcon}
           />
         </TouchableOpacity>
@@ -82,7 +82,7 @@ const TeamAdminScreen = ({navigation}) => {
         )}
         <TouchableOpacity onPress={toggleEditMode}>
           <Image
-            source={require('./assets/images/pencil.png')}
+            source={require('../../../assets/images/pencil.png')}
             style={styles.editIcon}
           />
         </TouchableOpacity>
@@ -128,7 +128,7 @@ const TeamAdminScreen = ({navigation}) => {
             {usersState.map((user, index) => (
               <View key={index} style={styles.userItem}>
                 <Image
-                  source={require('./assets/images/person.png')}
+                  source={require('../../../assets/images/person.png')}
                   style={styles.profileIcon}
                 />
                 <Text style={styles.userName}>{user.name}</Text>
@@ -157,7 +157,7 @@ const TeamAdminScreen = ({navigation}) => {
                 onPress={() => navigation.navigate('CameraAdmin')}>
                 <Image
                   style={styles.camera}
-                  source={require('./assets/images/camera.png')}
+                  source={require('../../../assets/images/camera.png')}
                 />
               </TouchableOpacity>
             </View>
@@ -171,7 +171,7 @@ const TeamAdminScreen = ({navigation}) => {
               {waitingUsers.map((waitingUser, index) => (
                 <View key={index} style={styles.userItem}>
                   <Image
-                    source={require('./assets/images/person.png')}
+                    source={require('../../../assets/images/person.png')}
                     style={styles.profileIcon}
                   />
                   <Text style={styles.userName}>{waitingUser.name}</Text>
@@ -195,7 +195,7 @@ const TeamAdminScreen = ({navigation}) => {
             {usersState.map((user, index) => (
               <View key={index} style={styles.userItem}>
                 <Image
-                  source={require('./assets/images/person.png')}
+                  source={require('../../../assets/images/person.png')}
                   style={styles.profileIcon}
                 />
                 <Text style={styles.userName}>{user.name}</Text>

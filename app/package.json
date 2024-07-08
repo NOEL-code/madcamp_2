@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.23.1",
-    "@react-native-community/cameraroll": "^4.1.2",
+    "@react-native-camera-roll/camera-roll": "^7.8.1",
     "@react-native-picker/picker": "^2.7.7",
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/stack": "^6.4.0",

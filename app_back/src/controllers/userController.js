@@ -28,7 +28,6 @@ exports.registerUser = async (req, res) => {
 
 // 로그인
 exports.loginUser = async (req, res) => {
-  console.log("123");
   const { userEmail, userPassword } = req.body;
 
   try {

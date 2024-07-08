@@ -1,9 +1,9 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var mongoose = require("mongoose")
+var createError = require("http-errors");
+var express = require("express");
+var path = require("path");
+var cookieParser = require("cookie-parser");
+var logger = require("morgan");
+var mongoose = require("mongoose");
 
 // var indexRouter = require('./routes/index');
 // var usersRouter = require('./routes/users');
@@ -16,27 +16,24 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var app = express();
 var indexRouter = require("./src/routes/index");
-var usersRouter = require("./src/routes/usersRouter")
 
 const corsMiddleware = require("./src/middlewares/cors");
 const connectDB = require("./src/utils/mongodb");
 
-//utils 에 있는 db. mongoose db 를 연결하는 메소드 
+//utils 에 있는 db. mongoose db 를 연결하는 메소드
 connectDB();
-
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
 app.use(logger("dev"));
-//cors? 
+//cors?
 app.use(corsMiddleware);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-
 
 app.use("/api", indexRouter);
 app.use("/api/users", require("./src/routes/usersRouter"));
@@ -44,14 +41,12 @@ app.use("/api/rooms", require("./src/routes/roomRouter"));
 app.use("/api/invited", require("./src/routes/invitedRoomRouter"));
 app.use("/api/apply", require("./src/routes/applyRoomRouter"));
 
-//end point ? api 이면 indexrouter에서 잡아가는거야 
+//end point ? api 이면 indexrouter에서 잡아가는거야
 
-app.use("/api/users", usersRouter);
-app.use("/api/attendance", require("./src/routes/attendanceRouter"))
-
+app.use("/api/attendance", require("./src/routes/attendanceRouter"));
 
 // catch 404 and forward to error handler
-// 위에서 걸럿는데 안 걸러졌어 api 가기 전에 404가 잡아서 오류 뿌림. 순서가 중요합니다. 
+// 위에서 걸럿는데 안 걸러졌어 api 가기 전에 404가 잡아서 오류 뿌림. 순서가 중요합니다.
 app.use(function (req, res, next) {
   next(createError(404));
 });

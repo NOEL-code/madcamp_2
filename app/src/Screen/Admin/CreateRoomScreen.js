@@ -41,7 +41,7 @@ const CreateRoomScreen = ({navigation}) => {
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.navigate('TeamAdmin')}>
           <Image
-            source={require('./assets/images/back.png')}
+            source={require('../../../assets/images/back.png')}
             style={styles.backIcon}
           />
         </TouchableOpacity>
@@ -80,7 +80,7 @@ const CreateRoomScreen = ({navigation}) => {
         {filteredUsers.map((user, index) => (
           <View key={index} style={styles.userItem}>
             <Image
-              source={require('./assets/images/person.png')}
+              source={require('../../../assets/images/person.png')}
               style={styles.profileIcon}
             />
             <Text style={styles.userName}>{user.name}</Text>
@@ -100,19 +100,19 @@ const CreateRoomScreen = ({navigation}) => {
       <View style={styles.navbar}>
         <TouchableOpacity>
           <Image
-            source={require('./assets/images/statistics.png')}
+            source={require('../../../assets/images/statistics.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>
         <TouchableOpacity>
           <Image
-            source={require('./assets/images/home.png')}
+            source={require('../../../assets/images/home.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>
         <TouchableOpacity>
           <Image
-            source={require('./assets/images/myPage.png')}
+            source={require('../../../assets/images/myPage.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>

@@ -65,15 +65,6 @@ yarn-debug.log*
 yarn-error.log*
 
 # React Native
-android/
-ios/
-*.iml
-.idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
 
 # MacOS
 .DS_Store

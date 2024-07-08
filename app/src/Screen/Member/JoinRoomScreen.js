@@ -42,7 +42,7 @@ const JoinRoomScreen = ({navigation}) => {
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
-            source={require('./assets/images/back.png')}
+            source={require('../../../assets/images/back.png')}
             style={styles.backIcon}
           />
         </TouchableOpacity>
@@ -68,7 +68,7 @@ const JoinRoomScreen = ({navigation}) => {
         {filteredRooms.map((room, index) => (
           <View key={index} style={styles.roomItem}>
             <Image
-              source={require('./assets/images/joinRoomProfile.png')}
+              source={require('../../../assets/images/joinRoomProfile.png')}
               style={styles.profileIcon}
             />
             <Text style={styles.roomName}>{room.name}</Text>
@@ -86,19 +86,19 @@ const JoinRoomScreen = ({navigation}) => {
       <View style={styles.navbar}>
         <TouchableOpacity>
           <Image
-            source={require('./assets/images/statistics.png')}
+            source={require('../../../assets/images/statistics.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>
         <TouchableOpacity>
           <Image
-            source={require('./assets/images/home.png')}
+            source={require('../../../assets/images/home.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>
         <TouchableOpacity>
           <Image
-            source={require('./assets/images/myPage.png')}
+            source={require('../../../assets/images/myPage.png')}
             style={styles.navIcon}
           />
         </TouchableOpacity>

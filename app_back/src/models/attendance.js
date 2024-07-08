@@ -13,25 +13,25 @@ const AttendanceSchema = new mongoose.Schema({
     {
       date: {
         // 각 기록의 날짜
-        type: String,
+        type: Date,
         required: true,
       },
       arriveTime: {
         // 출근시간
-        type: String,
+        type: Date,
       },
-      leaveTime: {
+      departTime: {
         // 퇴근시간
-        type: String,
+        type: Date,
       },
-      away: [
+      leave: [
         // 외출 기록
         {
           goOut: {
-            type: String,
+            type: Date,
           },
           comeBack: {
-            type: String,
+            type: Date,
           },
         },
       ],
