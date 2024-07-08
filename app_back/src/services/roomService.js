@@ -123,3 +123,12 @@ exports.updateRoomDescription = async (roomId, title, subtitle) => {
 
   return { ...updatedRoom._doc, members: membersWithNames };
 };
+
+exports.getRoomInfo = async (roomId) => {
+  const room = await Room.findById(roomId).populate('members.userId')
+  if (!room) {
+    throw new Error("Room not found");
+  }
+  return room;
+};
+

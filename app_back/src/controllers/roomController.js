@@ -7,6 +7,7 @@ const {
   removeMemberFromRoom,
   updateRoomDescription,
   deleteRoomById,
+  getRoomInfo
 } = require("../services/roomService");
 
 exports.getRooms = async (req, res) => {
@@ -101,6 +102,18 @@ exports.updateRoomDescription = async (req, res) => {
     res.status(200).json(updatedRoom);
   } catch (err) {
     console.log(err.message);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.getRoomInfo = async (req, res) => {
+  const { roomId } = req.params;
+
+  try {
+    const roomInfo = await getRoomInfo(roomId);
+    res.status(200).json(roomInfo);
+  } catch (err) {
+    console.error(err.message);
     res.status(500).json({ message: "Server error" });
   }
 };

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,36 +7,48 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
-
-import {store} from '../../redux/store';
-
-const users = [
-  {name: '정우성', status: 1},
-  {name: '이수민', status: 1},
-  {name: '박종민', status: 3},
-  {name: '김사랑', status: 4},
-  {name: '윈터', status: 2},
-];
+import api from '../../utils/api';
 
 const statusStyles = {
-  1: {color: '#03CF5D', text: '출석'},
-  2: {color: '#FF0000', text: '결석'},
-  3: {color: '#FFE600', text: '자리비움'},
-  4: {color: '#D9D9D9', text: '퇴근'},
+  1: { color: '#03CF5D', text: '출석' },
+  2: { color: '#FF0000', text: '결석' },
+  3: { color: '#FFE600', text: '자리비움' },
+  4: { color: '#D9D9D9', text: '퇴근' },
 };
 
 const statusBoxStyles = {
-  1: {backgroundColor: '#DFF5E9'},
-  2: {backgroundColor: '#FFE2E2'},
-  3: {backgroundColor: '#FFF4D5'},
-  4: {backgroundColor: '#F4F4F4'},
+  1: { backgroundColor: '#DFF5E9' },
+  2: { backgroundColor: '#FFE2E2' },
+  3: { backgroundColor: '#FFF4D5' },
+  4: { backgroundColor: '#F4F4F4' },
 };
 
-const TeamScreen = ({navigation}) => {
-  const user = store.getState().user;
+const TeamScreen = ({ route, navigation }) => {
+  const { roomId } = route.params;
+  const [roomInfo, setRoomInfo] = useState({ roomName: '', subTitle: '', members: [] });
 
-  console.log(user);
-  console.log(store.getState());
+  useEffect(() => {
+    console.log('Room ID:', roomId); // 방의 ID를 콘솔에 출력
+
+    const fetchRoomInfo = async () => {
+      try {
+        const response = await api.get(`/rooms/${roomId}`);
+        setRoomInfo(response.data);
+      } catch (error) {
+        console.error('Failed to fetch room info:', error);
+      }
+    };
+
+    fetchRoomInfo();
+  }, [roomId]);
+
+  const getStatusStyle = (status) => {
+    return statusStyles[status] || { color: '#000', text: '알 수 없음' };
+  };
+
+  const getStatusBoxStyle = (status) => {
+    return statusBoxStyles[status] || { backgroundColor: '#EEE' };
+  };
 
   return (
     <View style={styles.container}>
@@ -48,50 +60,36 @@ const TeamScreen = ({navigation}) => {
           />
         </TouchableOpacity>
       </View>
-      <Text style={styles.headerTitle}>팀이름</Text>
-      <Text style={styles.subTitle}>팀 한 줄 소개</Text>
+      <Text style={styles.headerTitle}>{roomInfo.roomName}</Text>
+      <Text style={styles.subTitle}>{roomInfo.subTitle}</Text>
 
       <View style={styles.separator} />
-      <Text style={styles.sectionTitle}>나의 상태</Text>
-      <View style={styles.userItem}>
-        <Image
-          source={require('assets/images/person.png')}
-          style={styles.profileIcon}
-        />
-        <Text style={styles.userName}>정우성</Text>
-        <View style={[styles.statusIndicatorBox, statusBoxStyles[1]]}>
-          <View
-            style={[
-              styles.statusIndicator,
-              {backgroundColor: statusStyles[1].color},
-            ]}
-          />
-          <Text style={styles.statusText}>{statusStyles[1].text}</Text>
-        </View>
-      </View>
-      <Text style={styles.sectionTitle}>학생 20명</Text>
+      <Text style={styles.sectionTitle}>학생 {roomInfo.members.length}명</Text>
       <ScrollView>
-        {users.map((user, index) => (
-          <View key={index} style={styles.userItem}>
-            <Image
-              source={require('assets/images/person.png')}
-              style={styles.profileIcon}
-            />
-            <Text style={styles.userName}>{user.name}</Text>
-            <View
-              style={[styles.statusIndicatorBox, statusBoxStyles[user.status]]}>
-              <View
-                style={[
-                  styles.statusIndicator,
-                  {backgroundColor: statusStyles[user.status].color},
-                ]}
+        {roomInfo.members.map((member, index) => {
+          const statusStyle = getStatusStyle(member.status);
+          const statusBoxStyle = getStatusBoxStyle(member.status);
+          return (
+            <View key={index} style={styles.userItem}>
+              <Image
+                source={require('assets/images/person.png')}
+                style={styles.profileIcon}
               />
-              <Text style={styles.statusText}>
-                {statusStyles[user.status].text}
-              </Text>
+              <Text style={styles.userName}>{member.userId.name}</Text> {/* 이름 출력 */}
+              <View style={[styles.statusIndicatorBox, statusBoxStyle]}>
+                <View
+                  style={[
+                    styles.statusIndicator,
+                    { backgroundColor: statusStyle.color },
+                  ]}
+                />
+                <Text style={styles.statusText}>
+                  {statusStyle.text}
+                </Text>
+              </View>
             </View>
-          </View>
-        ))}
+          );
+        })}
       </ScrollView>
     </View>
   );
