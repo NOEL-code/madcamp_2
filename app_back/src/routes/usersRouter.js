@@ -8,6 +8,8 @@ const {
   getCurrentUser,
   updateImage,
   getUserById,
+  createImage
+
 } = require("../controllers/userController");
 const authenticateToken = require("../middlewares/authenticateToken");
 
@@ -21,12 +23,11 @@ router.get("/me", authenticateToken, getCurrentUser);
 router.get("/logout", authenticateToken, logoutUser);
 
 router.post("/update/image", upload.single("image"), updateImage);
-
+//회원가입 할 때 플필 사진 정하기
 router.post("/create/image", upload.single("image"), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "No file uploaded" });
   }
-
   const imageUrl = req.file.location; // S3에 저장된 이미지의 URL
   res.status(200).json({ imageUrl });
 });
