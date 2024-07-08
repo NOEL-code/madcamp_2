@@ -8,6 +8,7 @@ import {
   ScrollView,
 } from 'react-native';
 import api from '../../utils/api';
+import { useSelector } from 'react-redux';
 
 const statusStyles = {
   1: { color: '#03CF5D', text: '출석' },
@@ -25,6 +26,7 @@ const statusBoxStyles = {
 
 const TeamScreen = ({ route, navigation }) => {
   const { roomId } = route.params;
+  const currentUser = useSelector(state => state.user);
   const [roomInfo, setRoomInfo] = useState({ roomName: '', subTitle: '', members: [] });
 
   useEffect(() => {
@@ -50,6 +52,9 @@ const TeamScreen = ({ route, navigation }) => {
     return statusBoxStyles[status] || { backgroundColor: '#EEE' };
   };
 
+  const currentUserStatus = roomInfo.members.find(member => member.userId._id === currentUser.id);
+  const otherMembers = roomInfo.members.filter(member => member.userId._id !== currentUser.id);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -64,9 +69,31 @@ const TeamScreen = ({ route, navigation }) => {
       <Text style={styles.subTitle}>{roomInfo.subTitle}</Text>
 
       <View style={styles.separator} />
-      <Text style={styles.sectionTitle}>학생 {roomInfo.members.length}명</Text>
+      <Text style={styles.sectionTitle}>나의 상태</Text>
+      {currentUserStatus && (
+        <View style={styles.userItem}>
+          <Image
+            source={require('assets/images/person.png')}
+            style={styles.profileIcon}
+          />
+          <Text style={styles.userName}>{currentUserStatus.userId.name}</Text>
+          <View style={[styles.statusIndicatorBox, getStatusBoxStyle(currentUserStatus.status)]}>
+            <View
+              style={[
+                styles.statusIndicator,
+                { backgroundColor: getStatusStyle(currentUserStatus.status).color },
+              ]}
+            />
+            <Text style={styles.statusText}>
+              {getStatusStyle(currentUserStatus.status).text}
+            </Text>
+          </View>
+        </View>
+      )}
+
+      <Text style={styles.sectionTitle}>학생 {otherMembers.length}명</Text>
       <ScrollView>
-        {roomInfo.members.map((member, index) => {
+        {otherMembers.map((member, index) => {
           const statusStyle = getStatusStyle(member.status);
           const statusBoxStyle = getStatusBoxStyle(member.status);
           return (
