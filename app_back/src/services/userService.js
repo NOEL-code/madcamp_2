@@ -59,6 +59,14 @@ exports.loginUser = async ({ userEmail, userPassword }) => {
     throw new Error("비밀번호가 일치하지 않습니다.");
   }
 
+  const resUser = {
+    id: user._id,
+    phoneNumber: user.phoneNumber,
+    photoUrl: user.photoUrl,
+    name: user.name,
+    userEmail: user.userEmail,
+  };
+
   const payload = {
     user: {
       id: user.id,
@@ -74,12 +82,11 @@ exports.loginUser = async ({ userEmail, userPassword }) => {
     refreshToken,
   });
 
-  return { accessToken, refreshToken };
+  return { accessToken, refreshToken, resUser };
 };
 
 exports.refreshAccessToken = async (refreshToken) => {
   try {
-
     console.log("리프레시 토큰 검증 시작:", refreshToken);
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
     console.log("리프레시 토큰 디코딩 완료:", decoded);

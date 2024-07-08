@@ -31,11 +31,11 @@ exports.loginUser = async (req, res) => {
   const { userEmail, userPassword } = req.body;
 
   try {
-    const { accessToken, refreshToken } = await loginUser({
+    const { accessToken, refreshToken, resUser } = await loginUser({
       userEmail,
       userPassword,
     });
-    res.status(201).json({ accessToken, refreshToken });
+    res.status(201).json({ accessToken, refreshToken, resUser });
   } catch (err) {
     if (
       err.message === "가입된 id가 아님" ||

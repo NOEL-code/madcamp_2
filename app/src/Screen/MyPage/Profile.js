@@ -11,6 +11,7 @@ import {
 import {launchImageLibrary} from 'react-native-image-picker';
 import {PERMISSIONS, request, check, RESULTS} from 'react-native-permissions';
 import api from '../../utils/api';
+import {useSelector} from 'react-redux';
 
 const initialWaitRooms = [{name: '카이부캠방'}, {name: '키키'}];
 const initialIngRooms = [
@@ -23,6 +24,8 @@ const Profile = ({navigation}) => {
   const [waitRooms, setWaitRooms] = useState(initialWaitRooms);
   const [ingRooms, setIngRooms] = useState(initialIngRooms);
   const [photo, setPhoto] = useState(null);
+
+  const user = useSelector(state => state.user);
 
   useEffect(() => {
     requestPermissions();
@@ -64,7 +67,7 @@ const Profile = ({navigation}) => {
               type: response.assets[0].type,
               name: response.assets[0].fileName,
             });
-            formData.append('userId', '사용자 ID'); // 적절한 사용자 ID를 여기에 추가
+            formData.append('userId', user.id); // Redux 상태에서 사용자 ID 가져오기
 
             try {
               const res = await api.post('/update/image', formData, {
@@ -102,9 +105,7 @@ const Profile = ({navigation}) => {
           <View style={styles.imageContainer}>
             <Image
               style={styles.profileImage}
-              source={
-                photo ? photo : require('../../../assets/images/person.png')
-              }
+              source={photo ? photo : {uri: user.photoUrl}}
               resizeMode="cover"
             />
             <TouchableOpacity
@@ -115,8 +116,8 @@ const Profile = ({navigation}) => {
           </View>
 
           <View style={styles.profileText}>
-            <Text style={styles.name}>이수민</Text>
-            <Text style={styles.userId}>ID smo1111</Text>
+            <Text style={styles.name}>{user.name}</Text>
+            <Text style={styles.userId}>{user.userEmail}</Text>
             <TouchableOpacity
               onPress={() => {
                 /* 로그아웃 기능 구현 */

@@ -5,41 +5,34 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInput,
-  Alert,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import api from '../../utils/api'; // api 설정 파일 불러오기
+import {useDispatch, useSelector} from 'react-redux';
+import {setUser} from '../../redux/userSlice'; // Adjust the import path as needed
+import {fetchLogin} from '../../Service/user'; // Adjust the import path as needed
 
 const LogIn = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const dispatch = useDispatch();
+  const user = useSelector(state => state.user);
 
   const handleLogin = async () => {
-    try {
-      const response = await api.post('/users/login', {
-        userEmail: email,
-        userPassword: password,
-      });
-      console.log(response);
-      const {accessToken, refreshToken} = response.data;
-      await AsyncStorage.setItem('accessToken', accessToken);
-      await AsyncStorage.setItem('refreshToken', refreshToken);
-      navigation.navigate('Main');
-    } catch (error) {
-      if (error.response) {
-        console.log('Error response data:', error.response.data); // 오류 응답 데이터 로그
-        Alert.alert(
-          '로그인 실패',
-          error.response.data.message ||
-            '이메일 또는 비밀번호가 잘못되었습니다.',
-        );
-      } else {
-        Alert.alert('로그인 실패', '서버와의 통신에 문제가 발생했습니다.');
-      }
-      console.error('Login error', error);
-    }
-  };
+    const result = await fetchLogin(email, password);
 
+    const userData = result;
+    console.log(userData);
+    dispatch(
+      setUser({
+        id: userData.id,
+        phoneNumber: userData.phoneNumber,
+        photoUrl: userData.photoUrl,
+        userName: userData.name,
+        userEmail: userData.userEmail,
+      }),
+    );
+    console.log('Redux User State:', user); // Redux에 저장된 사용자 정보 출력
+    navigation.navigate('Main');
+  };
   return (
     <View style={styles.container}>
       <TouchableOpacity
