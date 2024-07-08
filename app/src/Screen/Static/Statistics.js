@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from 'react-native';
 import {Calendar} from 'react-native-calendars';
-
+import NavBar from 'Components/NavBar';
 const workDays = [
   {
     date: '2024-07-07',
@@ -225,29 +225,7 @@ const Stat = ({navigation}) => {
         </View>
       </ScrollView>
 
-      <View style={styles.navbar}>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('Main');
-          }}>
-          <Image
-            source={require('../../../assets/images/statistics.png')}
-            style={styles.navIcon}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Main')}>
-          <Image
-            source={require('../../../assets/images/home.png')}
-            style={styles.navIcon}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-          <Image
-            source={require('../../../assets/images/myPage.png')}
-            style={styles.navIcon}
-          />
-        </TouchableOpacity>
-      </View>
+      <NavBar navigation={navigation} currentRoute={'Stat'}/>
     </View>
   );
 };

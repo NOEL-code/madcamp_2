@@ -36,7 +36,7 @@ const TeamScreen = ({navigation}) => {
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
-            source={require('../../../assets/images/back.png')}
+            source={require('assets/images/back.png')}
             style={styles.backIcon}
           />
         </TouchableOpacity>
@@ -48,7 +48,7 @@ const TeamScreen = ({navigation}) => {
       <Text style={styles.sectionTitle}>나의 상태</Text>
       <View style={styles.userItem}>
         <Image
-          source={require('../../../assets/images/person.png')}
+          source={require('assets/images/person.png')}
           style={styles.profileIcon}
         />
         <Text style={styles.userName}>정우성</Text>
@@ -67,7 +67,7 @@ const TeamScreen = ({navigation}) => {
         {users.map((user, index) => (
           <View key={index} style={styles.userItem}>
             <Image
-              source={require('../../../assets/images/person.png')}
+              source={require('assets/images/person.png')}
               style={styles.profileIcon}
             />
             <Text style={styles.userName}>{user.name}</Text>

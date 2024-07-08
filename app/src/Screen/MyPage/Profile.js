@@ -11,6 +11,7 @@ import {
 import {launchImageLibrary} from 'react-native-image-picker';
 import {PERMISSIONS, request, check, RESULTS} from 'react-native-permissions';
 import api from '../../utils/api';
+import NavBar from 'Components/NavBar';
 
 const initialWaitRooms = [{name: '카이부캠방'}, {name: '키키'}];
 const initialIngRooms = [
@@ -103,7 +104,7 @@ const Profile = ({navigation}) => {
             <Image
               style={styles.profileImage}
               source={
-                photo ? photo : require('../../../assets/images/person.png')
+                photo ? photo : require('assets/images/person.png')
               }
               resizeMode="cover"
             />
@@ -132,7 +133,7 @@ const Profile = ({navigation}) => {
             {waitRooms.map((room, index) => (
               <View key={index} style={styles.roomItem}>
                 <Image
-                  source={require('../../../assets/images/person.png')}
+                  source={require('assets/images/person.png')}
                   style={styles.profileIcon}
                 />
                 <Text style={styles.roomName}>{room.name}</Text>
@@ -150,7 +151,7 @@ const Profile = ({navigation}) => {
             {ingRooms.map((room, index) => (
               <View key={index} style={styles.roomItem}>
                 <Image
-                  source={require('../../../assets/images/person.png')}
+                  source={require('assets/images/person.png')}
                   style={styles.profileIcon}
                 />
                 <Text style={styles.roomName}>{room.name}</Text>
@@ -165,26 +166,7 @@ const Profile = ({navigation}) => {
         </View>
       </ScrollView>
 
-      <View style={styles.navbar}>
-        <TouchableOpacity onPress={() => navigation.navigate('Stat')}>
-          <Image
-            source={require('../../../assets/images/statistics.png')}
-            style={styles.navIcon}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Main')}>
-          <Image
-            source={require('../../../assets/images/home.png')}
-            style={styles.navIcon}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-          <Image
-            source={require('../../../assets/images/myPage.png')}
-            style={styles.navIcon}
-          />
-        </TouchableOpacity>
-      </View>
+      <NavBar navigation={navigation} currentRoute={'Profile'}/>
     </View>
   );
 };
@@ -284,17 +266,6 @@ const styles = StyleSheet.create({
   },
   rightAlign: {
     marginLeft: 'auto',
-  },
-  navbar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 18,
-    borderTopWidth: 1,
-    borderTopColor: '#ddd',
-  },
-  navIcon: {
-    width: 30,
-    height: 30,
   },
 });
 
