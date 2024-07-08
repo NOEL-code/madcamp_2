@@ -1,8 +1,28 @@
 const { applyRoomHistory } = require("../models/applyRoomHistory");
 const { getUserById } = require("./userService");
 
+exports.getApplyHistory = async () => {
+  let applyHistory = await applyRoomHistory.find();
+
+  return applyHistory;
+};
+
+exports.getAppliedRoom = async (userId) => {
+  let appliedRooms = await applyRoomHistory
+    .find({ "members.userId": userId })
+    .populate("roomId members.userId");
+
+  return appliedRooms.map((room) => ({
+    roomId: room.roomId,
+    members: room.members.map((member) => ({
+      userId: member.userId,
+      status: member.status,
+    })),
+  }));
+};
+
 exports.getAppliedMember = async (roomId) => {
-  let appliedMember = await applyRoomHistory.findOne(roomId);
+  let appliedMember = await applyRoomHistory.findOne({ roomId });
 
   if (!appliedMember) return null;
 
@@ -37,6 +57,16 @@ exports.applyRoom = async (userId, roomId) => {
       status: member.status,
     })),
   };
+};
+
+exports.cancelApplication = async (userId, roomId) => {
+  let updatedRoom = await applyRoomHistory.findOneAndUpdate(
+    { roomId, "members.userId": userId },
+    { $set: { "members.$.status": 4 } },
+    { new: true }
+  );
+
+  return updatedRoom;
 };
 
 exports.acceptApplication = async (userId, roomId) => {

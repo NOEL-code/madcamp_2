@@ -1,27 +1,82 @@
-import React, {useState} from 'react';
-import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+} from 'react-native';
 import {launchCamera} from 'react-native-image-picker';
+import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 
 const CameraScreen = ({navigation}) => {
   const [photo, setPhoto] = useState(null);
 
+  useEffect(() => {
+    requestCameraPermission();
+  }, []);
+
+  const requestCameraPermission = async () => {
+    const result = await check(PERMISSIONS.ANDROID.CAMERA);
+    if (result !== RESULTS.GRANTED) {
+      const requestResult = await request(PERMISSIONS.ANDROID.CAMERA);
+      if (requestResult !== RESULTS.GRANTED) {
+        Alert.alert(
+          'Permission denied',
+          'You need to grant camera permissions to use this feature.',
+        );
+      }
+    }
+  };
+
   const handleCameraPress = () => {
-    launchCamera(
-      {
-        mediaType: 'photo',
-        cameraType: 'back',
-      },
-      response => {
-        if (response.didCancel) {
-          console.log('User cancelled image picker');
-        } else if (response.error) {
-          console.log('ImagePicker Error: ', response.error);
-        } else {
-          const source = {uri: response.assets[0].uri};
-          setPhoto(source);
-        }
-      },
-    );
+    check(PERMISSIONS.ANDROID.CAMERA).then(result => {
+      if (result === RESULTS.GRANTED) {
+        launchCamera(
+          {
+            mediaType: 'photo',
+            cameraType: 'back',
+          },
+          response => {
+            if (response.didCancel) {
+              console.log('User cancelled image picker');
+            } else if (response.errorCode) {
+              console.log('ImagePicker Error: ', response.errorMessage);
+            } else if (response.assets && response.assets.length > 0) {
+              const source = {uri: response.assets[0].uri};
+              setPhoto(source);
+            }
+          },
+        );
+      } else {
+        request(PERMISSIONS.ANDROID.CAMERA).then(newResult => {
+          if (newResult === RESULTS.GRANTED) {
+            launchCamera(
+              {
+                mediaType: 'photo',
+                cameraType: 'back',
+              },
+              response => {
+                if (response.didCancel) {
+                  console.log('User cancelled image picker');
+                } else if (response.errorCode) {
+                  console.log('ImagePicker Error: ', response.errorMessage);
+                } else if (response.assets && response.assets.length > 0) {
+                  const source = {uri: response.assets[0].uri};
+                  setPhoto(source);
+                }
+              },
+            );
+          } else {
+            Alert.alert(
+              'Permission denied',
+              'You need to grant camera permissions to use this feature.',
+            );
+          }
+        });
+      }
+    });
   };
 
   return (
@@ -37,7 +92,7 @@ const CameraScreen = ({navigation}) => {
             <Image source={photo} style={styles.photo} />
           ) : (
             <Image
-              source={require('assets/images/camera.png')}
+              source={require('../../../assets/images/camera.png')}
               style={styles.cameraIcon}
             />
           )}

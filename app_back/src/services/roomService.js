@@ -18,7 +18,7 @@ exports.getHostRooms = async (hostId) => {
 };
 
 exports.createRoom = async (roomInfo) => {
-  const { roomName, host, members } = roomInfo;
+  const { roomName, roomDescription, host, members } = roomInfo;
 
   try {
     // 멤버 유효성 검사
@@ -33,6 +33,7 @@ exports.createRoom = async (roomInfo) => {
     // 새로운 방 생성
     const newRoom = new Room({
       roomName,
+      roomDescription,
       host: host, // host의 userId를 그대로 저장
       members: validMembers,
     });
@@ -100,12 +101,12 @@ exports.addMembersToRoom = async (roomId, userIds) => {
   return { ...updatedRoom._doc, members: membersWithNames };
 };
 
-exports.updateRoomDescription = async (roomId, title, subtitle) => {
+exports.updateRoomDescription = async (roomId, roomName, roomDescription) => {
   const updatedRoom = await Room.findByIdAndUpdate(
     roomId,
     {
-      title: title,
-      subTitle: subtitle,
+      roomName: roomName,
+      roomDescription: roomDescription,
     },
     { new: true }
   );

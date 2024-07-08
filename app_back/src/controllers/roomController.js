@@ -94,10 +94,14 @@ exports.addMembersToRoom = async (req, res) => {
 
 exports.updateRoomDescription = async (req, res) => {
   const { roomId } = req.params;
-  const { title, subTitle } = req.body;
+  const { roomName, roomDescription } = req.body;
 
   try {
-    const updatedRoom = await updateRoomDescription(roomId, title, subTitle);
+    const updatedRoom = await updateRoomDescription(
+      roomId,
+      roomName,
+      roomDescription
+    );
     res.status(200).json(updatedRoom);
   } catch (err) {
     console.log(err.message);

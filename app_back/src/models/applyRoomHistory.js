@@ -12,7 +12,7 @@ const applyRoomHistorySchema = mongoose.Schema({
         ref: "User",
       },
       status: {
-        // 승락대기: 1, 승락: 2, 거절: 3
+        // 승락대기: 1, 승락: 2, 거절: 3, 신청자 취소: 4
         type: Number,
         default: 1,
       },

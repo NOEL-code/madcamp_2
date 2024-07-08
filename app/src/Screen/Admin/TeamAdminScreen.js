@@ -9,6 +9,7 @@ import {
   ScrollView,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
+import {useSelector} from 'react-redux';
 
 const initialUsers = [
   {name: '정우성', status: 1},
@@ -38,12 +39,12 @@ const statusStylesBox = {
 
 const TeamAdminScreen = ({navigation}) => {
   const [isEditMode, setIsEditMode] = useState(false);
-  const [isStatusEditMode, setIsStatusEditMode] = useState(false);
   const [title, setTitle] = useState('카이부캠 방');
   const [subTitle, setSubTitle] = useState('한 달만에 왕짱이되는 방');
   const [usersState, setUsersState] = useState(initialUsers);
   const [waitingUsers, setWaitingUsers] = useState(initialWaitingUsers);
   const [selectedTab, setSelectedTab] = useState('현황');
+  const currentUser = useSelector(state => state.user);
 
   const toggleEditMode = () => {
     setIsEditMode(!isEditMode);
@@ -154,7 +155,10 @@ const TeamAdminScreen = ({navigation}) => {
             ))}
             <View style={styles.cameraContainer}>
               <TouchableOpacity
-                onPress={() => navigation.navigate('CameraAdmin')}>
+                onPress={() =>
+                  // 예를 들어, ProfileScreen에서 CameraScreen으로 유저 정보를 전달합니다
+                  navigation.navigate('CameraScreen', {user: currentUser})
+                }>
                 <Image
                   style={styles.camera}
                   source={require('assets/images/camera.png')}
