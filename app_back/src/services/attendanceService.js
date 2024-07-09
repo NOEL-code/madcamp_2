@@ -3,14 +3,14 @@ const { getUserById } = require("./userService");
 
 exports.recordArrival = async (userId) => {
   const today = new Date();
-  const todayString = today.toLocaleDateString("en-CA"); // 로컬 시간대로 날짜 변환
-  const currentTimeString = today.toTimeString().split(" ")[0]; // 시간 부분만 문자열로 변환
+  const todayString = today.toLocaleDateString("en-CA");
+  const currentTimeString = today.toTimeString().split(" ")[0];
 
   const attendance = await Attendance.findOneAndUpdate(
     { userId, "records.date": { $ne: todayString } },
     {
       $push: { records: { date: todayString, arriveTime: currentTimeString } },
-    }, // arriveTime을 현재 시간으로 설정
+    },
     { new: true, upsert: true }
   );
 
@@ -24,12 +24,12 @@ exports.recordArrival = async (userId) => {
 
 exports.recordLeave = async (userId) => {
   const today = new Date();
-  const todayString = today.toLocaleDateString("en-CA"); // 로컬 시간대로 날짜 변환
-  const currentTimeString = today.toTimeString().split(" ")[0]; // 시간 부분만 문자열로 변환
+  const todayString = today.toLocaleDateString("en-CA");
+  const currentTimeString = today.toTimeString().split(" ")[0];
 
   const attendance = await Attendance.findOneAndUpdate(
     { userId, "records.date": todayString },
-    { $set: { "records.$.leaveTime": currentTimeString } }, // leaveTime을 현재 시간으로 설정
+    { $set: { "records.$.leaveTime": currentTimeString } },
     { new: true }
   );
 
@@ -43,12 +43,12 @@ exports.recordLeave = async (userId) => {
 
 exports.recordGoOut = async (userId) => {
   const today = new Date();
-  const todayString = today.toLocaleDateString("en-CA"); // 로컬 시간대로 날짜 변환
-  const currentTimeString = today.toTimeString().split(" ")[0]; // 시간 부분만 문자열로 변환
+  const todayString = today.toLocaleDateString("en-CA");
+  const currentTimeString = today.toTimeString().split(" ")[0];
 
   const attendance = await Attendance.findOneAndUpdate(
     { userId, "records.date": todayString },
-    { $push: { "records.$.away": { goOut: currentTimeString } } }, // goOut을 현재 시간으로 설정
+    { $push: { "records.$.away": { goOut: currentTimeString } } },
     { new: true }
   );
 
@@ -62,8 +62,8 @@ exports.recordGoOut = async (userId) => {
 
 exports.recordComeBack = async (userId) => {
   const today = new Date();
-  const todayString = today.toLocaleDateString("en-CA"); // 로컬 시간대로 날짜 변환
-  const currentTimeString = today.toTimeString().split(" ")[0]; // 시간 부분만 문자열로 변환
+  const todayString = today.toLocaleDateString("en-CA");
+  const currentTimeString = today.toTimeString().split(" ")[0];
 
   const attendance = await Attendance.findOneAndUpdate(
     {
@@ -73,7 +73,7 @@ exports.recordComeBack = async (userId) => {
       "records.away.comeBack": null,
     },
     {
-      $set: { "records.$[outer].away.$[inner].comeBack": currentTimeString }, // comeBack을 현재 시간으로 설정
+      $set: { "records.$[outer].away.$[inner].comeBack": currentTimeString },
     },
     {
       arrayFilters: [{ "outer.date": todayString }, { "inner.comeBack": null }],
@@ -90,7 +90,7 @@ exports.recordComeBack = async (userId) => {
 };
 
 exports.getAttendanceByDate = async (userId, date) => {
-  const dateString = new Date(date).toLocaleDateString("en-CA"); // 로컬 시간대로 날짜 변환
+  const dateString = new Date(date).toLocaleDateString("en-CA");
 
   const attendance = await Attendance.findOne(
     { userId, "records.date": dateString },

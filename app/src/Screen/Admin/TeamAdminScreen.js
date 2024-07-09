@@ -167,9 +167,9 @@ const TeamAdminScreen = ({ route, navigation }) => {
                 </View>
               </View>
             ))}
-            <View style={styles.cameraContainer}>
+            <View style={styles.cameraContainer}> 
               <TouchableOpacity
-                onPress={() => navigation.navigate('CameraAdmin')}>
+                onPress={() => navigation.navigate('CameraAdmin', {members: roomInfo.members})}>
                 <Image
                   style={styles.camera}
                   source={require('assets/images/camera.png')}

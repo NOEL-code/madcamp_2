@@ -16,6 +16,7 @@ import LogInScreen from './src/Screen/MyPage/LogIn';
 import SignUpScreen from './src/Screen/MyPage/SignUp';
 import ProfileScreen from './src/Screen/MyPage/Profile';
 import InviteRoomScreen from './src/Screen/Admin/InviteRoomScreen';
+import Toast from 'react-native-toast-message';
 
 const Stack = createStackNavigator();
 
@@ -86,6 +87,7 @@ const App = () => {
             options={{headerShown: false}}
           />
         </Stack.Navigator>
+        <Toast ref={(ref) => Toast.setRef(ref)} />
       </NavigationContainer>
     </Provider>
   );

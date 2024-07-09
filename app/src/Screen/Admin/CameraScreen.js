@@ -1,9 +1,35 @@
-import React, {useState} from 'react';
-import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, Text, Image, TouchableOpacity, StyleSheet, Alert} from 'react-native';
+import { TextInput } from 'react-native-gesture-handler';
 import {launchCamera} from 'react-native-image-picker';
+import Toast from 'react-native-toast-message';
 
-const CameraScreen = ({navigation}) => {
+const CameraScreen = ({route, navigation}) => {
+  const {members} = route.params;
+   const [inputName, setInputName] = useState('');
   const [photo, setPhoto] = useState(null);
+
+  useEffect(() => {
+    console.log("THis is memvbers: ", members) // 나이스 ㅋㅋㅋ
+  })
+
+  const checkMemberName = () => {
+    const memberExists = members.some(member => member.userId.name === inputName);
+
+    if (memberExists) {
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Member found!'
+      });
+    } else {
+      Toast.show({
+        type: 'error',
+        text1: 'Fail',
+        text2: 'Member not found!'
+      });
+    }
+  };
 
   const handleCameraPress = () => {
     launchCamera(
@@ -42,6 +68,15 @@ const CameraScreen = ({navigation}) => {
             />
           )}
         </View>
+      </TouchableOpacity>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter member name"
+        value={inputName}
+        onChangeText={setInputName}
+      />
+      <TouchableOpacity onPress={checkMemberName}>
+        <Text >Check Member</Text>
       </TouchableOpacity>
       <View style={styles.buttonsContainer}>
         <TouchableOpacity style={styles.button}>
