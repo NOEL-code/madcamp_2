@@ -48,10 +48,9 @@ const LogIn = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>로그인</Text>
+      <Text style ={styles.subTitle}>환영합니다!</Text>
 
-      <View style={styles.inputContainer}>
         <View style={styles.inputWrapper}>
-          <Text style={styles.label}>이메일</Text>
           <TextInput
             style={styles.input}
             placeholder="이메일"
@@ -61,7 +60,6 @@ const LogIn = ({ navigation }) => {
           />
         </View>
         <View style={styles.inputWrapper}>
-          <Text style={styles.label}>비밀번호</Text>
           <TextInput
             style={styles.input}
             placeholder="비밀번호"
@@ -71,17 +69,19 @@ const LogIn = ({ navigation }) => {
             onChangeText={setPassword}
           />
         </View>
-      </View>
 
-      <TouchableOpacity style={styles.signUpButton} onPress={handleLogin}>
-        <Text style={styles.signUpButtonText}>로그인</Text>
+      <TouchableOpacity style={styles.logInButton} onPress={handleLogin}>
+        <Text style={styles.logInButtonText}>로그인</Text>
       </TouchableOpacity>
 
+      <View style={styles.signUpContainer}>
+      <Text style = {styles.question}>아직 회원이 아니신가요?</Text>
       <TouchableOpacity
-        style={styles.signUpButton}
         onPress={() => navigation.navigate('SignUp')}>
-        <Text style={styles.signUpButtonText}>회원가입</Text>
+        <Text style={styles.signUpText}>회원가입</Text>
       </TouchableOpacity>
+      </View>
+      
     </View>
   );
 };
@@ -92,55 +92,67 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 24,
     paddingTop: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: -50,
   },
-  backButton: {
-    position: 'absolute',
-    top: 20,
-    left: 20,
-  },
-  backButtonText: {
-    fontSize: 20,
-    color: '#000',
-  },
-  title: {
-    fontSize: 24,
+  title: { // 로그인
+    fontSize: 30,
     fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  subTitle: { // 환영합니다 
+    fontSize: 18,
     textAlign: 'center',
     marginBottom: 40,
   },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  inputWrapper: {
-    marginBottom: 15,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000',
+  inputWrapper: { // 아이디 비번 입력창임 ㅋㅋ
     marginBottom: 15,
   },
   input: {
-    height: 50,
+    height: 70,
+    width: 350,
     borderColor: '#E5E5EA',
-    borderWidth: 1,
-    borderRadius: 14,
+    borderWidth: 2,
+    borderRadius: 35,
     backgroundColor: '#FFFFFF',
-    paddingHorizontal: 10,
+    paddingHorizontal: 30,
   },
-  signUpButton: {
-    marginTop: 30,
-    height: 50,
+  logInButton: {
+    marginTop: 10,
+    marginBottom: 30,
+    width: 350,
+    height: 70,
     backgroundColor: '#03CF5D',
-    borderRadius: 25,
+    borderRadius: 35,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  signUpButtonText: {
+  logInButtonText: {
     color: '#FFF',
     fontWeight: 'bold',
     fontSize: 18,
   },
+  signUpContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+
+  },
+  question: { // 아직 회원이 아니신가요? 
+    color: '#5F5F5F',
+    fontsize: 10,
+    marginBottom: 5,
+    alignItems: 'center'
+  },
+  signUpText: { // 회원가입
+    color: '#5F5F5F',
+    borderBottomWidth: 1,
+    borderBottomColor: '#5F5F5F',
+    fontsize: 10,
+    alignItems: 'center',
+    fontWeight: 'bold'
+  }
 });
 
 export default LogIn;
