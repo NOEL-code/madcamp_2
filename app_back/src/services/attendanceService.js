@@ -1,6 +1,21 @@
 const { Attendance } = require("../models/Attendance");
 const { getUserById } = require("./userService");
 
+exports.getAttendance = async (userId) => {
+  try {
+    const attendanceRecords = await Attendance.find({ userId }).lean().exec();
+    return attendanceRecords.map(record => ({
+      date: record.records[0].date,
+      arriveTime: record.records[0].arriveTime,
+      departTime: record.records[0].departTime,
+      leave: record.records[0].leave
+    }));
+  } catch (error) {
+    console.error('Error getting attendance:', error);
+    throw new Error('Failed to get attendance');
+  }
+};
+
 exports.recordArrival = async (userId) => {
   const today = new Date();
   const todayString = today.toLocaleDateString("en-CA");
@@ -62,74 +77,73 @@ exports.recordLeave = async (userId) => {
   }
 };
 
-
 exports.recordGoOut = async (userId) => {
-const today = new Date();
-const todayString = today.toLocaleDateString("en-CA");
-const currentTimeString = today.toTimeString().split(" ")[0];
+  const today = new Date();
+  const todayString = today.toLocaleDateString("en-CA");
+  const currentTimeString = today.toTimeString().split(" ")[0];
 
-const attendance = await Attendance.findOneAndUpdate(
-  { userId, "records.date": todayString },
-  { $push: { "records.$.leave": { goOut: currentTimeString } } },
-  { new: true }
-);
+  const attendance = await Attendance.findOneAndUpdate(
+    { userId, "records.date": todayString },
+    { $push: { "records.$.leave": { goOut: currentTimeString } } },
+    { new: true }
+  );
 
-const user = await getUserById(userId);
+  const user = await getUserById(userId);
 
-return {
-  ...attendance.toObject(),
-  userName: user.name,
-};
+  return {
+    ...attendance.toObject(),
+    userName: user.name,
+  };
 };
 
 exports.recordComeBack = async (userId) => {
-const today = new Date();
-const todayString = today.toLocaleDateString("en-CA");
-const currentTimeString = today.toTimeString().split(" ")[0];
+  const today = new Date();
+  const todayString = today.toLocaleDateString("en-CA");
+  const currentTimeString = today.toTimeString().split(" ")[0];
 
-const attendance = await Attendance.findOneAndUpdate(
-  {
-    userId,
-    "records.date": todayString,
-    "records.leave.goOut": { $ne: null },
-    "records.leave.comeBack": null,
-  },
-  {
-    $set: { "records.$[outer].leave.$[inner].comeBack": currentTimeString },
-  },
-  {
-    arrayFilters: [{ "outer.date": todayString }, { "inner.comeBack": null }],
-    new: true,
-  }
-);
+  const attendance = await Attendance.findOneAndUpdate(
+    {
+      userId,
+      "records.date": todayString,
+      "records.leave.goOut": { $ne: null },
+      "records.leave.comeBack": null,
+    },
+    {
+      $set: { "records.$[outer].leave.$[inner].comeBack": currentTimeString },
+    },
+    {
+      arrayFilters: [{ "outer.date": todayString }, { "inner.comeBack": null }],
+      new: true,
+    }
+  );
 
-const user = await getUserById(userId);
+  const user = await getUserById(userId);
 
-return {
-  ...attendance.toObject(),
-  userName: user.name,
-};
+  return {
+    ...attendance.toObject(),
+    userName: user.name,
+  };
 };
 
 exports.getAttendanceByDate = async (userId, date) => {
-const dateString = new Date(date).toLocaleDateString("en-CA");
+  const dateString = new Date(date).toLocaleDateString("en-CA");
 
-const attendance = await Attendance.findOne(
-  { userId, "records.date": dateString },
-  { "records.$": 1 }
-)
-  .populate("userId")
-  .populate("roomId");
-if (!attendance) {
-  throw new Error("Attendance record not found");
-}
+  const attendance = await Attendance.findOne(
+    { userId, "records.date": dateString },
+    { "records.$": 1 }
+  )
+    .populate("userId")
+    .populate("roomId");
+  if (!attendance) {
+    throw new Error("Attendance record not found");
+  }
 
-const user = await getUserById(userId);
+  const user = await getUserById(userId);
 
-return {
-  ...attendance.toObject(),
-  userName: user.name,
-};
+  return {
+    ...attendance.toObject(),
+    userName: user.name,
+  };
 };
 
 exports.getCurrentStatus = async (userId) => {

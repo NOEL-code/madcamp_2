@@ -17,7 +17,6 @@ const getMarkedDates = (workDays, selected) => {
   });
   if (selected) {
     markedDates[selected] = {
-
       ...markedDates[selected],
       selected: true,
       selectedColor: '#03CF5D',
@@ -26,23 +25,41 @@ const getMarkedDates = (workDays, selected) => {
   return markedDates;
 };
 
-const calculateTotalTime = (on, off, away) => {
-  const onTime = new Date(`1970-01-01T${on}`);
-  const offTime = new Date(`1970-01-01T${off}`);
+const calculateTotalTime = (date, on, off, away) => {
+  const onTime = new Date(`${date}T${on}`);
+  let offTime = off ? new Date(`${date}T${off}`) : new Date();
+  
+  // 현재 시간을 KST로 변환
+  if (!off) {
+    offTime.setHours(offTime.getHours() + 9);
+  }
+
+  console.log(`onTime: ${onTime}, offTime: ${offTime}`);
 
   const totalAwayTime = away.reduce((total, period) => {
-    const awayTime = new Date(`1970-01-01T${period.start}`);
-    const comebackTime = new Date(`1970-01-01T${period.end}`);
+    const awayTime = new Date(`${date}T${period.start}`);
+    const comebackTime = period.end ? new Date(`${date}T${period.end}`) : new Date();
+    
+    // 복귀 시간이 없는 경우 현재 시간으로 설정 (KST 변환 포함)
+    if (!period.end) {
+      comebackTime.setHours(comebackTime.getHours() + 9);
+    }
+    
+    console.log(`awayTime: ${awayTime}, comebackTime: ${comebackTime}`);
     return total + (comebackTime - awayTime);
   }, 0);
 
   const totalTime = offTime - onTime - totalAwayTime;
+  console.log(`totalTime: ${totalTime}, totalAwayTime: ${totalAwayTime}`);
+  
   const hours = Math.floor(totalTime / (1000 * 60 * 60));
   const minutes = Math.floor((totalTime % (1000 * 60 * 60)) / (1000 * 60));
 
-  return `${hours}시간 ${minutes}분`;
+  // 마이너스 값이 나오는 경우 0으로 처리
+  const result = `${Math.max(0, hours)}시간 ${Math.max(0, minutes)}분`;
+  console.log(`Total Time: ${result}`);
+  return result;
 };
-
 const calculatePercentage = time => {
   const [hours, minutes, seconds] = time.split(':').map(Number);
   const timeInSeconds = hours * 3600 + minutes * 60 + seconds;
@@ -53,7 +70,7 @@ const calculatePercentage = time => {
   return (adjustedTimeInSeconds / dayDurationInSeconds) * 100;
 };
 
-const Stat = ({ navigation, userId }) => {
+const Stat = ({ navigation }) => {
   const today = new Date().toISOString().split('T')[0]; // 현재 날짜를 yyyy-mm-dd 형식으로 가져오기
   const [selected, setSelected] = useState(today);
   const [selectedWorkDay, setSelectedWorkDay] = useState(null);
@@ -121,6 +138,7 @@ const Stat = ({ navigation, userId }) => {
               <Text style={styles.totalTimeText}>
                 총{' '}
                 {calculateTotalTime(
+                  selectedWorkDay.date,
                   selectedWorkDay.on,
                   selectedWorkDay.off,
                   selectedWorkDay.away,
@@ -130,24 +148,26 @@ const Stat = ({ navigation, userId }) => {
                 <Text style={styles.labelText}>출근</Text>
                 <Text style={styles.timeText}>{selectedWorkDay.on}</Text>
                 <Text style={styles.labelText}>퇴근</Text>
-                <Text style={styles.timeText}>{selectedWorkDay.off}</Text>
+                <Text style={styles.timeText}>{selectedWorkDay.off || '-'}</Text>
               </View>
               <View style={styles.progressBarContainer}>
                 <View style={styles.progressBar}>
                   {/* 출근부터 첫 외출 전까지 */}
-                  <View
-                    style={[
-                      styles.timeSegment,
-                      {
-                        left: `${calculatePercentage(selectedWorkDay.on)}%`,
-                        width: `${
-                          calculatePercentage(selectedWorkDay.away[0].start) -
-                          calculatePercentage(selectedWorkDay.on)
-                        }%`,
-                        backgroundColor: '#03CF5D',
-                      },
-                    ]}
-                  />
+                  {selectedWorkDay.away.length > 0 && (
+                    <View
+                      style={[
+                        styles.timeSegment,
+                        {
+                          left: `${calculatePercentage(selectedWorkDay.on)}%`,
+                          width: `${
+                            calculatePercentage(selectedWorkDay.away[0].start) -
+                            calculatePercentage(selectedWorkDay.on)
+                          }%`,
+                          backgroundColor: '#03CF5D',
+                        },
+                      ]}
+                    />
+                  )}
                   {/* 외출 복귀 후 다음 외출 전까지 */}
                   {selectedWorkDay.away.map((period, index) => (
                     <React.Fragment key={index}>
@@ -157,7 +177,7 @@ const Stat = ({ navigation, userId }) => {
                           {
                             left: `${calculatePercentage(period.start)}%`,
                             width: `${
-                              calculatePercentage(period.end) -
+                              calculatePercentage(period.end || new Date().toTimeString().split(' ')[0]) -
                               calculatePercentage(period.start)
                             }%`,
                             backgroundColor: '#DFDFDF',
@@ -169,11 +189,11 @@ const Stat = ({ navigation, userId }) => {
                           style={[
                             styles.timeSegment,
                             {
-                              left: `${calculatePercentage(period.end)}%`,
+                              left: `${calculatePercentage(period.end || new Date().toTimeString().split(' ')[0])}%`,
                               width: `${
                                 calculatePercentage(
                                   selectedWorkDay.away[index + 1].start,
-                                ) - calculatePercentage(period.end)
+                                ) - calculatePercentage(period.end || new Date().toTimeString().split(' ')[0])
                               }%`,
                               backgroundColor: '#03CF5D',
                             },
@@ -184,10 +204,10 @@ const Stat = ({ navigation, userId }) => {
                           style={[
                             styles.timeSegment,
                             {
-                              left: `${calculatePercentage(period.end)}%`,
+                              left: `${calculatePercentage(period.end || new Date().toTimeString().split(' ')[0])}%`,
                               width: `${
-                                calculatePercentage(selectedWorkDay.off) -
-                                calculatePercentage(period.end)
+                                calculatePercentage(selectedWorkDay.off || new Date().toTimeString().split(' ')[0]) -
+                                calculatePercentage(period.end || new Date().toTimeString().split(' ')[0])
                               }%`,
                               backgroundColor: '#03CF5D',
                             },
