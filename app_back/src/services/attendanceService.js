@@ -131,3 +131,29 @@ return {
   userName: user.name,
 };
 };
+
+exports.getCurrentStatus = async (userId) => {
+  const today = new Date();
+  const todayString = today.toLocaleDateString("en-CA");
+
+  const attendance = await Attendance.findOne({ userId, "records.date": todayString });
+
+  if (!attendance) {
+    return { status: 3 }; // 퇴근 (출석 기록 없음)
+  }
+
+  const record = attendance.records[0];
+
+  if (!record.arriveTime) {
+    return { status: 3 }; // 퇴근 (출근 기록 없음)
+  }
+
+  if (!record.departTime) {
+    if (record.leave.length > 0 && !record.leave[record.leave.length - 1].comeBack) {
+      return { status: 2 }; // 자리비움 (외출 중 복귀 기록 없음)
+    }
+    return { status: 1 }; // 출석 (출근 기록 있음, 퇴근 기록 없음)
+  }
+
+  return { status: 3 }; // 퇴근 (퇴근 기록 있음)
+};

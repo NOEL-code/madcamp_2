@@ -4,7 +4,8 @@ const {
   recordLeave,
   recordGoOut,
   recordComeBack,
-  getAttendanceByDate
+  getAttendanceByDate,
+  getCurrentStatus
 } = require("../services/attendanceService");
 const { getUserById } = require('../services/userService');
 
@@ -70,5 +71,15 @@ exports.getAttendanceByDate = async (req, res) => {
     res.status(200).json(attendance);
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+exports.getCurrentStatus = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const status = await getCurrentStatus(userId);
+    res.status(200).json(status);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };

@@ -14,16 +14,14 @@ import { useSelector } from 'react-redux';
 
 const statusStyles = {
   1: { color: '#03CF5D', text: '출석' },
-  2: { color: '#FF0000', text: '결석' },
-  3: { color: '#FFE600', text: '자리비움' },
-  4: { color: '#D9D9D9', text: '퇴근' },
+  2: { color: '#FFE600', text: '자리비움' },
+  3: { color: '#D9D9D9', text: '퇴근' },
 };
 
 const statusBoxStyles = {
   1: { backgroundColor: '#DFF5E9' },
-  2: { backgroundColor: '#FFE2E2' },
-  3: { backgroundColor: '#FFF4D5' },
-  4: { backgroundColor: '#F4F4F4' },
+  2: { backgroundColor: '#FFF4D5' },
+  3: { backgroundColor: '#F4F4F4' },
 };
 
 const TeamAdminScreen = ({ route, navigation }) => {
@@ -42,10 +40,16 @@ const TeamAdminScreen = ({ route, navigation }) => {
     const fetchRoomInfo = async () => {
       try {
         const response = await api.get(`/rooms/${roomId}`);
+        const membersWithStatus = await Promise.all(
+          response.data.members.map(async (member) => {
+            const statusResponse = await api.get(`/attendance/status/${member.userId._id}`);
+            return { ...member, status: statusResponse.data.status };
+          })
+        );
         setRoomInfo(response.data);
         setTitle(response.data.roomName);
         setSubTitle(response.data.subTitle);
-        setUsersState(response.data.members);
+        setUsersState(membersWithStatus);
         setWaitingUsers(response.data.waitingList || []);
       } catch (error) {
         console.error('Failed to fetch room info:', error);
@@ -169,7 +173,7 @@ const TeamAdminScreen = ({ route, navigation }) => {
             ))}
             <View style={styles.cameraContainer}> 
               <TouchableOpacity
-                onPress={() => navigation.navigate('CameraAdmin', { members: roomInfo.members })}>
+                onPress={() => navigation.navigate('CameraAdmin', { members: roomInfo.members, roomId })}>
                 <Image
                   style={styles.camera}
                   source={require('assets/images/camera.png')}
@@ -219,9 +223,8 @@ const TeamAdminScreen = ({ route, navigation }) => {
                   style={styles.picker}
                   onValueChange={value => handleStatusChange(value, index)}>
                   <Picker.Item label="출석" value={1} />
-                  <Picker.Item label="결석" value={2} />
-                  <Picker.Item label="자리비움" value={3} />
-                  <Picker.Item label="퇴근" value={4} />
+                  <Picker.Item label="자리비움" value={2} />
+                  <Picker.Item label="퇴근" value={3} />
                 </Picker>
                 <TouchableOpacity onPress={() => deleteUser(index)}>
                   <Text style={styles.delete}>삭제</Text>

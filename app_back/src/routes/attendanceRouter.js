@@ -5,7 +5,8 @@ const {
   recordLeave,
   recordGoOut,
   recordComeBack,
-  getAttendanceByDate
+  getAttendanceByDate,
+  getCurrentStatus
 } = require("../controllers/attendanceController");
 const authenticateToken = require('../middlewares/authenticateToken');
 
@@ -17,5 +18,6 @@ router.post("/leave/:userId",  recordLeave); // 퇴근 기록
 router.post("/goout/:userId", recordGoOut); // 외출 기록
 router.post("/comeback/:userId", recordComeBack); // 복귀 기록
 router.get("/:date", authenticateToken, getAttendanceByDate); // 특정 날짜의 출결 기록 받기
+router.get("/status/:userId", authenticateToken, getCurrentStatus); //팀원의 현재 상태 받기
 
 module.exports = router;

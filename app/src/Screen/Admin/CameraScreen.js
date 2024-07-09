@@ -1,14 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  TextInput,
+  StyleSheet,
+  Alert,
+} from 'react-native';
 import { launchCamera } from 'react-native-image-picker';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import { useSelector } from 'react-redux';
-import { TextInput } from 'react-native-gesture-handler';
-import api,  from '../../utils/api'; // Adjust the import path as needed
-import { verifyUserImage } from '../../Service/user';
+import api, { verifyUserImage } from '../../utils/api'; // Adjust the import path as needed
 
 const CameraScreen = ({ route, navigation }) => {
-  const { members } = route.params;
+  const { members, roomId } = route.params;
   const [inputName, setInputName] = useState('');
   const [photo, setPhoto] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
@@ -56,7 +62,14 @@ const CameraScreen = ({ route, navigation }) => {
       const response = await api.post(`/attendance/${action}/${selectedUserId}`);
       if (response.status === 200) {
         console.log(`success: ${action} recorded!`);
-        Alert.alert('성공', `${action} 기록 완료!`);
+        Alert.alert('성공', `${action} 기록 완료!`, [
+          {
+            text: '확인',
+            onPress: () => {
+              navigation.navigate('TeamAdmin', { roomId });
+            }
+          }
+        ]);
       } else {
         console.log(`fail: Unable to record ${action}!`);
         Alert.alert('실패', `${action} 기록 실패!`);
