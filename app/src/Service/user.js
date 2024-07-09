@@ -54,7 +54,7 @@ export const verifyUserImage = async (imageUri, userId) => {
   const formData = new FormData();
   formData.append('file', {
     uri: imageUri,
-    type: 'image/jpeg', // Adjust the type if necessary
+    type: 'image/jpeg',
     name: 'photo.jpg',
   });
   formData.append('userId', userId);
