@@ -32,18 +32,18 @@ const SignUp = ({ navigation }) => {
           type: photo.type,
           name: photo.fileName,
         });
-  
+
         console.log('Uploading image...');
         const uploadResponse = await api.post('/users/create/image', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         });
-  
+
         console.log('Image uploaded:', uploadResponse.data);
         photoUrl = uploadResponse.data.imageUrl;
       }
-  
+
       console.log('Registering user...');
       const response = await api.post('/users/register', {
         userEmail: email,
@@ -52,20 +52,20 @@ const SignUp = ({ navigation }) => {
         phoneNumber: phoneNumber,
         photoUrl: photoUrl
       });
-  
+
       console.log('User registered:', response.data);
       const { accessToken, refreshToken } = response.data;
-  
+
       if (!accessToken || !refreshToken) {
         throw new Error('Invalid response from server');
       }
-  
+
       await AsyncStorage.setItem('accessToken', accessToken);
       await AsyncStorage.setItem('refreshToken', refreshToken);
       navigation.navigate('LogIn');
     } catch (error) {
       console.error('SignUp error', error);
-  
+
       if (error.response) {
         console.log('Error response data:', error.response.data); // 오류 응답 데이터 로그
         Alert.alert(
@@ -116,14 +116,15 @@ const SignUp = ({ navigation }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Image
-          source={require('assets/images/back.png')}
-          style={styles.backIcon}
-        />
-      </TouchableOpacity>
-
-      <Text style={styles.title}>회원가입</Text>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Image
+            source={require('assets/images/back.png')}
+            style={styles.backIcon}
+          />
+        </TouchableOpacity>
+        <Text style={styles.title}>회원가입</Text>
+      </View>
 
       <View style={styles.inputWrapper}>
         <Text style={styles.label}>이름</Text>
@@ -186,6 +187,7 @@ const SignUp = ({ navigation }) => {
       </View>
 
       <TouchableOpacity style={styles.arrowButton} onPress={handleSignUp}>
+        <Text style={styles.arrowButtonText}>회원가입</Text>
         <Text style={styles.arrowButtonText}>→</Text>
       </TouchableOpacity>
     </ScrollView>
@@ -196,26 +198,44 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     paddingHorizontal: 24,
-    paddingTop: 60,
     backgroundColor: '#FFFFFF',
+    paddingTop: 40,
+    alignItems: 'center',
+  },
+  header: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  backIcon: {
+    width: 24,
+    height: 24,
+    marginRight: 10,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
   },
   inputWrapper: {
     marginBottom: 20,
+    width: '100%',
+    alignItems: 'center',
   },
   label: {
     fontSize: 18,
     marginBottom: 5,
+    marginLeft: 30,
+    alignSelf: 'flex-start',
   },
   input: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#00C853',
-    paddingVertical: 5,
-    fontSize: 16,
+    height: 50,
+    width: 300,
+    borderColor: '#E5E5EA',
+    borderWidth: 2,
+    borderRadius: 25,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 20,
   },
   imagePicker: {
     borderWidth: 1,
@@ -225,6 +245,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     height: 150,
+    width: 300,
   },
   imagePickerText: {
     color: '#00C853',
@@ -235,20 +256,19 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   arrowButton: {
-    alignSelf: 'flex-end',
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#00C853',
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderRadius: 20,
+    borderRadius: 25,
+    marginTop: 20,
   },
   arrowButtonText: {
     color: '#FFFFFF',
-    fontSize: 24,
-  },
-  backIcon: {
-    width: 24,
-    height: 24,
-    marginBottom: 20,
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginRight: 5,
   },
 });
 
