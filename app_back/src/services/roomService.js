@@ -1,7 +1,6 @@
 const { Room } = require("../models/Room");
 const { getUserById } = require("./userService");
 const { sendInvite } = require("./invitedRoomService");
-const mongoose = require("mongoose");
 
 exports.getRooms = async () => {
   let rooms = await Room.find();
@@ -19,7 +18,7 @@ exports.getHostRooms = async (hostId) => {
 };
 
 exports.createRoom = async (roomInfo) => {
-  const { roomName, host, members } = roomInfo;
+  const { roomName, roomDescription, host, members } = roomInfo;
 
   try {
     // 멤버 유효성 검사
@@ -27,14 +26,15 @@ exports.createRoom = async (roomInfo) => {
     for (const member of members) {
       const user = await getUserById(member.userId);
       if (user) {
-        validMembers.push(new mongoose.Types.ObjectId(member.userId));
+        validMembers.push({ userId: member.userId }); // 객체 형식으로 저장
       }
     }
 
     // 새로운 방 생성
     const newRoom = new Room({
       roomName,
-      host: new mongoose.Types.ObjectId(host), // host도 ObjectId로 변환
+      roomDescription,
+      host: host, // host의 userId를 그대로 저장
       members: validMembers,
     });
 
@@ -45,19 +45,6 @@ exports.createRoom = async (roomInfo) => {
     console.error("Failed to create room:", error);
     throw error; // 에러를 호출한 쪽에서 처리할 수 있도록 던짐
   }
-  // const newRoom = new Room({
-  //   roomName,
-  //   host,
-  //   members: members.map((member) => member.userId),
-  // });
-
-  // const createdRoom = await newRoom.save();
-  // // const createdRoomId = createdRoom._id;
-
-  // const invitingMembersId = members.map((member) => member.userId);
-  // await sendInvite(invitingMembersId, createdRoomId);
-
-  // return createdRoom;
 };
 
 exports.deleteRoomById = async (roomId) => {
@@ -114,12 +101,12 @@ exports.addMembersToRoom = async (roomId, userIds) => {
   return { ...updatedRoom._doc, members: membersWithNames };
 };
 
-exports.updateRoomDescription = async (roomId, title, subtitle) => {
+exports.updateRoomDescription = async (roomId, roomName, roomDescription) => {
   const updatedRoom = await Room.findByIdAndUpdate(
     roomId,
     {
-      title: title,
-      subTitle: subtitle,
+      roomName: roomName,
+      roomDescription: roomDescription,
     },
     { new: true }
   );
@@ -137,3 +124,12 @@ exports.updateRoomDescription = async (roomId, title, subtitle) => {
 
   return { ...updatedRoom._doc, members: membersWithNames };
 };
+
+exports.getRoomInfo = async (roomId) => {
+  const room = await Room.findById(roomId).populate('members.userId')
+  if (!room) {
+    throw new Error("Room not found");
+  }
+  return room;
+};
+

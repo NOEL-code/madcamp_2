@@ -32,16 +32,19 @@ const SignUp = ({ navigation }) => {
           type: photo.type,
           name: photo.fileName,
         });
-
+  
+        console.log('Uploading image...');
         const uploadResponse = await api.post('/users/create/image', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         });
-
+  
+        console.log('Image uploaded:', uploadResponse.data);
         photoUrl = uploadResponse.data.imageUrl;
       }
-
+  
+      console.log('Registering user...');
       const response = await api.post('/users/register', {
         userEmail: email,
         userPassword: password,
@@ -49,18 +52,20 @@ const SignUp = ({ navigation }) => {
         phoneNumber: phoneNumber,
         photoUrl: photoUrl
       });
-
-      console.log(response.data);
+  
+      console.log('User registered:', response.data);
       const { accessToken, refreshToken } = response.data;
-
+  
       if (!accessToken || !refreshToken) {
         throw new Error('Invalid response from server');
       }
-
+  
       await AsyncStorage.setItem('accessToken', accessToken);
       await AsyncStorage.setItem('refreshToken', refreshToken);
       navigation.navigate('LogIn');
     } catch (error) {
+      console.error('SignUp error', error);
+  
       if (error.response) {
         console.log('Error response data:', error.response.data); // 오류 응답 데이터 로그
         Alert.alert(
@@ -70,7 +75,6 @@ const SignUp = ({ navigation }) => {
       } else {
         Alert.alert('회원가입 실패', '서버와의 통신에 문제가 발생했습니다.');
       }
-      console.error('SignUp error', error);
     }
   };
 

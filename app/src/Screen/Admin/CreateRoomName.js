@@ -7,24 +7,28 @@ import {
   TextInput,
   StyleSheet,
   Modal,
+  ScrollView,
 } from 'react-native';
 import {useSelector} from 'react-redux';
 import api from '../../utils/api';
 
 const CreateRoomNameScreen = ({navigation}) => {
   const [roomName, setRoomName] = useState('');
-  const [charCount, setCharCount] = useState(0);
+  const [roomDescription, setDescription] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const {memberIds} = useSelector(state => state.createRoom);
   const currentUser = useSelector(state => state.user); // currentUser를 가져옴
 
   console.log(memberIds);
 
-  const handleInputChange = text => {
+  const handleNameChange = text => {
     if (text.length <= 9) {
       setRoomName(text);
-      setCharCount(text.length);
     }
+  };
+
+  const handleDescriptionChange = text => {
+    setDescription(text);
   };
 
   const handleSubmit = async () => {
@@ -32,6 +36,7 @@ const CreateRoomNameScreen = ({navigation}) => {
       try {
         await api.post('/rooms/create', {
           roomName,
+          roomDescription,
           host: currentUser.id,
           members: memberIds.map(id => ({userId: id})),
         });
@@ -48,7 +53,7 @@ const CreateRoomNameScreen = ({navigation}) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
@@ -65,9 +70,18 @@ const CreateRoomNameScreen = ({navigation}) => {
           placeholder="방 이름"
           placeholderTextColor="#888"
           value={roomName}
-          onChangeText={handleInputChange}
+          onChangeText={handleNameChange}
         />
-        <Text style={styles.charCount}>{charCount}/9</Text>
+
+        <Text style={styles.config}>방 설명을 작성해 주세요.</Text>
+        <TextInput
+          style={styles.descriptionInput}
+          placeholder="방 설명"
+          placeholderTextColor="#888"
+          value={roomDescription}
+          onChangeText={handleDescriptionChange}
+          multiline
+        />
 
         <TouchableOpacity
           style={[styles.button, !roomName.trim() && styles.buttonDisabled]}
@@ -91,13 +105,13 @@ const CreateRoomNameScreen = ({navigation}) => {
           </View>
         </View>
       </Modal>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: '#fff',
   },
   create: {
@@ -139,6 +153,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     width: '80%',
     fontSize: 16,
+    marginTop: 20,
     marginBottom: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -153,6 +168,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0f0f0',
     fontSize: 16,
     textAlign: 'center',
+  },
+  descriptionInput: {
+    width: '80%',
+    height: 100,
+    margin: 15,
+    padding: 10,
+    borderRadius: 10,
+    backgroundColor: '#f0f0f0',
+    fontSize: 16,
+    textAlignVertical: 'top',
   },
   charCount: {
     fontSize: 16,

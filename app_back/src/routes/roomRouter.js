@@ -8,6 +8,7 @@ const {
   removeMemberFromRoom,
   updateRoomDescription,
   deleteRoomById,
+  getRoomInfo
 } = require("../controllers/roomController");
 
 const router = express.Router();
@@ -27,5 +28,8 @@ router.delete("/:roomId/member/:memberId", removeMemberFromRoom); // 멤버 삭�
 router.put("/:roomId", updateRoomDescription); //방 제목 업데이트
 
 router.delete("/:roomId", deleteRoomById); // 방 삭제
+
+router.get("/:roomId", getRoomInfo); // 특정 방의 멤버 리스트 가져오기
+
 
 module.exports = router;
