@@ -1,13 +1,15 @@
 const { applyRoomHistory } = require("../models/applyRoomHistory");
 const { getUserById } = require("./userService");
+const Room = require("../models/Room");
 
 exports.getApplyHistory = async () => {
+  console.log("Fetching apply history");
   let applyHistory = await applyRoomHistory.find();
-
   return applyHistory;
 };
 
 exports.getAppliedRoom = async (userId) => {
+  console.log(`Fetching applied rooms for userId: ${userId}`);
   let appliedRooms = await applyRoomHistory
     .find({ "members.userId": userId })
     .populate("roomId members.userId");
@@ -22,10 +24,13 @@ exports.getAppliedRoom = async (userId) => {
 };
 
 exports.getAppliedMember = async (roomId) => {
-  console.log("Fetching applied members for roomId:", roomId); // 추가된 로그
+  console.log(`Fetching applied members for roomId: ${roomId}`);
   let appliedMember = await applyRoomHistory.findOne({ roomId });
 
-  if (!appliedMember) return null;
+  if (!appliedMember) {
+    console.log("No applied members found");
+    return null;
+  }
 
   const memberDetails = await Promise.all(
     appliedMember.members.map(async (member) => {
@@ -40,7 +45,9 @@ exports.getAppliedMember = async (roomId) => {
 
   return { roomId: appliedMember.roomId, members: memberDetails };
 };
+
 exports.applyRoom = async (userId, roomId) => {
+  console.log(`Applying room for userId: ${userId}, roomId: ${roomId}`);
   let appliedRoom = await applyRoomHistory.findOneAndUpdate(
     { roomId },
     { $push: { members: { userId, status: 1 } } },
@@ -60,6 +67,7 @@ exports.applyRoom = async (userId, roomId) => {
 };
 
 exports.cancelApplication = async (userId, roomId) => {
+  console.log(`Cancelling application for userId: ${userId}, roomId: ${roomId}`);
   let updatedRoom = await applyRoomHistory.findOneAndUpdate(
     { roomId, "members.userId": userId },
     { $set: { "members.$.status": 4 } },
@@ -89,6 +97,7 @@ exports.acceptApplication = async (userId, roomId) => {
 };
 
 exports.rejectApplication = async (userId, roomId) => {
+  console.log(`Rejecting application for userId: ${userId}, roomId: ${roomId}`);
   let updatedRoom = await applyRoomHistory.findOneAndUpdate(
     { roomId, "members.userId": userId },
     { $set: { "members.$.status": 3 } },
@@ -108,12 +117,14 @@ exports.rejectApplication = async (userId, roomId) => {
 };
 
 exports.getWaitingUsersByRoomId = async (roomId) => {
+  console.log(`Fetching waiting users for roomId: ${roomId}`);
   const waitingUsers = await applyRoomHistory.findOne(
     { roomId },
     { members: { $elemMatch: { status: 1 } } }
   ).populate('members.userId', 'name'); // userId 필드를 통해 유저 이름을 포함하여 인구합니다.
 
   if (!waitingUsers) {
+    console.log("No waiting users found");
     return null;
   }
 
