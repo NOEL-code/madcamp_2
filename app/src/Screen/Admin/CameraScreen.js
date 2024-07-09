@@ -11,13 +11,15 @@ import {
 import {launchCamera} from 'react-native-image-picker';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import {useSelector} from 'react-redux';
-import api, {verifyUserImage} from '../../utils/api'; // Adjust the import path as needed
-
+import api from '../../utils/api';
+import {verifyUserImage} from '../../Service/user';
 const CameraScreen = ({route, navigation}) => {
   const {members, roomId} = route.params;
   const [inputName, setInputName] = useState('');
   const [photo, setPhoto] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
+
+  const [isVerified, setIsVerified] = useState(false);
 
   const user = useSelector(state => state.user); // Adjust the path according to your store
 
@@ -57,6 +59,10 @@ const CameraScreen = ({route, navigation}) => {
       console.log(`fail: No member selected for ${action}!`);
       Alert.alert('실패', '회원을 선택하지 않았습니다.');
       return;
+    }
+    if (!isVerified) {
+      console.log('not verified');
+      Alert.alert('회원 얼굴을 인증해주세요');
     }
     try {
       const response = await api.post(
@@ -108,7 +114,7 @@ const CameraScreen = ({route, navigation}) => {
         mediaType: 'photo',
         cameraType: 'back',
       },
-      response => {
+      async response => {
         if (response.didCancel) {
           console.log('User cancelled image picker');
         } else if (response.errorCode) {
@@ -116,8 +122,20 @@ const CameraScreen = ({route, navigation}) => {
         } else if (response.assets && response.assets.length > 0) {
           const source = {uri: response.assets[0].uri};
           setPhoto(source);
-          const resultVerify = verifyUserImage(response.assets[0].uri, user.id);
-          console.log(resultVerify);
+          try {
+            const resultVerify = await verifyUserImage(
+              response.assets[0].uri,
+              user.id,
+            );
+            if (resultVerify) {
+              setIsVerified(true);
+            }
+
+            console.log(resultVerify);
+          } catch (error) {
+            console.error('Error verifying image:', error);
+            Alert.alert('Error', 'Image verification failed.');
+          }
         }
       },
     );

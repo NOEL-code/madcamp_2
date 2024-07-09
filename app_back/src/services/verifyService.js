@@ -4,8 +4,8 @@ const { getUserImageById } = require("./userService");
 const url = "http://192.249.29.4:5005/verify";
 
 exports.verify = async (userId, imageUrl) => {
-  const image2_path = getUserImageById(userId);
-  console.log(photoUrl);
+  const image2_path = await getUserImageById(userId);
+  console.log(image2_path);
   const image1_path = imageUrl;
   console.log(imageUrl);
 
@@ -15,10 +15,10 @@ exports.verify = async (userId, imageUrl) => {
   };
 
   try {
-    const result = axios.post(url, req);
-
+    const result = await axios.post(url, req);
     return result.data.verified;
   } catch (err) {
     console.error(err, "docker error");
+    throw err;
   }
 };

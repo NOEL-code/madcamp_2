@@ -180,7 +180,7 @@ const TeamAdminScreen = ({route, navigation}) => {
             <View style={styles.cameraContainer}>
               <TouchableOpacity
                 onPress={() =>
-                  navigation.navigate('CameraAdmin', {
+                  navigation.navigate('CameraScreen', {
                     members: roomInfo.members,
                     roomId,
                   })
