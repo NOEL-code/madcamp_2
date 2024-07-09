@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const RoomSchema = mongoose.Schema({
   roomName: String,
+  roomDescription: String,
   host: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -16,8 +17,6 @@ const RoomSchema = mongoose.Schema({
       },
     ],
   },
-  title: String,
-  subTitle: String,
 });
 
 const Room = mongoose.model("Room", RoomSchema);

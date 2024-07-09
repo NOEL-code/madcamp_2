@@ -50,6 +50,27 @@ export const fetchImage = async (formData, user, dispatch) => {
   }
 };
 
+export const verifyUserImage = async (imageUri, userId) => {
+  const formData = new FormData();
+  formData.append('file', {
+    uri: imageUri,
+    type: 'image/jpeg', // Adjust the type if necessary
+    name: 'photo.jpg',
+  });
+  formData.append('userId', userId);
+
+  try {
+    const response = await api.post(`/verify/${userId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    console.log('Image uploaded successfully:', response.data);
+  } catch (error) {
+    console.error('Error uploading image with user ID:', error);
+  }
+};
+
 export const fetchLogout = async () => {
   try {
     await api.get('/users/logout');

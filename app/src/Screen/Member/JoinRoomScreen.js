@@ -18,12 +18,13 @@ const JoinRoomScreen = ({navigation}) => {
   const [search, setSearch] = useState('');
   const [selectedRoomIndex, setSelectedRoomIndex] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [appliedRooms, setAppliedRooms] = useState([]);
   const dispatch = useDispatch();
   const currentUser = useSelector(state => state.user);
 
-  console.log(currentUser);
   useEffect(() => {
     fetchRooms();
+    fetchAppliedRooms();
   }, []);
 
   const fetchRooms = async () => {
@@ -46,24 +47,31 @@ const JoinRoomScreen = ({navigation}) => {
       );
 
       setRooms(filteredRooms);
-      console.log(filteredRooms);
     } catch (error) {
       console.error('Failed to fetch rooms:', error);
       Alert.alert('오류', '방 목록을 가져오는데 실패했습니다.');
     }
   };
 
-  const handleSelect = index => {
-    setSelectedRoomIndex(index);
-    handleApply(index); // 참여 신청 전송
+  const fetchAppliedRooms = async () => {
+    try {
+      const response = await api.get(`/apply/user/${currentUser.id}`);
+      const appliedRoomsData = response.data.map(item => item.roomId._id);
+      setAppliedRooms(appliedRoomsData);
+    } catch (error) {
+      console.error('Failed to fetch applied rooms:', error);
+    }
   };
 
-  const handleApply = async index => {
-    const selectedRoom = rooms[index];
+  const handleSelect = roomId => {
+    handleApply(roomId); // 참여 신청 전송
+  };
+
+  const handleApply = async roomId => {
     try {
       const response = await api.post('/apply', {
         userId: currentUser.id,
-        roomId: selectedRoom._id,
+        roomId: roomId,
       });
       if (response.status === 200) {
         setModalVisible(true);
@@ -79,7 +87,9 @@ const JoinRoomScreen = ({navigation}) => {
     navigation.navigate('Main');
   };
 
-  const filteredRooms = rooms.filter(room => room.roomName.includes(search));
+  const filteredRooms = rooms.filter(
+    room => room.roomName.includes(search) && !appliedRooms.includes(room._id),
+  );
 
   return (
     <View style={styles.container}>
@@ -121,7 +131,7 @@ const JoinRoomScreen = ({navigation}) => {
                 styles.selectButton,
                 selectedRoomIndex === index && styles.selectedButton,
               ]}
-              onPress={() => handleSelect(index)}>
+              onPress={() => handleSelect(room._id)}>
               <Text style={styles.joinText}>참여</Text>
             </TouchableOpacity>
           </View>

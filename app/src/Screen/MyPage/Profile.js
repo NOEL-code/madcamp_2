@@ -25,6 +25,7 @@ const Profile = ({navigation}) => {
   useEffect(() => {
     requestPermissions();
     fetchUserRooms(); // 참여 중인 방 목록 불러오기
+    fetchAppliedRooms(); // 승인 대기 중인 방 목록 불러오기
   }, []);
 
   const requestPermissions = async () => {
@@ -44,6 +45,21 @@ const Profile = ({navigation}) => {
     } catch (error) {
       console.error('Failed to fetch user rooms:', error);
       Alert.alert('오류', '참여 중인 방 목록을 불러오는 데 실패했습니다.');
+    }
+  };
+
+  const fetchAppliedRooms = async () => {
+    try {
+      const response = await api.get(`/apply/user/${user.id}`);
+      const waitRooms = response.data.filter(room =>
+        room.members.some(
+          member => member.userId._id === user.id && member.status === 1,
+        ),
+      );
+      setWaitRooms(waitRooms);
+    } catch (error) {
+      console.error('Failed to fetch applied rooms:', error);
+      Alert.alert('오류', '승인 대기 중인 방 목록을 불러오는 데 실패했습니다.');
     }
   };
 
@@ -96,8 +112,18 @@ const Profile = ({navigation}) => {
     }
   };
 
-  const handleCancel = roomName => {
-    setWaitRooms(waitRooms.filter(room => room.name !== roomName));
+  const handleCancel = async roomId => {
+    try {
+      await api.put(`/apply/cancel/${roomId}/${user.id}`);
+      setWaitRooms(waitRooms.filter(room => room.roomId._id !== roomId));
+      Alert.alert('신청 취소 성공', '참여 신청을 성공적으로 취소했습니다.');
+    } catch (error) {
+      console.error('Failed to cancel application:', error);
+      Alert.alert(
+        '신청 취소 실패',
+        '참여 신청을 취소하는 동안 문제가 발생했습니다.',
+      );
+    }
   };
 
   const handleExit = async roomId => {
@@ -124,7 +150,10 @@ const Profile = ({navigation}) => {
             <TouchableOpacity
               style={styles.cameraButton}
               onPress={handleImageChange}>
-              <Text style={styles.cameraIcon}>이미지 변경</Text>
+              <Image
+                style={styles.cameraIcon}
+                source={require('../../../assets/images/profileCamera.png')}
+              />
             </TouchableOpacity>
           </View>
 
@@ -146,10 +175,10 @@ const Profile = ({navigation}) => {
                   source={require('../../../assets/images/person.png')}
                   style={styles.profileIcon}
                 />
-                <Text style={styles.roomName}>{room.name}</Text>
+                <Text style={styles.roomName}>{room.roomId.roomName}</Text>
                 <TouchableOpacity
                   style={styles.rightAlign}
-                  onPress={() => handleCancel(room.name)}>
+                  onPress={() => handleCancel(room.roomId._id)}>
                   <Text style={styles.cancelButton}>취소</Text>
                 </TouchableOpacity>
               </View>
@@ -224,17 +253,16 @@ const styles = StyleSheet.create({
   cameraButton: {
     position: 'absolute',
     bottom: 0,
-    right: 130,
-    backgroundColor: '#00C853',
-    width: 100,
+    right: 1,
+    width: 40,
     height: 40,
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },
   cameraIcon: {
-    color: '#FFFFFF',
-    fontSize: 16,
+    height: 40,
+    width: 40,
   },
   profileText: {
     alignItems: 'center',
