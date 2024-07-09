@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,43 +8,52 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
-import {Picker} from '@react-native-picker/picker';
-import {useSelector} from 'react-redux';
-
-const initialUsers = [
-  {name: '정우성', status: 1},
-  {name: '이수민', status: 1},
-  {name: '박종민', status: 3},
-  {name: '이선주', status: 4},
-];
-
-const initialWaitingUsers = [
-  {name: '정우성', status: 1},
-  {name: '이수민', status: 1},
-];
+import { Picker } from '@react-native-picker/picker';
+import api from '../../utils/api';
+import { useSelector } from 'react-redux';
 
 const statusStyles = {
-  1: {color: '#03CF5D', text: '출석'},
-  2: {color: '#B1B1B1', text: '결석'},
-  3: {color: '#FFE600', text: '자리비움'},
-  4: {color: '#D9D9D9', text: '퇴근'},
+  1: { color: '#03CF5D', text: '출석' },
+  2: { color: '#FF0000', text: '결석' },
+  3: { color: '#FFE600', text: '자리비움' },
+  4: { color: '#D9D9D9', text: '퇴근' },
 };
 
-const statusStylesBox = {
-  1: {backgroundColor: '#DFF5E9'},
-  2: {backgroundColor: '#FFE2E2'},
-  3: {backgroundColor: '#FFF4D5'},
-  4: {backgroundColor: '#F4F4F4'},
+const statusBoxStyles = {
+  1: { backgroundColor: '#DFF5E9' },
+  2: { backgroundColor: '#FFE2E2' },
+  3: { backgroundColor: '#FFF4D5' },
+  4: { backgroundColor: '#F4F4F4' },
 };
 
-const TeamAdminScreen = ({navigation}) => {
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [title, setTitle] = useState('카이부캠 방');
-  const [subTitle, setSubTitle] = useState('한 달만에 왕짱이되는 방');
-  const [usersState, setUsersState] = useState(initialUsers);
-  const [waitingUsers, setWaitingUsers] = useState(initialWaitingUsers);
-  const [selectedTab, setSelectedTab] = useState('현황');
+const TeamAdminScreen = ({ route, navigation }) => {
+  const { roomId } = route.params;
   const currentUser = useSelector(state => state.user);
+  const [roomInfo, setRoomInfo] = useState({ roomName: '', subTitle: '', members: [] });
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [isStatusEditMode, setIsStatusEditMode] = useState(false);
+  const [title, setTitle] = useState('');
+  const [subTitle, setSubTitle] = useState('');
+  const [usersState, setUsersState] = useState([]);
+  const [waitingUsers, setWaitingUsers] = useState([]);
+  const [selectedTab, setSelectedTab] = useState('현황');
+
+  useEffect(() => {
+    const fetchRoomInfo = async () => {
+      try {
+        const response = await api.get(`/rooms/${roomId}`);
+        setRoomInfo(response.data);
+        setTitle(response.data.roomName);
+        setSubTitle(response.data.subTitle);
+        setUsersState(response.data.members);
+        setWaitingUsers(response.data.waitingList || []);
+      } catch (error) {
+        console.error('Failed to fetch room info:', error);
+      }
+    };
+
+    fetchRoomInfo();
+  }, [roomId]);
 
   const toggleEditMode = () => {
     setIsEditMode(!isEditMode);
@@ -61,10 +70,18 @@ const TeamAdminScreen = ({navigation}) => {
     setUsersState(newUsers);
   };
 
+  const getStatusStyle = (status) => {
+    return statusStyles[status] || { color: '#000', text: '알 수 없음' };
+  };
+
+  const getStatusBoxStyle = (status) => {
+    return statusBoxStyles[status] || { backgroundColor: '#EEE' };
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate('Main')}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
             source={require('assets/images/back.png')}
             style={styles.backIcon}
@@ -132,33 +149,27 @@ const TeamAdminScreen = ({navigation}) => {
                   source={require('assets/images/person.png')}
                   style={styles.profileIcon}
                 />
-                <Text style={styles.userName}>{user.name}</Text>
+                <Text style={styles.userName}>{user.userId.name}</Text>
                 <View
                   style={[
                     styles.statusIndicatorBox,
-                    {
-                      backgroundColor:
-                        statusStylesBox[user.status].backgroundColor,
-                    },
+                    getStatusBoxStyle(user.status),
                   ]}>
                   <View
                     style={[
                       styles.statusIndicator,
-                      {backgroundColor: statusStyles[user.status].color},
+                      { backgroundColor: getStatusStyle(user.status).color },
                     ]}
                   />
                   <Text style={styles.statusText}>
-                    {statusStyles[user.status].text}
+                    {getStatusStyle(user.status).text}
                   </Text>
                 </View>
               </View>
             ))}
-            <View style={styles.cameraContainer}>
+            <View style={styles.cameraContainer}> 
               <TouchableOpacity
-                onPress={() =>
-                  // 예를 들어, ProfileScreen에서 CameraScreen으로 유저 정보를 전달합니다
-                  navigation.navigate('CameraScreen', {user: currentUser})
-                }>
+                onPress={() => navigation.navigate('CameraAdmin', { members: roomInfo.members })}>
                 <Image
                   style={styles.camera}
                   source={require('assets/images/camera.png')}
@@ -202,7 +213,7 @@ const TeamAdminScreen = ({navigation}) => {
                   source={require('assets/images/person.png')}
                   style={styles.profileIcon}
                 />
-                <Text style={styles.userName}>{user.name}</Text>
+                <Text style={styles.userName}>{user.userId.name}</Text>
                 <Picker
                   selectedValue={user.status}
                   style={styles.picker}

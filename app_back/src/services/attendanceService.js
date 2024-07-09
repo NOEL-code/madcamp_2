@@ -3,16 +3,24 @@ const { getUserById } = require("./userService");
 
 exports.recordArrival = async (userId) => {
   const today = new Date();
-  const todayString = today.toLocaleDateString("en-CA"); // 로컬 시간대로 날짜 변환
-  const currentTimeString = today.toTimeString().split(" ")[0]; // 시간 부분만 문자열로 변환
+  const todayString = today.toLocaleDateString("en-CA");
+  const currentTimeString = today.toTimeString().split(" ")[0];
 
-  const attendance = await Attendance.findOneAndUpdate(
+  let attendance = await Attendance.findOneAndUpdate(
     { userId, "records.date": { $ne: todayString } },
     {
       $push: { records: { date: todayString, arriveTime: currentTimeString } },
-    }, // arriveTime을 현재 시간으로 설정
+    },
     { new: true, upsert: true }
   );
+
+  if (!attendance) {
+    attendance = new Attendance({
+      userId,
+      records: [{ date: todayString, arriveTime: currentTimeString }]
+    });
+    await attendance.save();
+  }
 
   const user = await getUserById(userId);
 
@@ -23,89 +31,103 @@ exports.recordArrival = async (userId) => {
 };
 
 exports.recordLeave = async (userId) => {
-  const today = new Date();
-  const todayString = today.toLocaleDateString("en-CA"); // 로컬 시간대로 날짜 변환
-  const currentTimeString = today.toTimeString().split(" ")[0]; // 시간 부분만 문자열로 변환
+  try {
+    const today = new Date();
+    const todayString = today.toLocaleDateString("en-CA");
+    const currentTimeString = today.toTimeString().split(" ")[0];
 
-  const attendance = await Attendance.findOneAndUpdate(
-    { userId, "records.date": todayString },
-    { $set: { "records.$.leaveTime": currentTimeString } }, // leaveTime을 현재 시간으로 설정
-    { new: true }
-  );
+    // 오늘 날짜의 출석 기록이 있는지 확인
+    const attendance = await Attendance.findOneAndUpdate(
+      { userId, "records.date": todayString },
+      {
+        $set: { "records.$.departTime": currentTimeString },
+      },
+      { new: true }
+    );
 
-  const user = await getUserById(userId);
+    if (!attendance) {
+      // 출석 기록이 없다면 에러를 반환
+      throw new Error('No attendance record found for today');
+    }
 
-  return {
-    ...attendance.toObject(),
-    userName: user.name,
-  };
+    const user = await getUserById(userId);
+
+    return {
+      ...attendance.toObject(),
+      userName: user.name,
+    };
+  } catch (error) {
+    console.error('Error recording leave:', error);
+    throw new Error('Unable to record leave');
+  }
 };
 
+
 exports.recordGoOut = async (userId) => {
-  const today = new Date();
-  const todayString = today.toLocaleDateString("en-CA"); // 로컬 시간대로 날짜 변환
-  const currentTimeString = today.toTimeString().split(" ")[0]; // 시간 부분만 문자열로 변환
+const today = new Date();
+const todayString = today.toLocaleDateString("en-CA");
+const currentTimeString = today.toTimeString().split(" ")[0];
 
-  const attendance = await Attendance.findOneAndUpdate(
-    { userId, "records.date": todayString },
-    { $push: { "records.$.away": { goOut: currentTimeString } } }, // goOut을 현재 시간으로 설정
-    { new: true }
-  );
+const attendance = await Attendance.findOneAndUpdate(
+  { userId, "records.date": todayString },
+  { $push: { "records.$.leave": { goOut: currentTimeString } } },
+  { new: true }
+);
 
-  const user = await getUserById(userId);
+const user = await getUserById(userId);
 
-  return {
-    ...attendance.toObject(),
-    userName: user.name,
-  };
+return {
+  ...attendance.toObject(),
+  userName: user.name,
+};
 };
 
 exports.recordComeBack = async (userId) => {
-  const today = new Date();
-  const todayString = today.toLocaleDateString("en-CA"); // 로컬 시간대로 날짜 변환
-  const currentTimeString = today.toTimeString().split(" ")[0]; // 시간 부분만 문자열로 변환
+const today = new Date();
+const todayString = today.toLocaleDateString("en-CA");
+const currentTimeString = today.toTimeString().split(" ")[0];
 
-  const attendance = await Attendance.findOneAndUpdate(
-    {
-      userId,
-      "records.date": todayString,
-      "records.away.goOut": { $ne: null },
-      "records.away.comeBack": null,
-    },
-    {
-      $set: { "records.$[outer].away.$[inner].comeBack": currentTimeString }, // comeBack을 현재 시간으로 설정
-    },
-    {
-      arrayFilters: [{ "outer.date": todayString }, { "inner.comeBack": null }],
-      new: true,
-    }
-  );
+const attendance = await Attendance.findOneAndUpdate(
+  {
+    userId,
+    "records.date": todayString,
+    "records.leave.goOut": { $ne: null },
+    "records.leave.comeBack": null,
+  },
+  {
+    $set: { "records.$[outer].leave.$[inner].comeBack": currentTimeString },
+  },
+  {
+    arrayFilters: [{ "outer.date": todayString }, { "inner.comeBack": null }],
+    new: true,
+  }
+);
 
-  const user = await getUserById(userId);
+const user = await getUserById(userId);
 
-  return {
-    ...attendance.toObject(),
-    userName: user.name,
-  };
+return {
+  ...attendance.toObject(),
+  userName: user.name,
+};
 };
 
 exports.getAttendanceByDate = async (userId, date) => {
-  const dateString = new Date(date).toLocaleDateString("en-CA"); // 로컬 시간대로 날짜 변환
+const dateString = new Date(date).toLocaleDateString("en-CA");
 
-  const attendance = await Attendance.findOne(
-    { userId, "records.date": dateString },
-    { "records.$": 1 }
-  )
-    .populate("userId")
-    .populate("roomId");
-  if (!attendance) {
-    throw new Error("Attendance record not found");
-  }
+const attendance = await Attendance.findOne(
+  { userId, "records.date": dateString },
+  { "records.$": 1 }
+)
+  .populate("userId")
+  .populate("roomId");
+if (!attendance) {
+  throw new Error("Attendance record not found");
+}
 
-  const user = await getUserById(userId);
+const user = await getUserById(userId);
 
-  return {
-    ...attendance.toObject(),
-    userName: user.name,
-  };
+return {
+  ...attendance.toObject(),
+  userName: user.name,
+};
 };
