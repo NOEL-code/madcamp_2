@@ -87,7 +87,6 @@ const App = () => {
             options={{headerShown: false}}
           />
         </Stack.Navigator>
-        <Toast ref={(ref) => Toast.setRef(ref)} />
       </NavigationContainer>
     </Provider>
   );

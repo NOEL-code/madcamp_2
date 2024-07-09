@@ -3,31 +3,60 @@ import {View, Text, Image, TouchableOpacity, StyleSheet, Alert} from 'react-nati
 import { TextInput } from 'react-native-gesture-handler';
 import {launchCamera} from 'react-native-image-picker';
 import Toast from 'react-native-toast-message';
+import api from '../../utils/api';
 
 const CameraScreen = ({route, navigation}) => {
   const {members} = route.params;
    const [inputName, setInputName] = useState('');
   const [photo, setPhoto] = useState(null);
+  const [selectedUserId, setSelectedUserId] = useState(null);
 
   useEffect(() => {
     console.log("THis is memvbers: ", members) // 나이스 ㅋㅋㅋ
   })
 
-  const checkMemberName = () => {
-    const memberExists = members.some(member => member.userId.name === inputName);
+  const showToast = (type, text1, text2) => {
+    Toast.show({
+      type,
+      text1,
+      text2,
+      position: 'bottom',
+      visibilityTime: 2000,
+      autoHide: true,
+      bottomOffset: 40,
+    });
+  };
 
-    if (memberExists) {
-      Toast.show({
-        type: 'success',
-        text1: 'Success',
-        text2: 'Member found!'
-      });
+
+  const checkMemberName = () => {
+    const member = members.find(member => member.userId.name === inputName);
+
+    if (member) {
+      console.log('success');
+      setSelectedUserId(member.userId._id);
+      showToast('success', 'Success', 'Member found!');
     } else {
-      Toast.show({
-        type: 'error',
-        text1: 'Fail',
-        text2: 'Member not found!'
-      });
+      console.log('fail');
+      showToast('error', 'Fail', 'Member not found!');
+      setSelectedUserId(null);
+    }
+  };
+
+  const recordArrival = async () => {
+    if (!selectedUserId) {
+      showToast('error', 'Fail', 'No member selected!');
+      return;
+    }
+    try {
+      const response = await api.post(`/attendance/arrival/${selectedUserId}`);
+      if (response.status === 200) {
+        showToast('success', 'Success', 'Arrival recorded!');
+      } else {
+        showToast('error', 'Fail', 'Unable to record arrival!');
+      }
+    } catch (error) {
+      console.error('Error recording arrival:', error);
+      showToast('error', 'Fail', 'Unable to record arrival!');
     }
   };
 
@@ -79,7 +108,7 @@ const CameraScreen = ({route, navigation}) => {
         <Text >Check Member</Text>
       </TouchableOpacity>
       <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={recordArrival}>
           <Text style={styles.buttonText}>출근</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button}>

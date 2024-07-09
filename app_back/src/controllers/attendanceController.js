@@ -24,57 +24,45 @@ exports.getAttendance = async (req, res) => {
 };
 
 exports.recordArrival = async (req, res) => {
+  const { userId } = req.params;
   try {
-    const userId = req.params.userId;
-    if (!await checkAdmin(req.user.id)) {
-      return res.status(403).json({ message: "Access denied" });
-    }
     const attendance = await recordArrival(userId);
-    res.status(200).json(attendance);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(200).json({ message: '출근 기록 완료', attendance });
+  } catch (error) {
+    res.status(500).json({ message: '출근 기록 실패', error: error.message });
   }
 };
 
 exports.recordLeave = async (req, res) => {
+  const { userId } = req.params;
   try {
-    const userId = req.params.userId;
-    if (!await checkAdmin(req.user.id)) {
-      return res.status(403).json({ message: "Access denied" });
-    }
     const attendance = await recordLeave(userId);
-    res.status(200).json(attendance);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(200).json({ message: '출근 기록 완료', attendance });
+  } catch (error) {
+    res.status(500).json({ message: '출근 기록 실패', error: error.message });
   }
 };
 
+
 exports.recordGoOut = async (req, res) => {
+  const { userId } = req.params;
   try {
-    const userId = req.params.userId;
-    if (!await checkAdmin(req.user.id)) {
-      return res.status(403).json({ message: "Access denied" });
-    }
     const attendance = await recordGoOut(userId);
-    res.status(200).json(attendance);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(200).json({ message: '출근 기록 완료', attendance });
+  } catch (error) {
+    res.status(500).json({ message: '출근 기록 실패', error: error.message });
   }
 };
 
 exports.recordComeBack = async (req, res) => {
+  const { userId } = req.params;
   try {
-    const userId = req.params.userId;
-    if (!await checkAdmin(req.user.id)) {
-      return res.status(403).json({ message: "Access denied" });
-    }
     const attendance = await recordComeBack(userId);
-    res.status(200).json(attendance);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(200).json({ message: '출근 기록 완료', attendance });
+  } catch (error) {
+    res.status(500).json({ message: '출근 기록 실패', error: error.message });
   }
 };
-
 exports.getAttendanceByDate = async (req, res) => {
   try {
     const userId = req.user.id;

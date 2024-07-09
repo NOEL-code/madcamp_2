@@ -1,18 +1,25 @@
 const { Attendance } = require("../models/Attendance");
 const { getUserById } = require("./userService");
-
 exports.recordArrival = async (userId) => {
   const today = new Date();
   const todayString = today.toLocaleDateString("en-CA");
   const currentTimeString = today.toTimeString().split(" ")[0];
 
-  const attendance = await Attendance.findOneAndUpdate(
+  let attendance = await Attendance.findOneAndUpdate(
     { userId, "records.date": { $ne: todayString } },
     {
       $push: { records: { date: todayString, arriveTime: currentTimeString } },
     },
     { new: true, upsert: true }
   );
+
+  if (!attendance) {
+    attendance = new Attendance({
+      userId,
+      records: [{ date: todayString, arriveTime: currentTimeString }]
+    });
+    await attendance.save();
+  }
 
   const user = await getUserById(userId);
 
@@ -21,7 +28,6 @@ exports.recordArrival = async (userId) => {
     userName: user.name,
   };
 };
-
 exports.recordLeave = async (userId) => {
   const today = new Date();
   const todayString = today.toLocaleDateString("en-CA");
