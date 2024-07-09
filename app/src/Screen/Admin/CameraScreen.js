@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -8,13 +8,13 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
-import { launchCamera } from 'react-native-image-picker';
-import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
-import { useSelector } from 'react-redux';
-import api, { verifyUserImage } from '../../utils/api'; // Adjust the import path as needed
+import {launchCamera} from 'react-native-image-picker';
+import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
+import {useSelector} from 'react-redux';
+import api, {verifyUserImage} from '../../utils/api'; // Adjust the import path as needed
 
-const CameraScreen = ({ route, navigation }) => {
-  const { members, roomId } = route.params;
+const CameraScreen = ({route, navigation}) => {
+  const {members, roomId} = route.params;
   const [inputName, setInputName] = useState('');
   const [photo, setPhoto] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
@@ -52,23 +52,25 @@ const CameraScreen = ({ route, navigation }) => {
     }
   };
 
-  const recordAttendance = async (action) => {
+  const recordAttendance = async action => {
     if (!selectedUserId) {
       console.log(`fail: No member selected for ${action}!`);
       Alert.alert('실패', '회원을 선택하지 않았습니다.');
       return;
     }
     try {
-      const response = await api.post(`/attendance/${action}/${selectedUserId}`);
+      const response = await api.post(
+        `/attendance/${action}/${selectedUserId}`,
+      );
       if (response.status === 200) {
         console.log(`success: ${action} recorded!`);
         Alert.alert('성공', `${action} 기록 완료!`, [
           {
             text: '확인',
             onPress: () => {
-              navigation.navigate('TeamAdmin', { roomId });
-            }
-          }
+              navigation.navigate('TeamAdmin', {roomId});
+            },
+          },
         ]);
       } else {
         console.log(`fail: Unable to record ${action}!`);
@@ -112,12 +114,9 @@ const CameraScreen = ({ route, navigation }) => {
         } else if (response.errorCode) {
           console.log('ImagePicker Error: ', response.errorMessage);
         } else if (response.assets && response.assets.length > 0) {
-          const source = { uri: response.assets[0].uri };
+          const source = {uri: response.assets[0].uri};
           setPhoto(source);
-          const resultVerify = verifyUserImage(
-            response.assets[0].uri,
-            user.id,
-          );
+          const resultVerify = verifyUserImage(response.assets[0].uri, user.id);
           console.log(resultVerify);
         }
       },
@@ -153,16 +152,24 @@ const CameraScreen = ({ route, navigation }) => {
         <Text style={styles.checkButtonText}>Check Member</Text>
       </TouchableOpacity>
       <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => recordAttendance('arrival')}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => recordAttendance('arrival')}>
           <Text style={styles.buttonText}>출근</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => recordAttendance('goout')}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => recordAttendance('goout')}>
           <Text style={styles.buttonText}>자리비움</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => recordAttendance('comeback')}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => recordAttendance('comeback')}>
           <Text style={styles.buttonText}>복귀</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => recordAttendance('leave')}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => recordAttendance('leave')}>
           <Text style={styles.buttonText}>퇴근</Text>
         </TouchableOpacity>
       </View>
