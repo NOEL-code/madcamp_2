@@ -63,10 +63,16 @@ const TeamAdminScreen = ({ route, navigation }) => {
     setIsEditMode(!isEditMode);
   };
 
-  const handleStatusChange = (value, index) => {
-    const newUsers = [...usersState];
-    newUsers[index].status = value;
-    setUsersState(newUsers);
+  const handleStatusChange = async (value, index) => {
+    const userId = usersState[index].userId._id;
+    try {
+      await api.post(`/attendance/status/${userId}`, { status: value });
+      const newUsers = [...usersState];
+      newUsers[index].status = value;
+      setUsersState(newUsers);
+    } catch (error) {
+      console.error('Failed to change status:', error);
+    }
   };
 
   const deleteUser = index => {

@@ -5,7 +5,8 @@ const {
   recordGoOut,
   recordComeBack,
   getAttendanceByDate,
-  getCurrentStatus
+  getCurrentStatus,
+  updateStatus // 새로 추가된 함수
 } = require("../services/attendanceService");
 const { getUserById } = require('../services/userService');
 
@@ -87,5 +88,17 @@ exports.getCurrentStatus = async (req, res) => {
   } catch (error) {
     console.error('Error fetching current status:', error);
     res.status(500).json({ message: 'Failed to fetch current status.' });
+  }
+};
+
+exports.updateStatus = async (req, res) => {
+  const { userId } = req.params;
+  const { status } = req.body;
+  try {
+    await updateStatus(userId, status);
+    res.status(200).json({ message: 'Status updated successfully' });
+  } catch (error) {
+    console.error('Error updating status:', error);
+    res.status(500).json({ message: 'Failed to update status', error: error.message });
   }
 };

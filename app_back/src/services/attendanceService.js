@@ -171,3 +171,57 @@ exports.getCurrentStatus = async (userId) => {
 
   return { status: 3 }; // 퇴근 (퇴근 기록 있음)
 };
+
+exports.updateStatus = async (userId, status) => {
+  try {
+    if (status === 1) {
+      // 출석으로 변경되는 경우 출근 기록을 추가
+      const today = new Date();
+      const todayString = today.toLocaleDateString("en-CA");
+      const currentTimeString = today.toTimeString().split(" ")[0];
+
+      let attendance = await Attendance.findOneAndUpdate(
+        { userId, "records.date": { $ne: todayString } },
+        {
+          $push: { records: { date: todayString, arriveTime: currentTimeString } },
+        },
+        { new: true, upsert: true }
+      );
+
+      if (!attendance) {
+        attendance = new Attendance({
+          userId,
+          records: [{ date: todayString, arriveTime: currentTimeString }]
+        });
+        await attendance.save();
+      }
+    } else if (status === 2) {
+      // 자리비움으로 변경되는 경우 외출 기록을 추가
+      const today = new Date();
+      const todayString = today.toLocaleDateString("en-CA");
+      const currentTimeString = today.toTimeString().split(" ")[0];
+
+      await Attendance.findOneAndUpdate(
+        { userId, "records.date": todayString },
+        { $push: { "records.$.leave": { goOut: currentTimeString } } },
+        { new: true }
+      );
+    } else if (status === 3) {
+      // 퇴근으로 변경되는 경우 퇴근 기록을 추가
+      const today = new Date();
+      const todayString = today.toLocaleDateString("en-CA");
+      const currentTimeString = today.toTimeString().split(" ")[0];
+
+      await Attendance.findOneAndUpdate(
+        { userId, "records.date": todayString },
+        {
+          $set: { "records.$.departTime": currentTimeString },
+        },
+        { new: true }
+      );
+    }
+  } catch (error) {
+    console.error('Error updating status:', error);
+    throw new Error('Failed to update status');
+  }
+};
