@@ -169,15 +169,14 @@ exports.getUserById = async (userId) => {
   }
 };
 
-exports.getUserImages = async () => {
+exports.getUsersImages = async (userIds) => {
   try {
-    const users = await User.find();
+    const users = await User.find({ _id: { $in: userIds } });
     if (users && users.length > 0) {
       const userImages = users.map((user) => ({
         id: user._id,
         photoUrl: user.photoUrl,
       }));
-      console.log(userImages);
       return userImages;
     } else {
       console.error("No users found");
@@ -186,6 +185,16 @@ exports.getUserImages = async () => {
   } catch (err) {
     console.error("Error fetching users:", err);
     throw new Error("Error fetching users");
+  }
+};
+
+exports.findUserNameById = async (userId) => {
+  try {
+    const user = await User.findById(userId);
+    return user ? user.name : null;
+  } catch (error) {
+    console.error("Error fetching user by id:", error);
+    throw new Error("Error fetching user by id");
   }
 };
 
@@ -286,10 +295,4 @@ exports.getUsers = async () => {
 
   console.log("getUsers service successful, users:", resUsers);
   return resUsers;
-};
-
-exports.findUserNameById = async (userId) => {
-  let user = await User.findById(userId);
-
-  return user.name;
 };

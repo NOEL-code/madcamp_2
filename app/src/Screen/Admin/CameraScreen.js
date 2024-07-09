@@ -12,19 +12,16 @@ import {
 } from 'react-native';
 import {launchCamera} from 'react-native-image-picker';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
-import {useSelector} from 'react-redux';
 import api from '../../utils/api';
 import {verifyUserImage} from '../../Service/user';
 
 const CameraScreen = ({route, navigation}) => {
-  const {members, roomId} = route.params;
+  const {roomId} = route.params;
   const [inputName, setInputName] = useState('');
   const [photo, setPhoto] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [isVerified, setIsVerified] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const user = useSelector(state => state.user);
 
   useEffect(() => {
     requestCameraPermission();
@@ -114,7 +111,10 @@ const CameraScreen = ({route, navigation}) => {
           setPhoto(source);
           setLoading(true);
           try {
-            const resultVerify = await verifyUserImage(response.assets[0].uri);
+            const resultVerify = await verifyUserImage(
+              response.assets[0].uri,
+              roomId,
+            );
             console.log(resultVerify);
             setLoading(false);
             if (resultVerify) {
