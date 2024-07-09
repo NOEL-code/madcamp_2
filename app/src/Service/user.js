@@ -66,6 +66,7 @@ export const verifyUserImage = async (imageUri, userId) => {
       },
     });
     console.log('Image uploaded successfully:', response.data);
+    return response.data;
   } catch (error) {
     console.error('Error uploading image with user ID:', error);
   }
