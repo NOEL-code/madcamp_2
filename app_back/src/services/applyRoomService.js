@@ -22,6 +22,7 @@ exports.getAppliedRoom = async (userId) => {
 };
 
 exports.getAppliedMember = async (roomId) => {
+  console.log("Fetching applied members for roomId:", roomId); // 추가된 로그
   let appliedMember = await applyRoomHistory.findOne({ roomId });
 
   if (!appliedMember) return null;
@@ -39,7 +40,6 @@ exports.getAppliedMember = async (roomId) => {
 
   return { roomId: appliedMember.roomId, members: memberDetails };
 };
-
 exports.applyRoom = async (userId, roomId) => {
   let appliedRoom = await applyRoomHistory.findOneAndUpdate(
     { roomId },
@@ -105,4 +105,17 @@ exports.rejectApplication = async (userId, roomId) => {
       status: member.status,
     })),
   };
+};
+
+exports.getWaitingUsersByRoomId = async (roomId) => {
+  const waitingUsers = await applyRoomHistory.findOne(
+    { roomId },
+    { members: { $elemMatch: { status: 1 } } }
+  ).populate('members.userId', 'name'); // userId 필드를 통해 유저 이름을 포함하여 인구합니다.
+
+  if (!waitingUsers) {
+    return null;
+  }
+
+  return waitingUsers.members;
 };

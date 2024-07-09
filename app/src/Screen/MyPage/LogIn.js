@@ -18,10 +18,10 @@ const LogIn = ({navigation}) => {
   const user = useSelector(state => state.user);
 
   const handleLogin = async () => {
-    try {
-      console.log('로그인 누름');
 
-      const result = await fetchLogin(email, password);
+    try {
+    const result = await fetchLogin(email, password);
+
 
       if (!result || result.error || !result.id) {
         Alert.alert('로그인 실패', '아이디와 비밀번호를 확인해주세요.');

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,25 +7,28 @@ import {
   TextInput,
   StyleSheet,
   ScrollView,
+  Alert
 } from 'react-native';
-import {Picker} from '@react-native-picker/picker';
+import { Picker } from '@react-native-picker/picker';
 import api from '../../utils/api';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 
 const statusStyles = {
-  1: {color: '#03CF5D', text: '출석'},
-  2: {color: '#FFE600', text: '자리비움'},
-  3: {color: '#D9D9D9', text: '퇴근'},
+  1: { color: '#03CF5D', text: '출석' },
+  2: { color: '#FFE600', text: '자리비움' },
+  3: { color: '#D9D9D9', text: '퇴근' },
 };
 
 const statusBoxStyles = {
-  1: {backgroundColor: '#DFF5E9'},
-  2: {backgroundColor: '#FFF4D5'},
-  3: {backgroundColor: '#F4F4F4'},
+  1: { backgroundColor: '#DFF5E9' },
+  2: { backgroundColor: '#FFF4D5' },
+  3: { backgroundColor: '#F4F4F4' },
 };
 
-const TeamAdminScreen = ({route, navigation}) => {
-  const {roomId} = route.params;
+const TeamAdminScreen = ({ route, navigation }) => {
+  const { roomId } = route.params;
+  const currentUser = useSelector(state => state.user);
+
   const [roomInfo, setRoomInfo] = useState({
     roomName: '',
     subTitle: '',
@@ -47,20 +50,29 @@ const TeamAdminScreen = ({route, navigation}) => {
             const statusResponse = await api.get(
               `/attendance/status/${member.userId._id}`,
             );
-            return {...member, status: statusResponse.data.status};
+            return { ...member, status: statusResponse.data.status };
           }),
         );
         setRoomInfo(response.data);
         setTitle(response.data.roomName);
         setSubTitle(response.data.subTitle);
         setUsersState(membersWithStatus);
-        setWaitingUsers(response.data.waitingList || []);
       } catch (error) {
         console.error('Failed to fetch room info:', error);
       }
     };
 
+    const fetchWaitingUsers = async () => {
+      try {
+        const response = await api.get(`/apply/waiting/${roomId}`);
+        setWaitingUsers(response.data.members || []);
+      } catch (error) {
+        console.error('Failed to fetch waiting users:', error);
+      }
+    };
+
     fetchRoomInfo();
+    fetchWaitingUsers();
   }, [roomId]);
 
   const toggleEditMode = () => {
@@ -79,17 +91,58 @@ const TeamAdminScreen = ({route, navigation}) => {
     }
   };
 
-  const deleteUser = index => {
-    const newUsers = usersState.filter((_, i) => i !== index);
-    setUsersState(newUsers);
+  const deleteUser = async (index) => {
+    const userId = usersState[index].userId._id;
+    try {
+      await api.delete(`/rooms/${roomId}/member/${userId}`);
+      const newUsers = usersState.filter((_, i) => i !== index);
+      setUsersState(newUsers);
+      Alert.alert('성공', '멤버가 성공적으로 삭제되었습니다.');
+    } catch (error) {
+      console.error('Failed to delete member:', error);
+      Alert.alert('실패', '멤버 삭제에 실패했습니다.');
+    }
+  };
+
+  const deleteRoom = async () => {
+    try {
+      await api.delete(`/rooms/${roomId}`);
+      Alert.alert('성공', '방이 성공적으로 삭제되었습니다.');
+      navigation.goBack();
+    } catch (error) {
+      console.error('Failed to delete room:', error);
+      Alert.alert('실패', '방 삭제에 실패했습니다.');
+    }
+  };
+
+  const acceptUser = async (userId) => {
+    try {
+      await api.put(`/apply/accept/${roomId}/${userId}`);
+      setWaitingUsers(waitingUsers.filter(user => user.userId !== userId));
+      Alert.alert('성공', '멤버가 성공적으로 승인되었습니다.');
+    } catch (error) {
+      console.error('Failed to accept member:', error);
+      Alert.alert('실패', '멤버 승인에 실패했습니다.');
+    }
+  };
+
+  const rejectUser = async (userId) => {
+    try {
+      await api.put(`/apply/reject/${roomId}/${userId}`);
+      setWaitingUsers(waitingUsers.filter(user => user.userId !== userId));
+      Alert.alert('성공', '멤버가 성공적으로 거절되었습니다.');
+    } catch (error) {
+      console.error('Failed to reject member:', error);
+      Alert.alert('실패', '멤버 거절에 실패했습니다.');
+    }
   };
 
   const getStatusStyle = status => {
-    return statusStyles[status] || {color: '#000', text: '알 수 없음'};
+    return statusStyles[status] || { color: '#000', text: '알 수 없음' };
   };
 
   const getStatusBoxStyle = status => {
-    return statusBoxStyles[status] || {backgroundColor: '#EEE'};
+    return statusBoxStyles[status] || { backgroundColor: '#EEE' };
   };
 
   return (
@@ -172,7 +225,7 @@ const TeamAdminScreen = ({route, navigation}) => {
                   <View
                     style={[
                       styles.statusIndicator,
-                      {backgroundColor: getStatusStyle(user.status).color},
+                      { backgroundColor: getStatusStyle(user.status).color },
                     ]}
                   />
                   <Text style={styles.statusText}>
@@ -207,11 +260,15 @@ const TeamAdminScreen = ({route, navigation}) => {
                     source={require('assets/images/person.png')}
                     style={styles.profileIcon}
                   />
-                  <Text style={styles.userName}>{waitingUser.name}</Text>
-                  <TouchableOpacity style={styles.refuse}>
+                  <Text style={styles.userName}>{waitingUser.userId.name}</Text>
+                  <TouchableOpacity
+                    style={styles.refuse}
+                    onPress={() => rejectUser(waitingUser.userId._id)}>
                     <Text style={styles.refuseText}>거절</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.accept}>
+                  <TouchableOpacity
+                    style={styles.accept}
+                    onPress={() => acceptUser(waitingUser.userId._id)}>
                     <Text style={styles.acceptText}>승인</Text>
                   </TouchableOpacity>
                 </View>
@@ -246,7 +303,7 @@ const TeamAdminScreen = ({route, navigation}) => {
               </View>
             ))}
             <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.deleteButton}>
+              <TouchableOpacity style={styles.deleteButton} onPress={deleteRoom}>
                 <Text style={styles.deleteButtonText}>팀 삭제하기</Text>
               </TouchableOpacity>
             </View>
