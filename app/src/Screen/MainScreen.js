@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -10,10 +10,10 @@ import {
 } from 'react-native';
 import api from '../utils/api'; // api 설정 파일 불러오기
 import NavBar from 'Components/NavBar';
-import { useSelector } from 'react-redux';
-import { useIsFocused } from '@react-navigation/native'; // react-navigation hooks 추가
+import {useSelector} from 'react-redux';
+import {useIsFocused} from '@react-navigation/native'; // react-navigation hooks 추가
 
-const MainScreen = ({ navigation }) => {
+const MainScreen = ({navigation}) => {
   const [participatingRooms, setParticipatingRooms] = useState([]);
   const [managingRooms, setManagingRooms] = useState([]);
   const currentUser = useSelector(state => state.user);
@@ -86,7 +86,7 @@ const MainScreen = ({ navigation }) => {
                 <TouchableOpacity
                   style={styles.forwardButton}
                   onPress={() =>
-                    navigation.navigate('Team', { roomId: room._id })
+                    navigation.navigate('Team', {roomId: room._id})
                   }>
                   <Image
                     source={require('assets/images/next.png')}
@@ -113,7 +113,7 @@ const MainScreen = ({ navigation }) => {
                 <TouchableOpacity
                   style={styles.forwardButton}
                   onPress={() =>
-                    navigation.navigate('TeamAdmin', { roomId: room._id })
+                    navigation.navigate('TeamAdmin', {roomId: room._id})
                   }>
                   <Image
                     source={require('assets/images/next.png')}

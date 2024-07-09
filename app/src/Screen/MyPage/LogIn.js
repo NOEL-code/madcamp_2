@@ -17,6 +17,8 @@ const LogIn = ({navigation}) => {
   const user = useSelector(state => state.user);
 
   const handleLogin = async () => {
+    console.log('로그인 누름');
+
     const result = await fetchLogin(email, password);
 
     const userData = result;
