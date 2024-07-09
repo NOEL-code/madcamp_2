@@ -12,16 +12,14 @@ import { useSelector } from 'react-redux';
 
 const statusStyles = {
   1: { color: '#03CF5D', text: '출석' },
-  2: { color: '#FF0000', text: '결석' },
-  3: { color: '#FFE600', text: '자리비움' },
-  4: { color: '#D9D9D9', text: '퇴근' },
+  2: { color: '#FFE600', text: '자리비움' },
+  3: { color: '#D9D9D9', text: '퇴근' },
 };
 
 const statusBoxStyles = {
   1: { backgroundColor: '#DFF5E9' },
-  2: { backgroundColor: '#FFE2E2' },
-  3: { backgroundColor: '#FFF4D5' },
-  4: { backgroundColor: '#F4F4F4' },
+  2: { backgroundColor: '#FFF4D5' },
+  3: { backgroundColor: '#F4F4F4' },
 };
 
 const TeamScreen = ({ route, navigation }) => {
@@ -35,7 +33,16 @@ const TeamScreen = ({ route, navigation }) => {
     const fetchRoomInfo = async () => {
       try {
         const response = await api.get(`/rooms/${roomId}`);
-        setRoomInfo(response.data);
+        const membersWithStatus = await Promise.all(
+          response.data.members.map(async (member) => {
+            const statusResponse = await api.get(`/attendance/status/${member.userId._id}`);
+            return { ...member, status: statusResponse.data.status };
+          })
+        );
+        setRoomInfo({
+          ...response.data,
+          members: membersWithStatus
+        });
       } catch (error) {
         console.error('Failed to fetch room info:', error);
       }
