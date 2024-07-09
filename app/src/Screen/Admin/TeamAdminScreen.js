@@ -7,6 +7,7 @@ import {
   TextInput,
   StyleSheet,
   ScrollView,
+  Alert
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import api from '../../utils/api';
@@ -82,8 +83,18 @@ const TeamAdminScreen = ({route, navigation}) => {
   };
 
   const deleteUser = index => {
-    const newUsers = usersState.filter((_, i) => i !== index);
-    setUsersState(newUsers);
+    
+  };
+
+  const deleteRoom = async () => {
+    try {
+      await api.delete(`/rooms/${roomId}`);
+      Alert.alert('성공', '방이 성공적으로 삭제되었습니다.');
+      navigation.goBack();
+    } catch (error) {
+      console.error('Failed to delete room:', error);
+      Alert.alert('실패', '방 삭제에 실패했습니다.');
+    }
   };
 
   const getStatusStyle = status => {
@@ -249,7 +260,7 @@ const TeamAdminScreen = ({route, navigation}) => {
               </View>
             ))}
             <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.deleteButton}>
+              <TouchableOpacity style={styles.deleteButton} onPress = {() => {deleteRoom()}}>
                 <Text style={styles.deleteButtonText}>팀 삭제하기</Text>
               </TouchableOpacity>
             </View>

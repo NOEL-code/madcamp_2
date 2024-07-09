@@ -9,117 +9,117 @@
 9        android:targetSdkVersion="31" />
 10
 11    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-11-->/Users/noel/madcamp_2/app/android/app/src/debug/AndroidManifest.xml:5:5-77
-11-->/Users/noel/madcamp_2/app/android/app/src/debug/AndroidManifest.xml:5:22-75
+11-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\debug\AndroidManifest.xml:5:5-77
+11-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\debug\AndroidManifest.xml:5:22-75
 12    <uses-permission android:name="android.permission.INTERNET" />
-12-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:4:5-67
-12-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:4:22-64
+12-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:4:5-67
+12-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:4:22-64
 13    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-13-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:5:5-79
-13-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:5:22-77
+13-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:5:5-79
+13-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:5:22-77
 14    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-14-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:6:5-80
-14-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:6:22-78
+14-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:6:5-80
+14-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:6:22-78
 15    <uses-permission android:name="android.permission.CAMERA" />
-15-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:7:5-64
-15-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:7:22-62
+15-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:7:5-64
+15-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:7:22-62
 16    <uses-permission android:name="android.permission.INTERNET" />
-16-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:4:5-67
-16-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:4:22-64
+16-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:4:5-67
+16-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:4:22-64
 17    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-17-->[com.facebook.flipper:flipper:0.125.0] /Users/noel/.gradle/caches/transforms-3/03f04a3f11198ce3b7c6cedb9b41266b/transformed/jetified-flipper-0.125.0/AndroidManifest.xml:16:5-76
-17-->[com.facebook.flipper:flipper:0.125.0] /Users/noel/.gradle/caches/transforms-3/03f04a3f11198ce3b7c6cedb9b41266b/transformed/jetified-flipper-0.125.0/AndroidManifest.xml:16:22-73
+17-->[com.facebook.flipper:flipper:0.125.0] C:\Users\user\.gradle\caches\transforms-3\03f04a3f11198ce3b7c6cedb9b41266b\transformed\jetified-flipper-0.125.0\AndroidManifest.xml:16:5-76
+17-->[com.facebook.flipper:flipper:0.125.0] C:\Users\user\.gradle\caches\transforms-3\03f04a3f11198ce3b7c6cedb9b41266b\transformed\jetified-flipper-0.125.0\AndroidManifest.xml:16:22-73
 18
 19    <application
-19-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:10:5-31:19
+19-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:10:5-31:19
 20        android:name="com.capture.MainApplication"
-20-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:11:7-38
+20-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:11:7-38
 21        android:allowBackup="false"
-21-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:15:7-34
+21-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:15:7-34
 22        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-22-->[androidx.core:core:1.8.0] /Users/noel/.gradle/caches/transforms-3/6be23c5517985f19fcabc9b798caadc5/transformed/core-1.8.0/AndroidManifest.xml:24:18-86
+22-->[androidx.core:core:1.8.0] C:\Users\user\.gradle\caches\transforms-3\6be23c5517985f19fcabc9b798caadc5\transformed\core-1.8.0\AndroidManifest.xml:24:18-86
 23        android:debuggable="true"
 24        android:icon="@mipmap/ic_launcher"
-24-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:13:7-41
+24-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:13:7-41
 25        android:label="@string/app_name"
-25-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:12:7-39
+25-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:12:7-39
 26        android:networkSecurityConfig="@xml/network_security_config"
-26-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:17:7-67
+26-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:17:7-67
 27        android:roundIcon="@mipmap/ic_launcher_round"
-27-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:14:7-52
+27-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:14:7-52
 28        android:theme="@style/AppTheme"
-28-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:18:7-38
+28-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:18:7-38
 29        android:usesCleartextTraffic="true" >
-29-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:16:7-42
+29-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:16:7-42
 30        <activity
-30-->/Users/noel/madcamp_2/app/android/app/src/debug/AndroidManifest.xml:11:9-111
+30-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\debug\AndroidManifest.xml:11:9-111
 31            android:name="com.facebook.react.devsupport.DevSettingsActivity"
-31-->/Users/noel/madcamp_2/app/android/app/src/debug/AndroidManifest.xml:11:19-83
+31-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\debug\AndroidManifest.xml:11:19-83
 32            android:exported="false" />
-32-->/Users/noel/madcamp_2/app/android/app/src/debug/AndroidManifest.xml:11:84-108
+32-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\debug\AndroidManifest.xml:11:84-108
 33        <activity
-33-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:19:7-30:18
+33-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:19:7-30:18
 34            android:name="com.capture.MainActivity"
-34-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:20:9-37
+34-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:20:9-37
 35            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
-35-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:22:9-118
+35-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:22:9-118
 36            android:exported="true"
-36-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:25:9-32
+36-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:25:9-32
 37            android:label="@string/app_name"
-37-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:21:9-41
+37-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:21:9-41
 38            android:launchMode="singleTask"
-38-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:23:9-40
+38-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:23:9-40
 39            android:windowSoftInputMode="adjustResize" >
-39-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:24:9-51
+39-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:24:9-51
 40            <intent-filter>
-40-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:26:9-29:25
+40-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:26:9-29:25
 41                <action android:name="android.intent.action.MAIN" />
-41-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:27:13-65
-41-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:27:21-62
+41-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:27:13-65
+41-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:27:21-62
 42
 43                <category android:name="android.intent.category.LAUNCHER" />
-43-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:28:13-73
-43-->/Users/noel/madcamp_2/app/android/app/src/main/AndroidManifest.xml:28:23-70
+43-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:28:13-73
+43-->C:\Users\user\Desktop\2024\madcamp_2\app\android\app\src\main\AndroidManifest.xml:28:23-70
 44            </intent-filter>
 45        </activity>
 46
 47        <provider
-47-->[:react-native-image-picker] /Users/noel/madcamp_2/app/node_modules/react-native-image-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:10:9-18:20
+47-->[:react-native-image-picker] C:\Users\user\Desktop\2024\madcamp_2\app\node_modules\react-native-image-picker\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:10:9-18:20
 48            android:name="com.imagepicker.ImagePickerProvider"
-48-->[:react-native-image-picker] /Users/noel/madcamp_2/app/node_modules/react-native-image-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:11:13-63
+48-->[:react-native-image-picker] C:\Users\user\Desktop\2024\madcamp_2\app\node_modules\react-native-image-picker\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:11:13-63
 49            android:authorities="com.capture.imagepickerprovider"
-49-->[:react-native-image-picker] /Users/noel/madcamp_2/app/node_modules/react-native-image-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:12:13-71
+49-->[:react-native-image-picker] C:\Users\user\Desktop\2024\madcamp_2\app\node_modules\react-native-image-picker\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:12:13-71
 50            android:exported="false"
-50-->[:react-native-image-picker] /Users/noel/madcamp_2/app/node_modules/react-native-image-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:13:13-37
+50-->[:react-native-image-picker] C:\Users\user\Desktop\2024\madcamp_2\app\node_modules\react-native-image-picker\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:13:13-37
 51            android:grantUriPermissions="true" >
-51-->[:react-native-image-picker] /Users/noel/madcamp_2/app/node_modules/react-native-image-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:14:13-47
+51-->[:react-native-image-picker] C:\Users\user\Desktop\2024\madcamp_2\app\node_modules\react-native-image-picker\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:14:13-47
 52            <meta-data
-52-->[:react-native-image-picker] /Users/noel/madcamp_2/app/node_modules/react-native-image-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:15:13-17:70
+52-->[:react-native-image-picker] C:\Users\user\Desktop\2024\madcamp_2\app\node_modules\react-native-image-picker\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:15:13-17:70
 53                android:name="android.support.FILE_PROVIDER_PATHS"
-53-->[:react-native-image-picker] /Users/noel/madcamp_2/app/node_modules/react-native-image-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:16:17-67
+53-->[:react-native-image-picker] C:\Users\user\Desktop\2024\madcamp_2\app\node_modules\react-native-image-picker\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:16:17-67
 54                android:resource="@xml/imagepicker_provider_paths" />
-54-->[:react-native-image-picker] /Users/noel/madcamp_2/app/node_modules/react-native-image-picker/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml:17:17-67
+54-->[:react-native-image-picker] C:\Users\user\Desktop\2024\madcamp_2\app\node_modules\react-native-image-picker\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:17:17-67
 55        </provider>
 56        <provider
-56-->[androidx.emoji2:emoji2:1.0.0] /Users/noel/.gradle/caches/transforms-3/b6fe4da57007a43d86a66ba4c66459bd/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:26:9-34:20
+56-->[androidx.emoji2:emoji2:1.0.0] C:\Users\user\.gradle\caches\transforms-3\b6fe4da57007a43d86a66ba4c66459bd\transformed\jetified-emoji2-1.0.0\AndroidManifest.xml:26:9-34:20
 57            android:name="androidx.startup.InitializationProvider"
-57-->[androidx.emoji2:emoji2:1.0.0] /Users/noel/.gradle/caches/transforms-3/b6fe4da57007a43d86a66ba4c66459bd/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:27:13-67
+57-->[androidx.emoji2:emoji2:1.0.0] C:\Users\user\.gradle\caches\transforms-3\b6fe4da57007a43d86a66ba4c66459bd\transformed\jetified-emoji2-1.0.0\AndroidManifest.xml:27:13-67
 58            android:authorities="com.capture.androidx-startup"
-58-->[androidx.emoji2:emoji2:1.0.0] /Users/noel/.gradle/caches/transforms-3/b6fe4da57007a43d86a66ba4c66459bd/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:28:13-68
+58-->[androidx.emoji2:emoji2:1.0.0] C:\Users\user\.gradle\caches\transforms-3\b6fe4da57007a43d86a66ba4c66459bd\transformed\jetified-emoji2-1.0.0\AndroidManifest.xml:28:13-68
 59            android:exported="false" >
-59-->[androidx.emoji2:emoji2:1.0.0] /Users/noel/.gradle/caches/transforms-3/b6fe4da57007a43d86a66ba4c66459bd/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:29:13-37
+59-->[androidx.emoji2:emoji2:1.0.0] C:\Users\user\.gradle\caches\transforms-3\b6fe4da57007a43d86a66ba4c66459bd\transformed\jetified-emoji2-1.0.0\AndroidManifest.xml:29:13-37
 60            <meta-data
-60-->[androidx.emoji2:emoji2:1.0.0] /Users/noel/.gradle/caches/transforms-3/b6fe4da57007a43d86a66ba4c66459bd/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:31:13-33:52
+60-->[androidx.emoji2:emoji2:1.0.0] C:\Users\user\.gradle\caches\transforms-3\b6fe4da57007a43d86a66ba4c66459bd\transformed\jetified-emoji2-1.0.0\AndroidManifest.xml:31:13-33:52
 61                android:name="androidx.emoji2.text.EmojiCompatInitializer"
-61-->[androidx.emoji2:emoji2:1.0.0] /Users/noel/.gradle/caches/transforms-3/b6fe4da57007a43d86a66ba4c66459bd/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:32:17-75
+61-->[androidx.emoji2:emoji2:1.0.0] C:\Users\user\.gradle\caches\transforms-3\b6fe4da57007a43d86a66ba4c66459bd\transformed\jetified-emoji2-1.0.0\AndroidManifest.xml:32:17-75
 62                android:value="androidx.startup" />
-62-->[androidx.emoji2:emoji2:1.0.0] /Users/noel/.gradle/caches/transforms-3/b6fe4da57007a43d86a66ba4c66459bd/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:33:17-49
+62-->[androidx.emoji2:emoji2:1.0.0] C:\Users\user\.gradle\caches\transforms-3\b6fe4da57007a43d86a66ba4c66459bd\transformed\jetified-emoji2-1.0.0\AndroidManifest.xml:33:17-49
 63            <meta-data
-63-->[androidx.lifecycle:lifecycle-process:2.4.0] /Users/noel/.gradle/caches/transforms-3/bc74a39e1ea23fea00bfcf2682a93948/transformed/jetified-lifecycle-process-2.4.0/AndroidManifest.xml:31:13-33:52
+63-->[androidx.lifecycle:lifecycle-process:2.4.0] C:\Users\user\.gradle\caches\transforms-3\bc74a39e1ea23fea00bfcf2682a93948\transformed\jetified-lifecycle-process-2.4.0\AndroidManifest.xml:31:13-33:52
 64                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
-64-->[androidx.lifecycle:lifecycle-process:2.4.0] /Users/noel/.gradle/caches/transforms-3/bc74a39e1ea23fea00bfcf2682a93948/transformed/jetified-lifecycle-process-2.4.0/AndroidManifest.xml:32:17-78
+64-->[androidx.lifecycle:lifecycle-process:2.4.0] C:\Users\user\.gradle\caches\transforms-3\bc74a39e1ea23fea00bfcf2682a93948\transformed\jetified-lifecycle-process-2.4.0\AndroidManifest.xml:32:17-78
 65                android:value="androidx.startup" />
-65-->[androidx.lifecycle:lifecycle-process:2.4.0] /Users/noel/.gradle/caches/transforms-3/bc74a39e1ea23fea00bfcf2682a93948/transformed/jetified-lifecycle-process-2.4.0/AndroidManifest.xml:33:17-49
+65-->[androidx.lifecycle:lifecycle-process:2.4.0] C:\Users\user\.gradle\caches\transforms-3\bc74a39e1ea23fea00bfcf2682a93948\transformed\jetified-lifecycle-process-2.4.0\AndroidManifest.xml:33:17-49
 66        </provider>
 67    </application>
 68
