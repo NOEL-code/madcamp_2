@@ -1,7 +1,7 @@
 const axios = require("axios");
 const { getUserImageById } = require("./userService");
 
-const url = "http://localhost:5005/verify";
+const url = "http://192.249.29.4:5005/verify";
 
 exports.verify = async (userId, imageUrl) => {
   const image2_path = getUserImageById(userId);
