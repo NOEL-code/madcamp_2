@@ -8,7 +8,7 @@ import {
   Alert,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import {setUser} from '../../redux/userSlice'; // Adjust the import path as needed
+import {setUser} from '../../reduxs/userSlice'; // Adjust the import path as needed
 import {fetchLogin} from '../../Service/user'; // Adjust the import path as needed
 
 const LogIn = ({navigation}) => {

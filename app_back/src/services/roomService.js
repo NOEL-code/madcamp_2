@@ -126,10 +126,9 @@ exports.updateRoomDescription = async (roomId, roomName, roomDescription) => {
 };
 
 exports.getRoomInfo = async (roomId) => {
-  const room = await Room.findById(roomId).populate('members.userId')
+  const room = await Room.findById(roomId).populate("members.userId");
   if (!room) {
     throw new Error("Room not found");
   }
   return room;
 };
-

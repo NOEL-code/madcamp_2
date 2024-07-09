@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {
   View,
   Text,
@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import api from '../../utils/api';
-import {useSelector} from 'react-redux';
 
 const statusStyles = {
   1: {color: '#03CF5D', text: '출석'},
@@ -38,33 +37,47 @@ const TeamAdminScreen = ({route, navigation}) => {
   const [waitingUsers, setWaitingUsers] = useState([]);
   const [selectedTab, setSelectedTab] = useState('현황');
 
-  useEffect(() => {
-    const fetchRoomInfo = async () => {
-      try {
-        const response = await api.get(`/rooms/${roomId}`);
-        const membersWithStatus = await Promise.all(
-          response.data.members.map(async member => {
-            const statusResponse = await api.get(
-              `/attendance/status/${member.userId._id}`,
-            );
-            return {...member, status: statusResponse.data.status};
-          }),
-        );
-        setRoomInfo(response.data);
-        setTitle(response.data.roomName);
-        setSubTitle(response.data.subTitle);
-        setUsersState(membersWithStatus);
-        setWaitingUsers(response.data.waitingList || []);
-      } catch (error) {
-        console.error('Failed to fetch room info:', error);
-      }
-    };
-
-    fetchRoomInfo();
+  const fetchRoomInfo = useCallback(async () => {
+    try {
+      const response = await api.get(`/rooms/${roomId}`);
+      const membersWithStatus = await Promise.all(
+        response.data.members.map(async member => {
+          const statusResponse = await api.get(
+            `/attendance/status/${member.userId._id}`,
+          );
+          return {...member, status: statusResponse.data.status};
+        }),
+      );
+      setRoomInfo(response.data);
+      setTitle(response.data.roomName);
+      setSubTitle(response.data.roomDescription);
+      setUsersState(membersWithStatus);
+      setWaitingUsers(response.data.waitingList || []);
+    } catch (error) {
+      console.error('Failed to fetch room info:', error);
+    }
   }, [roomId]);
+
+  useEffect(() => {
+    fetchRoomInfo();
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchRoomInfo();
+    });
+    return unsubscribe;
+  }, [fetchRoomInfo, navigation]);
 
   const toggleEditMode = () => {
     setIsEditMode(!isEditMode);
+
+    if (isEditMode) {
+      const req = {
+        roomName: title,
+        roomDescription: subTitle,
+      };
+      const response = api.put(`/rooms/${roomId}`, req);
+
+      console.log(response);
+    }
   };
 
   const handleStatusChange = async (value, index) => {

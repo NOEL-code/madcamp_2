@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import api from '../../utils/api';
-import {setMembers} from '../../redux/createRoomSlice'; // Redux 액션 임포트
+import {setMembers} from '../../reduxs/createRoomSlice'; // Redux 액션 임포트
 
 const initialUsers = []; // 초기 사용자 데이터를 빈 배열로 설정
 

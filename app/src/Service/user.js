@@ -1,7 +1,7 @@
 import api from '../utils/api'; // Adjust the import path as needed
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Alert} from 'react-native';
-import {setUser} from '../redux/userSlice'; // Adjust the import path as needed
+import {setUser} from '../reduxs/userSlice'; // Adjust the import path as needed
 
 export const fetchLogin = async (email, password) => {
   try {

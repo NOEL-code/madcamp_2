@@ -1,6 +1,6 @@
 import React from 'react';
 import {Provider} from 'react-redux';
-import {store} from './src/redux/store';
+import {store} from './src/reduxs/store';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import MainScreen from './src/Screen/MainScreen'; // 기존 화면
@@ -16,7 +16,6 @@ import LogInScreen from './src/Screen/MyPage/LogIn';
 import SignUpScreen from './src/Screen/MyPage/SignUp';
 import ProfileScreen from './src/Screen/MyPage/Profile';
 import InviteRoomScreen from './src/Screen/Admin/InviteRoomScreen';
-import Toast from 'react-native-toast-message';
 
 const Stack = createStackNavigator();
 
