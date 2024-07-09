@@ -17,7 +17,7 @@ export const fetchLogin = async (email, password) => {
   } catch (error) {
     if (error.response) {
       console.log('Error response data:', error.response.data); // 오류 응답 데이터 로그
-    } 
+    }
     console.error('Login error', error);
     return {success: false};
   }
@@ -44,25 +44,29 @@ export const fetchImage = async (formData, user, dispatch) => {
   }
 };
 
-export const verifyUserImage = async (imageUri, userId) => {
+export const verifyUserImage = async imageUri => {
   const formData = new FormData();
   formData.append('file', {
     uri: imageUri,
     type: 'image/jpeg',
     name: 'photo.jpg',
   });
-  formData.append('userId', userId);
 
   try {
-    const response = await api.post(`/verify/${userId}`, formData, {
+    const response = await api.post(`/verify`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
     console.log('Image uploaded successfully:', response.data);
-    return response.data;
+    if (response.data.verified) {
+      return {userId: response.data.userId, userName: response.data.userName};
+    } else {
+      return false;
+    }
   } catch (error) {
-    console.error('Error uploading image with user ID:', error);
+    console.error('Error uploading image:', error);
+    return false;
   }
 };
 

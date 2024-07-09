@@ -26,14 +26,12 @@ const statusBoxStyles = {
 
 const TeamAdminScreen = ({route, navigation}) => {
   const {roomId} = route.params;
-  const currentUser = useSelector(state => state.user);
   const [roomInfo, setRoomInfo] = useState({
     roomName: '',
     subTitle: '',
     members: [],
   });
   const [isEditMode, setIsEditMode] = useState(false);
-  const [isStatusEditMode, setIsStatusEditMode] = useState(false);
   const [title, setTitle] = useState('');
   const [subTitle, setSubTitle] = useState('');
   const [usersState, setUsersState] = useState([]);
@@ -72,7 +70,7 @@ const TeamAdminScreen = ({route, navigation}) => {
   const handleStatusChange = async (value, index) => {
     const userId = usersState[index].userId._id;
     try {
-      await api.post(`/attendance/status/${userId}`, { status: value });
+      await api.post(`/attendance/status/${userId}`, {status: value});
       const newUsers = [...usersState];
       newUsers[index].status = value;
       setUsersState(newUsers);
@@ -187,7 +185,6 @@ const TeamAdminScreen = ({route, navigation}) => {
               <TouchableOpacity
                 onPress={() =>
                   navigation.navigate('CameraScreen', {
-                    members: roomInfo.members,
                     roomId,
                   })
                 }>

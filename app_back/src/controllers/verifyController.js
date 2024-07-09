@@ -5,10 +5,9 @@ exports.verify = async (req, res) => {
     console.error("verify error: No file uploaded");
     return res.status(400).json({ message: "No file uploaded" });
   }
-  const { userId } = req.params;
   const imageUrl = req.file.location; // S3에 저장된 이미지의 URL
   try {
-    const result = await verify(userId, imageUrl);
+    const result = await verify(imageUrl);
 
     console.log(result);
     res.status(200).json(result);

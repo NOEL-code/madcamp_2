@@ -43,19 +43,6 @@ const CameraScreen = ({route, navigation}) => {
     }
   };
 
-  const checkMemberName = () => {
-    const member = members.find(member => member.userId.name === inputName);
-    if (member) {
-      console.log('success: Member found!');
-      setSelectedUserId(member.userId._id);
-      Alert.alert('성공', '회원이 확인되었습니다.');
-    } else {
-      console.log('fail: Member not found!');
-      setSelectedUserId(null);
-      Alert.alert('실패', '회원을 찾을 수 없습니다.');
-    }
-  };
-
   const recordAttendance = async action => {
     if (!selectedUserId) {
       console.log(`fail: No member selected for ${action}!`);
@@ -93,10 +80,6 @@ const CameraScreen = ({route, navigation}) => {
   };
 
   const handleCameraPress = () => {
-    if (!inputName) {
-      Alert.alert('경고', '회원정보를 입력해주세요.');
-      return;
-    }
     check(PERMISSIONS.ANDROID.CAMERA).then(result => {
       if (result === RESULTS.GRANTED) {
         launchCameraFunction();
@@ -131,14 +114,13 @@ const CameraScreen = ({route, navigation}) => {
           setPhoto(source);
           setLoading(true);
           try {
-            const resultVerify = await verifyUserImage(
-              response.assets[0].uri,
-              selectedUserId,
-            );
+            const resultVerify = await verifyUserImage(response.assets[0].uri);
             console.log(resultVerify);
             setLoading(false);
             if (resultVerify) {
               setIsVerified(true);
+              setInputName(resultVerify.userName);
+              setSelectedUserId(resultVerify.userId);
               Alert.alert('성공', '인증 완료');
             } else {
               Alert.alert('실패', '인증 실패, 다시 시도해주세요.');
@@ -180,15 +162,13 @@ const CameraScreen = ({route, navigation}) => {
         />
       )}
       <TextInput
-        style={styles.input}
-        placeholder="회원 이름 입력"
+        style={styles.nameButton}
+        placeholder="사진으로 회원 인증을 해주세요"
         value={inputName}
         onChangeText={setInputName}
-        placeholderTextColor="#888"
+        placeholderTextColor="#fff"
+        editable={false} // 회원 이름 입력란을 읽기 전용으로 설정
       />
-      <TouchableOpacity style={styles.checkButton} onPress={checkMemberName}>
-        <Text style={styles.checkButtonText}>회원 확인</Text>
-      </TouchableOpacity>
       <View style={styles.buttonsContainer}>
         <TouchableOpacity
           style={[styles.button, !isVerified && styles.disabledButton]}
@@ -253,28 +233,14 @@ const styles = StyleSheet.create({
   loading: {
     marginVertical: 20,
   },
-  input: {
+  nameButton: {
     height: 50,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 20,
-    padding: 10,
     marginTop: 20,
-    width: '100%',
-    alignSelf: 'center',
-    borderRadius: 10,
-    backgroundColor: '#fff',
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  checkButton: {
-    backgroundColor: '#03CF5D',
     padding: 15,
     borderRadius: 20,
     alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#03CF5D',
     marginBottom: 20,
   },
   checkButtonText: {
