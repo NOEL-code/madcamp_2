@@ -157,7 +157,7 @@ const TeamAdminScreen = ({navigation}) => {
               <TouchableOpacity
                 onPress={() =>
                   // 예를 들어, ProfileScreen에서 CameraScreen으로 유저 정보를 전달합니다
-                  navigation.navigate('CameraScreen', {user: currentUser})
+                  navigation.navigate('CameraScreen')
                 }>
                 <Image
                   style={styles.camera}

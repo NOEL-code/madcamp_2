@@ -55,7 +55,7 @@ const App = () => {
             options={{headerShown: false}}
           />
           <Stack.Screen
-            name="CameraAdmin"
+            name="CameraScreen"
             component={CameraScreen}
             options={{headerShown: false}}
           />
