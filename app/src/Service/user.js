@@ -1,7 +1,7 @@
 import api from '../utils/api'; // Adjust the import path as needed
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Alert} from 'react-native';
-import {setUser} from '../redux/userSlice'; // Adjust the import path as needed
+import {setUser} from '../reduxs/userSlice'; // Adjust the import path as needed
 
 export const fetchLogin = async (email, password) => {
   try {
@@ -44,7 +44,7 @@ export const fetchImage = async (formData, user, dispatch) => {
   }
 };
 
-export const verifyUserImage = async imageUri => {
+export const verifyUserImage = async (imageUri, roomId) => {
   const formData = new FormData();
   formData.append('file', {
     uri: imageUri,
@@ -53,14 +53,17 @@ export const verifyUserImage = async imageUri => {
   });
 
   try {
-    const response = await api.post(`/verify`, formData, {
+    const response = await api.post(`/verify/${roomId}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
     console.log('Image uploaded successfully:', response.data);
-    if (response.data.verified) {
-      return {userId: response.data.userId, userName: response.data.userName};
+    if (response.data.userId) {
+      return {
+        userId: response.data.userId,
+        userName: response.data.userName,
+      };
     } else {
       return false;
     }
@@ -69,6 +72,32 @@ export const verifyUserImage = async imageUri => {
     return false;
   }
 };
+
+// export const verifyUserImage = async imageUri => {
+//   const formData = new FormData();
+//   formData.append('file', {
+//     uri: imageUri,
+//     type: 'image/jpeg',
+//     name: 'photo.jpg',
+//   });
+
+//   try {
+//     const response = await api.post('/verify', formData, {
+//       headers: {
+//         'Content-Type': 'multipart/form-data',
+//       },
+//     });
+//     console.log('Image uploaded successfully:', response.data);
+//     if (response.data.verified) {
+//       return {userId: response.data.userId, userName: response.data.userName};
+//     } else {
+//       return false;
+//     }
+//   } catch (error) {
+//     console.error('Error uploading image:', error);
+//     return false;
+//   }
+// };
 
 export const fetchLogout = async () => {
   try {

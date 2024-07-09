@@ -7,7 +7,7 @@ const {
   removeMemberFromRoom,
   updateRoomDescription,
   deleteRoomById,
-  getRoomInfo
+  getRoomInfo,
 } = require("../services/roomService");
 
 exports.getRooms = async (req, res) => {
@@ -103,6 +103,7 @@ exports.updateRoomDescription = async (req, res) => {
       roomName,
       roomDescription
     );
+    console.log(updatedRoom);
     res.status(200).json(updatedRoom);
   } catch (err) {
     console.log(err.message);

@@ -10,7 +10,6 @@ module.exports = {
           src: './src',
           Components: './src/Components',
           Screen: './src/Screen',
-          redux: './src/redux'
         },
       },
     ],
