@@ -1,46 +1,23 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  Image,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
 } from 'react-native';
-import {Calendar} from 'react-native-calendars';
+import { Calendar } from 'react-native-calendars';
 import NavBar from 'Components/NavBar';
-const workDays = [
-  {
-    date: '2024-07-07',
-    on: '10:30:00',
-    off: '22:00:00',
-    away: [{start: '14:00:00', end: '15:00:00'}],
-  },
-  {
-    date: '2024-07-06',
-    on: '10:30:00',
-    off: '22:00:00',
-    away: [{start: '14:00:00', end: '15:00:00'}],
-  },
-  {
-    date: '2024-07-25',
-    on: '13:30:00',
-    off: '24:00:00',
-    away: [
-      {start: '14:00:00', end: '15:00:00'},
-      {start: '16:00:00', end: '16:30:00'},
-      {start: '18:00:00', end: '21:00:00'},
-    ],
-  },
-];
+import api from '../../utils/api';  // api 유틸리티 가져오기
 
 const getMarkedDates = (workDays, selected) => {
   const markedDates = {};
   workDays.forEach(day => {
-    markedDates[day.date] = {dots: [{key: 'work', color: '#03CF5D'}]};
+    markedDates[day.date] = { dots: [{ key: 'work', color: '#03CF5D' }] };
   });
   if (selected) {
     markedDates[selected] = {
+
       ...markedDates[selected],
       selected: true,
       selectedColor: '#03CF5D',
@@ -76,14 +53,37 @@ const calculatePercentage = time => {
   return (adjustedTimeInSeconds / dayDurationInSeconds) * 100;
 };
 
-const Stat = ({navigation}) => {
+const Stat = ({ navigation, userId }) => {
   const today = new Date().toISOString().split('T')[0]; // 현재 날짜를 yyyy-mm-dd 형식으로 가져오기
   const [selected, setSelected] = useState(today);
   const [selectedWorkDay, setSelectedWorkDay] = useState(null);
+  const [workDays, setWorkDays] = useState([]);
 
   useEffect(() => {
-    const workDay = workDays.find(workDay => workDay.date === today);
-    setSelectedWorkDay(workDay || null);
+    const fetchAttendance = async () => {
+      try {
+        const response = await api.get(`/attendance`);
+        const attendanceData = response.data;
+
+        const formattedWorkDays = attendanceData.map(record => ({
+          date: record.date,
+          on: record.arriveTime,
+          off: record.departTime,
+          away: record.leave.map(leaveRecord => ({
+            start: leaveRecord.goOut,
+            end: leaveRecord.comeBack,
+          })),
+        }));
+
+        setWorkDays(formattedWorkDays);
+        const todayWorkDay = formattedWorkDays.find(workDay => workDay.date === today);
+        setSelectedWorkDay(todayWorkDay || null);
+      } catch (error) {
+        console.error('Failed to fetch attendance data:', error);
+      }
+    };
+
+    fetchAttendance();
   }, [today]);
 
   const handleDayPress = day => {
@@ -217,15 +217,15 @@ const Stat = ({navigation}) => {
             </>
           )}
           <View style={styles.legendContainer}>
-            <View style={[styles.legendDot, {backgroundColor: '#03CF5D'}]} />
+            <View style={[styles.legendDot, { backgroundColor: '#03CF5D' }]} />
             <Text style={styles.legendText}>근무</Text>
-            <View style={[styles.legendDot, {backgroundColor: '#5F5F5F'}]} />
+            <View style={[styles.legendDot, { backgroundColor: '#5F5F5F' }]} />
             <Text style={styles.legendText}>자리비움</Text>
           </View>
         </View>
       </ScrollView>
 
-      <NavBar navigation={navigation} currentRoute={'Stat'}/>
+      <NavBar navigation={navigation} currentRoute={'Stat'} />
     </View>
   );
 };

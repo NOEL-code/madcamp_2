@@ -5,8 +5,7 @@ import createRoomReducer from './createRoomSlice';
 export const store = configureStore({
   reducer: {
     user: userReducer,
-    createRoom: createRoomReducer,
-  },
-});
-
-export default store;
+    createRoom: createRoomReducer,  },
+  });
+  
+  export default store;
