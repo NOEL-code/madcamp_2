@@ -17,6 +17,7 @@ const getMarkedDates = (workDays, selected) => {
   });
   if (selected) {
     markedDates[selected] = {
+
       ...markedDates[selected],
       selected: true,
       selectedColor: '#03CF5D',
@@ -52,7 +53,7 @@ const calculatePercentage = time => {
   return (adjustedTimeInSeconds / dayDurationInSeconds) * 100;
 };
 
-const Stat = ({ navigation }) => {
+const Stat = ({ navigation, userId }) => {
   const today = new Date().toISOString().split('T')[0]; // 현재 날짜를 yyyy-mm-dd 형식으로 가져오기
   const [selected, setSelected] = useState(today);
   const [selectedWorkDay, setSelectedWorkDay] = useState(null);
@@ -61,7 +62,7 @@ const Stat = ({ navigation }) => {
   useEffect(() => {
     const fetchAttendance = async () => {
       try {
-        const response = await api.get(`/attendance/user/${userId}`);
+        const response = await api.get(`/attendance`);
         const attendanceData = response.data;
 
         const formattedWorkDays = attendanceData.map(record => ({

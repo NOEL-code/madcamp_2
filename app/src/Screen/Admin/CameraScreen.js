@@ -16,81 +16,33 @@ const CameraScreen = ({ route, navigation }) => {
     if (member) {
       console.log('success: Member found!');
       setSelectedUserId(member.userId._id);
+      Alert.alert('성공', '회원이 확인되었습니다.');
     } else {
       console.log('fail: Member not found!');
       setSelectedUserId(null);
+      Alert.alert('실패', '회원을 찾을 수 없습니다.');
     }
   };
 
-  const recordArrival = async () => {
+  const recordAttendance = async (action) => {
     if (!selectedUserId) {
-      console.log('fail: No member selected!');
+      console.log(`fail: No member selected for ${action}!`);
+      Alert.alert('실패', '회원을 선택하지 않았습니다.');
       return;
     }
     try {
-      const response = await api.post(`/attendance/arrival/${selectedUserId}`);
+      const response = await api.post(`/attendance/${action}/${selectedUserId}`);
       if (response.status === 200) {
-        console.log('success: Arrival recorded!');
+        console.log(`success: ${action} recorded!`);
+        Alert.alert('성공', `${action} 기록 완료!`);
       } else {
-        console.log('fail: Unable to record arrival!');
+        console.log(`fail: Unable to record ${action}!`);
+        Alert.alert('실패', `${action} 기록 실패!`);
       }
     } catch (error) {
-      console.error('Error recording arrival:', error);
-      console.log('fail: Unable to record arrival!');
-    }
-  };
-
-  const recordGoOut = async () => {
-    if (!selectedUserId) {
-      console.log('fail: No member selected!');
-      return;
-    }
-    try {
-      const response = await api.post(`/attendance/goout/${selectedUserId}`);
-      if (response.status === 200) {
-        console.log('success: Go out recorded!');
-      } else {
-        console.log('fail: Unable to record go out!');
-      }
-    } catch (error) {
-      console.error('Error recording go out:', error);
-      console.log('fail: Unable to record go out!');
-    }
-  };
-
-  const recordComeBack = async () => {
-    if (!selectedUserId) {
-      console.log('fail: No member selected!');
-      return;
-    }
-    try {
-      const response = await api.post(`/attendance/comeback/${selectedUserId}`);
-      if (response.status === 200) {
-        console.log('success: Come back recorded!');
-      } else {
-        console.log('fail: Unable to record come back!');
-      }
-    } catch (error) {
-      console.error('Error recording come back:', error);
-      console.log('fail: Unable to record come back!');
-    }
-  };
-
-  const recordLeave = async () => {
-    if (!selectedUserId) {
-      console.log('fail: No member selected!');
-      return;
-    }
-    try {
-      const response = await api.post(`/attendance/leave/${selectedUserId}`);
-      if (response.status === 200) {
-        console.log('success: Leave recorded!');
-      } else {
-        console.log('fail: Unable to record leave!');
-      }
-    } catch (error) {
-      console.error('Error recording leave:', error);
-      console.log('fail: Unable to record leave!');
+      console.error(`Error recording ${action}:`, error);
+      console.log(`fail: Unable to record ${action}!`);
+      Alert.alert('실패', `${action} 기록 중 오류 발생!`);
     }
   };
 
@@ -138,20 +90,20 @@ const CameraScreen = ({ route, navigation }) => {
         value={inputName}
         onChangeText={setInputName}
       />
-      <TouchableOpacity onPress={checkMemberName}>
-        <Text>Check Member</Text>
+      <TouchableOpacity style={styles.checkButton} onPress={checkMemberName}>
+        <Text style={styles.checkButtonText}>Check Member</Text>
       </TouchableOpacity>
       <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.button} onPress={recordArrival}>
+        <TouchableOpacity style={styles.button} onPress={() => recordAttendance('arrival')}>
           <Text style={styles.buttonText}>출근</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={recordGoOut}>
+        <TouchableOpacity style={styles.button} onPress={() => recordAttendance('goout')}>
           <Text style={styles.buttonText}>자리비움</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={recordComeBack}>
+        <TouchableOpacity style={styles.button} onPress={() => recordAttendance('comeback')}>
           <Text style={styles.buttonText}>복귀</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={recordLeave}>
+        <TouchableOpacity style={styles.button} onPress={() => recordAttendance('leave')}>
           <Text style={styles.buttonText}>퇴근</Text>
         </TouchableOpacity>
       </View>
@@ -197,6 +149,18 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     padding: 10,
     width: '80%',
+    alignSelf: 'center',
+  },
+  checkButton: {
+    backgroundColor: '#03CF5D',
+    padding: 10,
+    borderRadius: 20,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  checkButtonText: {
+    color: '#fff',
+    fontSize: 18,
   },
   buttonsContainer: {
     marginTop: 20,

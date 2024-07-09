@@ -8,10 +8,6 @@ const {
 } = require("../services/attendanceService");
 const { getUserById } = require('../services/userService');
 
-const checkAdmin = async (userId) => {
-  const user = await getUserById(userId);
-  return user.role === 'admin';
-};
 
 exports.getAttendance = async (req, res) => {
   try {
