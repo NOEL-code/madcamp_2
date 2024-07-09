@@ -1,38 +1,49 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   TextInput,
+  Alert,
 } from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
-import {setUser} from '../../redux/userSlice'; // Adjust the import path as needed
-import {fetchLogin} from '../../Service/user'; // Adjust the import path as needed
+import { useDispatch, useSelector } from 'react-redux';
+import { setUser } from '../../redux/userSlice'; // Adjust the import path as needed
+import { fetchLogin } from '../../Service/user'; // Adjust the import path as needed
 
-const LogIn = ({navigation}) => {
+const LogIn = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
   const user = useSelector(state => state.user);
 
   const handleLogin = async () => {
-    const result = await fetchLogin(email, password);
+    try {
+      const result = await fetchLogin(email, password);
 
-    const userData = result;
-    console.log(userData);
-    dispatch(
-      setUser({
-        id: userData.id,
-        phoneNumber: userData.phoneNumber,
-        photoUrl: userData.photoUrl,
-        userName: userData.name,
-        userEmail: userData.userEmail,
-      }),
-    );
-    console.log('Redux User State:', user); // Redux에 저장된 사용자 정보 출력
-    navigation.navigate('Main');
+      if (!result || result.error || !result.id) {
+        Alert.alert('로그인 실패', '아이디와 비밀번호를 확인해주세요.');
+      } else {
+        const userData = result;
+        console.log(userData);
+        dispatch(
+          setUser({
+            id: userData.id,
+            phoneNumber: userData.phoneNumber,
+            photoUrl: userData.photoUrl,
+            userName: userData.name,
+            userEmail: userData.userEmail,
+          }),
+        );
+        console.log('Redux User State:', user); // Redux에 저장된 사용자 정보 출력
+        navigation.navigate('Main');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      Alert.alert('로그인 실패', '서버 오류가 발생했습니다. 나중에 다시 시도해주세요.');
+    }
   };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>로그인</Text>
