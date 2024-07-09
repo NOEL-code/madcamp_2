@@ -1,5 +1,6 @@
 const { Attendance } = require("../models/Attendance");
 const { getUserById } = require("./userService");
+
 exports.recordArrival = async (userId) => {
   const today = new Date();
   const todayString = today.toLocaleDateString("en-CA");
@@ -28,16 +29,27 @@ exports.recordArrival = async (userId) => {
     userName: user.name,
   };
 };
+
 exports.recordLeave = async (userId) => {
   const today = new Date();
   const todayString = today.toLocaleDateString("en-CA");
   const currentTimeString = today.toTimeString().split(" ")[0];
 
-  const attendance = await Attendance.findOneAndUpdate(
+  let attendance = await Attendance.findOneAndUpdate(
     { userId, "records.date": todayString },
-    { $set: { "records.$.leaveTime": currentTimeString } },
+    {
+      $set: { "records.$.departTime": currentTimeString },
+    },
     { new: true }
   );
+
+  if (!attendance) {
+    attendance = new Attendance({
+      userId,
+      records: [{ date: todayString, departTime: currentTimeString }]
+    });
+    await attendance.save();
+  }
 
   const user = await getUserById(userId);
 
@@ -54,7 +66,7 @@ exports.recordGoOut = async (userId) => {
 
   const attendance = await Attendance.findOneAndUpdate(
     { userId, "records.date": todayString },
-    { $push: { "records.$.away": { goOut: currentTimeString } } },
+    { $push: { "records.$.leave": { goOut: currentTimeString } } },
     { new: true }
   );
 
@@ -75,11 +87,11 @@ exports.recordComeBack = async (userId) => {
     {
       userId,
       "records.date": todayString,
-      "records.away.goOut": { $ne: null },
-      "records.away.comeBack": null,
+      "records.leave.goOut": { $ne: null },
+      "records.leave.comeBack": null,
     },
     {
-      $set: { "records.$[outer].away.$[inner].comeBack": currentTimeString },
+      $set: { "records.$[outer].leave.$[inner].comeBack": currentTimeString },
     },
     {
       arrayFilters: [{ "outer.date": todayString }, { "inner.comeBack": null }],
