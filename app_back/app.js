@@ -30,6 +30,11 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
+
 app.use("/api", indexRouter);
 app.use("/api/users", require("./src/routes/usersRouter"));
 app.use("/api/rooms", require("./src/routes/roomRouter"));

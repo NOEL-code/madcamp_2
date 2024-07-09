@@ -7,7 +7,7 @@ import {
   TextInput,
   StyleSheet,
   ScrollView,
-  Alert
+  Alert,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import api from '../../utils/api';
@@ -40,36 +40,36 @@ const TeamAdminScreen = ({ route, navigation }) => {
   const [waitingUsers, setWaitingUsers] = useState([]);
   const [selectedTab, setSelectedTab] = useState('현황');
 
+  const fetchRoomInfo = async () => {
+    try {
+      const response = await api.get(`/rooms/${roomId}`);
+      const membersWithStatus = await Promise.all(
+        response.data.members.map(async member => {
+          const statusResponse = await api.get(
+            `/attendance/status/${member.userId._id}`,
+          );
+          return { ...member, status: statusResponse.data.status };
+        }),
+      );
+      setRoomInfo(response.data);
+      setTitle(response.data.roomName);
+      setSubTitle(response.data.subTitle);
+      setUsersState(membersWithStatus);
+    } catch (error) {
+      console.error('Failed to fetch room info:', error);
+    }
+  };
+
+  const fetchWaitingUsers = async () => {
+    try {
+      const response = await api.get(`/apply/waiting/${roomId}`);
+      setWaitingUsers(response.data.members || []);
+    } catch (error) {
+      console.error('Failed to fetch waiting users:', error);
+    }
+  };
+
   useEffect(() => {
-    const fetchRoomInfo = async () => {
-      try {
-        const response = await api.get(`/rooms/${roomId}`);
-        const membersWithStatus = await Promise.all(
-          response.data.members.map(async member => {
-            const statusResponse = await api.get(
-              `/attendance/status/${member.userId._id}`,
-            );
-            return { ...member, status: statusResponse.data.status };
-          }),
-        );
-        setRoomInfo(response.data);
-        setTitle(response.data.roomName);
-        setSubTitle(response.data.subTitle);
-        setUsersState(membersWithStatus);
-      } catch (error) {
-        console.error('Failed to fetch room info:', error);
-      }
-    };
-
-    const fetchWaitingUsers = async () => {
-      try {
-        const response = await api.get(`/apply/waiting/${roomId}`);
-        setWaitingUsers(response.data.members || []);
-      } catch (error) {
-        console.error('Failed to fetch waiting users:', error);
-      }
-    };
-
     fetchRoomInfo();
     fetchWaitingUsers();
   }, [roomId]);
@@ -114,25 +114,10 @@ const TeamAdminScreen = ({ route, navigation }) => {
     }
   };
 
-  const acceptUser = async (userId) => {
+  const handleAccept = async (userId) => {
     try {
-      await api.put(`/apply/accept/${roomId}/${userId}`);
-      setWaitingUsers(waitingUsers.filter(user => user.userId !== userId));
-      Alert.alert('성공', '멤버가 성공적으로 승인되었습니다.');
-    } catch (error) {
-      console.error('Failed to accept member:', error);
-      Alert.alert('실패', '멤버 승인에 실패했습니다.');
-    }
-  };
-
-  const rejectUser = async (userId) => {
-    try {
-      await api.put(`/apply/reject/${roomId}/${userId}`);
-      setWaitingUsers(waitingUsers.filter(user => user.userId !== userId));
-      Alert.alert('성공', '멤버가 성공적으로 거절되었습니다.');
-    } catch (error) {
-      console.error('Failed to reject member:', error);
-      Alert.alert('실패', '멤버 거절에 실패했습니다.');
+    } catch (err) {
+      console.log(err)
     }
   };
 
@@ -263,12 +248,13 @@ const TeamAdminScreen = ({ route, navigation }) => {
                   <Text style={styles.userName}>{waitingUser.userId.name}</Text>
                   <TouchableOpacity
                     style={styles.refuse}
-                    onPress={() => rejectUser(waitingUser.userId._id)}>
+                  >
                     <Text style={styles.refuseText}>거절</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.accept}
-                    onPress={() => acceptUser(waitingUser.userId._id)}>
+                    onPress = {() => {handleAccept(waitingUser.userId._id)}}
+                    >
                     <Text style={styles.acceptText}>승인</Text>
                   </TouchableOpacity>
                 </View>
