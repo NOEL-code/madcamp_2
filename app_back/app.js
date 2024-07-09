@@ -4,16 +4,8 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var mongoose = require("mongoose");
-
-// var indexRouter = require('./routes/index');
-// var usersRouter = require('./routes/users');
 require("dotenv").config();
 
-var createError = require("http-errors");
-var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
 var app = express();
 var indexRouter = require("./src/routes/index");
 
@@ -30,8 +22,11 @@ app.set("view engine", "ejs");
 app.use(logger("dev"));
 //cors?
 app.use(corsMiddleware);
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+
+// 요청 본문 크기 제한을 50MB로 설정
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
+
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 

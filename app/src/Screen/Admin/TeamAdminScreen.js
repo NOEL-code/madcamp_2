@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -8,26 +8,30 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import {Picker} from '@react-native-picker/picker';
 import api from '../../utils/api';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 
 const statusStyles = {
-  1: { color: '#03CF5D', text: '출석' },
-  2: { color: '#FFE600', text: '자리비움' },
-  3: { color: '#D9D9D9', text: '퇴근' },
+  1: {color: '#03CF5D', text: '출석'},
+  2: {color: '#FFE600', text: '자리비움'},
+  3: {color: '#D9D9D9', text: '퇴근'},
 };
 
 const statusBoxStyles = {
-  1: { backgroundColor: '#DFF5E9' },
-  2: { backgroundColor: '#FFF4D5' },
-  3: { backgroundColor: '#F4F4F4' },
+  1: {backgroundColor: '#DFF5E9'},
+  2: {backgroundColor: '#FFF4D5'},
+  3: {backgroundColor: '#F4F4F4'},
 };
 
-const TeamAdminScreen = ({ route, navigation }) => {
-  const { roomId } = route.params;
+const TeamAdminScreen = ({route, navigation}) => {
+  const {roomId} = route.params;
   const currentUser = useSelector(state => state.user);
-  const [roomInfo, setRoomInfo] = useState({ roomName: '', subTitle: '', members: [] });
+  const [roomInfo, setRoomInfo] = useState({
+    roomName: '',
+    subTitle: '',
+    members: [],
+  });
   const [isEditMode, setIsEditMode] = useState(false);
   const [isStatusEditMode, setIsStatusEditMode] = useState(false);
   const [title, setTitle] = useState('');
@@ -41,10 +45,12 @@ const TeamAdminScreen = ({ route, navigation }) => {
       try {
         const response = await api.get(`/rooms/${roomId}`);
         const membersWithStatus = await Promise.all(
-          response.data.members.map(async (member) => {
-            const statusResponse = await api.get(`/attendance/status/${member.userId._id}`);
-            return { ...member, status: statusResponse.data.status };
-          })
+          response.data.members.map(async member => {
+            const statusResponse = await api.get(
+              `/attendance/status/${member.userId._id}`,
+            );
+            return {...member, status: statusResponse.data.status};
+          }),
         );
         setRoomInfo(response.data);
         setTitle(response.data.roomName);
@@ -80,12 +86,12 @@ const TeamAdminScreen = ({ route, navigation }) => {
     setUsersState(newUsers);
   };
 
-  const getStatusStyle = (status) => {
-    return statusStyles[status] || { color: '#000', text: '알 수 없음' };
+  const getStatusStyle = status => {
+    return statusStyles[status] || {color: '#000', text: '알 수 없음'};
   };
 
-  const getStatusBoxStyle = (status) => {
-    return statusBoxStyles[status] || { backgroundColor: '#EEE' };
+  const getStatusBoxStyle = status => {
+    return statusBoxStyles[status] || {backgroundColor: '#EEE'};
   };
 
   return (
@@ -168,7 +174,7 @@ const TeamAdminScreen = ({ route, navigation }) => {
                   <View
                     style={[
                       styles.statusIndicator,
-                      { backgroundColor: getStatusStyle(user.status).color },
+                      {backgroundColor: getStatusStyle(user.status).color},
                     ]}
                   />
                   <Text style={styles.statusText}>
@@ -177,9 +183,14 @@ const TeamAdminScreen = ({ route, navigation }) => {
                 </View>
               </View>
             ))}
-            <View style={styles.cameraContainer}> 
+            <View style={styles.cameraContainer}>
               <TouchableOpacity
-                onPress={() => navigation.navigate('CameraAdmin', { members: roomInfo.members, roomId })}>
+                onPress={() =>
+                  navigation.navigate('CameraScreen', {
+                    members: roomInfo.members,
+                    roomId,
+                  })
+                }>
                 <Image
                   style={styles.camera}
                   source={require('assets/images/camera.png')}

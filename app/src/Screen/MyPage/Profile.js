@@ -115,7 +115,7 @@ const Profile = ({navigation}) => {
   const handleCancel = async roomId => {
     try {
       await api.put(`/apply/cancel/${roomId}/${user.id}`);
-      setWaitRooms(waitRooms.filter(room => room.roomId._id !== roomId));
+      setWaitRooms(waitRooms.filter(room => room.roomId?._id !== roomId)); // roomId가 null이 아닌지 체크
       Alert.alert('신청 취소 성공', '참여 신청을 성공적으로 취소했습니다.');
     } catch (error) {
       console.error('Failed to cancel application:', error);
@@ -169,18 +169,24 @@ const Profile = ({navigation}) => {
         <View style={styles.roomsContainer}>
           <View style={styles.RoomList}>
             <Text style={styles.sectionTitle}>승인 대기</Text>
-            {waitRooms.map((room, index) => (
+            {waitRooms?.map((room, index) => (
               <View key={index} style={styles.roomItem}>
                 <Image
                   source={require('../../../assets/images/person.png')}
                   style={styles.profileIcon}
                 />
-                <Text style={styles.roomName}>{room.roomId.roomName}</Text>
-                <TouchableOpacity
-                  style={styles.rightAlign}
-                  onPress={() => handleCancel(room.roomId._id)}>
-                  <Text style={styles.cancelButton}>취소</Text>
-                </TouchableOpacity>
+                {room.roomId && ( // room.roomId가 null인지 체크
+                  <>
+                    <Text style={styles.roomNameStyle}>
+                      {room.roomId.roomName}
+                    </Text>
+                    <TouchableOpacity
+                      style={styles.rightAlign}
+                      onPress={() => handleCancel(room.roomId._id)}>
+                      <Text style={styles.cancelButton}>취소</Text>
+                    </TouchableOpacity>
+                  </>
+                )}
               </View>
             ))}
           </View>
@@ -193,7 +199,7 @@ const Profile = ({navigation}) => {
                   source={require('../../../assets/images/person.png')}
                   style={styles.profileIcon}
                 />
-                <Text style={styles.roomName}>{room.roomName}</Text>
+                <Text style={styles.roomNameStyle}>{room.roomName}</Text>
                 <TouchableOpacity
                   style={styles.rightAlign}
                   onPress={() => handleExit(room._id)}>
@@ -308,7 +314,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginRight: 10,
   },
-  roomName: {
+  roomNameStyle: {
     fontSize: 18,
     flex: 1,
   },

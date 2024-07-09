@@ -1,4 +1,4 @@
-const { Token } = require("../models/Token"); // 실제 경로에 맞게 수정
+const { Token } = require("../models/token"); // 실제 경로에 맞게 수정
 
 const TokenModel = {
   async findToken(userId) {

@@ -30,7 +30,7 @@ export const fetchImage = async (formData, user, dispatch) => {
         'Content-Type': 'multipart/form-data',
       },
     });
-    console.log('Image uploaded successfully: ', res.data);
+    console.log('Image uploaded successfully: ', res);
 
     // Redux 상태 업데이트
     dispatch(
@@ -48,7 +48,7 @@ export const verifyUserImage = async (imageUri, userId) => {
   const formData = new FormData();
   formData.append('file', {
     uri: imageUri,
-    type: 'image/jpeg', // Adjust the type if necessary
+    type: 'image/jpeg',
     name: 'photo.jpg',
   });
   formData.append('userId', userId);
@@ -60,6 +60,7 @@ export const verifyUserImage = async (imageUri, userId) => {
       },
     });
     console.log('Image uploaded successfully:', response.data);
+    return response.data;
   } catch (error) {
     console.error('Error uploading image with user ID:', error);
   }

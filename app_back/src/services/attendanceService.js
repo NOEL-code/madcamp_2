@@ -1,4 +1,4 @@
-const { Attendance } = require("../models/Attendance");
+const { Attendance } = require("../models/attendance");
 const { getUserById } = require("./userService");
 
 exports.getAttendance = async (userId) => {
