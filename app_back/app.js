@@ -40,6 +40,7 @@ app.use("/api/users", require("./src/routes/usersRouter"));
 app.use("/api/rooms", require("./src/routes/roomRouter"));
 app.use("/api/invited", require("./src/routes/invitedRoomRouter"));
 app.use("/api/apply", require("./src/routes/applyRoomRouter"));
+app.use("/api/verify", require("./src/routes/verifyRouter"));
 
 //end point ? api 이면 indexrouter에서 잡아가는거야
 

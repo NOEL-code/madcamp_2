@@ -9,9 +9,12 @@ import {
 } from 'react-native';
 import {launchCamera} from 'react-native-image-picker';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
+import {useSelector} from 'react-redux';
+import {verifyUserImage} from '../../utils/api'; // Adjust the import path as needed
 
 const CameraScreen = ({navigation}) => {
   const [photo, setPhoto] = useState(null);
+  const user = useSelector(state => state.user); // Adjust the path according to your store
 
   useEffect(() => {
     requestCameraPermission();
@@ -46,6 +49,11 @@ const CameraScreen = ({navigation}) => {
             } else if (response.assets && response.assets.length > 0) {
               const source = {uri: response.assets[0].uri};
               setPhoto(source);
+              const resultVerify = verifyUserImage(
+                response.assets[0].uri,
+                user.id,
+              );
+              console.log(resultVerify);
             }
           },
         );
@@ -65,6 +73,11 @@ const CameraScreen = ({navigation}) => {
                 } else if (response.assets && response.assets.length > 0) {
                   const source = {uri: response.assets[0].uri};
                   setPhoto(source);
+                  const resultVerify = verifyUserImage(
+                    response.assets[0].uri,
+                    user.id,
+                  );
+                  console.log(resultVerify);
                 }
               },
             );
