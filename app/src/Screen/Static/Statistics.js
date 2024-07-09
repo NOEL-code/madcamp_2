@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
   StyleSheet,
   ScrollView,
 } from 'react-native';
@@ -28,7 +27,7 @@ const getMarkedDates = (workDays, selected) => {
 const calculateTotalTime = (date, on, off, away) => {
   const onTime = new Date(`${date}T${on}`);
   let offTime = off ? new Date(`${date}T${off}`) : new Date();
-  
+
   // 현재 시간을 KST로 변환
   if (!off) {
     offTime.setHours(offTime.getHours() + 9);
@@ -60,6 +59,7 @@ const calculateTotalTime = (date, on, off, away) => {
   console.log(`Total Time: ${result}`);
   return result;
 };
+
 const calculatePercentage = time => {
   const [hours, minutes, seconds] = time.split(':').map(Number);
   const timeInSeconds = hours * 3600 + minutes * 60 + seconds;
@@ -153,21 +153,22 @@ const Stat = ({ navigation }) => {
               <View style={styles.progressBarContainer}>
                 <View style={styles.progressBar}>
                   {/* 출근부터 첫 외출 전까지 */}
-                  {selectedWorkDay.away.length > 0 && (
-                    <View
-                      style={[
-                        styles.timeSegment,
-                        {
-                          left: `${calculatePercentage(selectedWorkDay.on)}%`,
-                          width: `${
-                            calculatePercentage(selectedWorkDay.away[0].start) -
-                            calculatePercentage(selectedWorkDay.on)
-                          }%`,
-                          backgroundColor: '#03CF5D',
-                        },
-                      ]}
-                    />
-                  )}
+                  <View
+                    style={[
+                      styles.timeSegment,
+                      {
+                        left: `${calculatePercentage(selectedWorkDay.on)}%`,
+                        width: `${
+                          selectedWorkDay.away.length > 0
+                            ? calculatePercentage(selectedWorkDay.away[0].start) -
+                              calculatePercentage(selectedWorkDay.on)
+                            : calculatePercentage(selectedWorkDay.off || new Date().toTimeString().split(' ')[0]) -
+                              calculatePercentage(selectedWorkDay.on)
+                        }%`,
+                        backgroundColor: '#03CF5D',
+                      },
+                    ]}
+                  />
                   {/* 외출 복귀 후 다음 외출 전까지 */}
                   {selectedWorkDay.away.map((period, index) => (
                     <React.Fragment key={index}>
@@ -191,9 +192,8 @@ const Stat = ({ navigation }) => {
                             {
                               left: `${calculatePercentage(period.end || new Date().toTimeString().split(' ')[0])}%`,
                               width: `${
-                                calculatePercentage(
-                                  selectedWorkDay.away[index + 1].start,
-                                ) - calculatePercentage(period.end || new Date().toTimeString().split(' ')[0])
+                                calculatePercentage(selectedWorkDay.away[index + 1].start) -
+                                calculatePercentage(period.end || new Date().toTimeString().split(' ')[0])
                               }%`,
                               backgroundColor: '#03CF5D',
                             },
