@@ -7,21 +7,24 @@ import {
   TextInput,
   StyleSheet,
   Alert,
+  ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import {launchCamera} from 'react-native-image-picker';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import {useSelector} from 'react-redux';
 import api from '../../utils/api';
 import {verifyUserImage} from '../../Service/user';
+
 const CameraScreen = ({route, navigation}) => {
   const {members, roomId} = route.params;
   const [inputName, setInputName] = useState('');
   const [photo, setPhoto] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
-
   const [isVerified, setIsVerified] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const user = useSelector(state => state.user); // Adjust the path according to your store
+  const user = useSelector(state => state.user);
 
   useEffect(() => {
     requestCameraPermission();
@@ -42,7 +45,6 @@ const CameraScreen = ({route, navigation}) => {
 
   const checkMemberName = () => {
     const member = members.find(member => member.userId.name === inputName);
-
     if (member) {
       console.log('success: Member found!');
       setSelectedUserId(member.userId._id);
@@ -63,6 +65,7 @@ const CameraScreen = ({route, navigation}) => {
     if (!isVerified) {
       console.log('not verified');
       Alert.alert('회원 얼굴을 인증해주세요');
+      return;
     }
     try {
       const response = await api.post(
@@ -90,6 +93,10 @@ const CameraScreen = ({route, navigation}) => {
   };
 
   const handleCameraPress = () => {
+    if (!inputName) {
+      Alert.alert('경고', '회원정보를 입력해주세요.');
+      return;
+    }
     check(PERMISSIONS.ANDROID.CAMERA).then(result => {
       if (result === RESULTS.GRANTED) {
         launchCameraFunction();
@@ -122,17 +129,22 @@ const CameraScreen = ({route, navigation}) => {
         } else if (response.assets && response.assets.length > 0) {
           const source = {uri: response.assets[0].uri};
           setPhoto(source);
+          setLoading(true);
           try {
             const resultVerify = await verifyUserImage(
               response.assets[0].uri,
-              user.id,
+              selectedUserId,
             );
+            console.log(resultVerify);
+            setLoading(false);
             if (resultVerify) {
               setIsVerified(true);
+              Alert.alert('성공', '인증 완료');
+            } else {
+              Alert.alert('실패', '인증 실패, 다시 시도해주세요.');
             }
-
-            console.log(resultVerify);
           } catch (error) {
+            setLoading(false);
             console.error('Error verifying image:', error);
             Alert.alert('Error', 'Image verification failed.');
           }
@@ -142,13 +154,13 @@ const CameraScreen = ({route, navigation}) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.backButton}>←</Text>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity onPress={handleCameraPress}>
+      <TouchableOpacity onPress={handleCameraPress} disabled={loading}>
         <View style={styles.cameraContainer}>
           {photo ? (
             <Image source={photo} style={styles.photo} />
@@ -160,44 +172,56 @@ const CameraScreen = ({route, navigation}) => {
           )}
         </View>
       </TouchableOpacity>
+      {loading && (
+        <ActivityIndicator
+          size="large"
+          color="#0000ff"
+          style={styles.loading}
+        />
+      )}
       <TextInput
         style={styles.input}
-        placeholder="Enter member name"
+        placeholder="회원 이름 입력"
         value={inputName}
         onChangeText={setInputName}
+        placeholderTextColor="#888"
       />
       <TouchableOpacity style={styles.checkButton} onPress={checkMemberName}>
-        <Text style={styles.checkButtonText}>Check Member</Text>
+        <Text style={styles.checkButtonText}>회원 확인</Text>
       </TouchableOpacity>
       <View style={styles.buttonsContainer}>
         <TouchableOpacity
-          style={styles.button}
-          onPress={() => recordAttendance('arrival')}>
+          style={[styles.button, !isVerified && styles.disabledButton]}
+          onPress={() => recordAttendance('arrival')}
+          disabled={!isVerified}>
           <Text style={styles.buttonText}>출근</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.button}
-          onPress={() => recordAttendance('goout')}>
+          style={[styles.button, !isVerified && styles.disabledButton]}
+          onPress={() => recordAttendance('goout')}
+          disabled={!isVerified}>
           <Text style={styles.buttonText}>자리비움</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.button}
-          onPress={() => recordAttendance('comeback')}>
+          style={[styles.button, !isVerified && styles.disabledButton]}
+          onPress={() => recordAttendance('comeback')}
+          disabled={!isVerified}>
           <Text style={styles.buttonText}>복귀</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.button}
-          onPress={() => recordAttendance('leave')}>
+          style={[styles.button, !isVerified && styles.disabledButton]}
+          onPress={() => recordAttendance('leave')}
+          disabled={!isVerified}>
           <Text style={styles.buttonText}>퇴근</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     padding: 20,
     backgroundColor: '#fff',
   },
@@ -226,18 +250,28 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 10,
   },
+  loading: {
+    marginVertical: 20,
+  },
   input: {
-    height: 40,
+    height: 50,
     borderColor: 'gray',
     borderWidth: 1,
     marginBottom: 20,
     padding: 10,
-    width: '80%',
+    width: '100%',
     alignSelf: 'center',
+    borderRadius: 10,
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   checkButton: {
     backgroundColor: '#03CF5D',
-    padding: 10,
+    padding: 15,
     borderRadius: 20,
     alignItems: 'center',
     marginBottom: 20,
@@ -245,6 +279,7 @@ const styles = StyleSheet.create({
   checkButtonText: {
     color: '#fff',
     fontSize: 18,
+    fontWeight: 'bold',
   },
   buttonsContainer: {
     marginTop: 20,
@@ -255,6 +290,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginBottom: 10,
     alignItems: 'center',
+  },
+  disabledButton: {
+    backgroundColor: '#d3d3d3',
   },
   buttonText: {
     color: '#fff',

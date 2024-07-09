@@ -10,6 +10,7 @@ exports.verify = async (req, res) => {
   const imageUrl = req.file.location; // S3에 저장된 이미지의 URL
   try {
     const result = await verify(userId, imageUrl);
+    console.log(res.data);
     res.status(200).json(result);
   } catch (err) {
     console.error(err);

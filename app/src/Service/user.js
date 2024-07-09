@@ -36,7 +36,7 @@ export const fetchImage = async (formData, user, dispatch) => {
         'Content-Type': 'multipart/form-data',
       },
     });
-    console.log('Image uploaded successfully: ', res.data);
+    console.log('Image uploaded successfully: ', res);
 
     // Redux 상태 업데이트
     dispatch(
