@@ -72,6 +72,8 @@ const TeamScreen = ({route, navigation}) => {
     member => member.userId._id !== currentUser.id,
   );
 
+  console.log(otherMembers);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -90,7 +92,7 @@ const TeamScreen = ({route, navigation}) => {
       {currentUserStatus && (
         <View style={styles.userItem}>
           <Image
-            source={require('assets/images/person.png')}
+            source={{uri: currentUserStatus.userId.photoUrl}}
             style={styles.profileIcon}
           />
           <Text style={styles.userName}>{currentUserStatus.userId.name}</Text>
@@ -123,7 +125,7 @@ const TeamScreen = ({route, navigation}) => {
           return (
             <View key={index} style={styles.userItem}>
               <Image
-                source={require('assets/images/person.png')}
+                source={{uri: member.userId.photoUrl}}
                 style={styles.profileIcon}
               />
 

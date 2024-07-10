@@ -287,7 +287,7 @@ const TeamAdminScreen = ({route, navigation}) => {
                 style={styles.userItem}
                 onPress={() => handleUserClick(user)}>
                 <Image
-                  source={require('assets/images/person.png')}
+                  source={{uri: user.userId.photoUrl}}
                   style={styles.profileIcon}
                 />
                 <Text style={styles.userName}>{user.userId.name}</Text>
@@ -331,7 +331,7 @@ const TeamAdminScreen = ({route, navigation}) => {
               {waitingUsers.map((waitingUser, index) => (
                 <View key={index} style={styles.userItem}>
                   <Image
-                    source={require('assets/images/person.png')}
+                    source={{uri: waitingUser.userId.photoUrl}}
                     style={styles.profileIcon}
                   />
                   <Text style={styles.userName}>{waitingUser.name}</Text>
@@ -359,7 +359,7 @@ const TeamAdminScreen = ({route, navigation}) => {
             {usersState.map((user, index) => (
               <View key={index} style={styles.userItem}>
                 <Image
-                  source={require('assets/images/person.png')}
+                  source={{uri: user.userId.photoUrl}}
                   style={styles.profileIcon}
                 />
                 <Text style={styles.userName}>{user.userId.name}</Text>
