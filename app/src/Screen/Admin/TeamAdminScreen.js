@@ -22,6 +22,7 @@ import {
   getWaitingUsers,
   deleteRoom,
   deleteMember,
+  getTopWorker, // Ensure this is correctly imported
 } from '../../Service/roomAdmin';
 
 const statusStyles = {
@@ -91,16 +92,6 @@ const TeamAdminScreen = ({route, navigation}) => {
     }
   }, [roomId]);
 
-  const fetchTopWorker = async () => {
-    try {
-      const response = await getTopWorker(roomId);
-      setTopWorkerId(response.data.topWorkerId);
-      console.log('Top Worker ID:', response.data.topWorkerId);
-    } catch (error) {
-      console.error('Failed to fetch top worker:', error);
-    }
-  };
-
   const fetchWaitingMembers = useCallback(async () => {
     try {
       const waitingData = await getWaitingUsers(roomId);
@@ -111,15 +102,27 @@ const TeamAdminScreen = ({route, navigation}) => {
   }, [roomId]);
 
   useEffect(() => {
+    const fetchTopWorker = async () => {
+      try {
+        const response = await getTopWorker(roomId);
+        setTopWorkerId(response.data.topWorkerId);
+        console.log('Top Worker ID:', response.data.topWorkerId);
+      } catch (error) {
+        console.error('Failed to fetch top worker:', error);
+      }
+    };
+
     requestSmsPermission();
     fetchRoomInfo();
     fetchTopWorker();
     fetchWaitingMembers();
+
     const unsubscribe = navigation.addListener('focus', () => {
       fetchRoomInfo();
     });
+
     return unsubscribe;
-  }, [fetchRoomInfo, fetchTopWorker, fetchWaitingMembers, navigation, roomId]);
+  }, [fetchRoomInfo, fetchWaitingMembers, navigation, roomId]);
 
   const toggleEditMode = async () => {
     setIsEditMode(!isEditMode);
@@ -297,7 +300,7 @@ const TeamAdminScreen = ({route, navigation}) => {
                 onPress={() => handleUserClick(user)}>
                 <View style={styles.profileContainer}>
                   <Image
-                    source={require('assets/images/person.png')}
+                    source={{uri: user.userId.photoUrl}}
                     style={styles.profileIcon}
                   />
                   {user.userId._id === topWorkerId && (
@@ -307,6 +310,7 @@ const TeamAdminScreen = ({route, navigation}) => {
                     />
                   )}
                 </View>
+
                 <Text style={styles.userName}>{user.userId.name}</Text>
                 <View
                   style={[
@@ -348,7 +352,7 @@ const TeamAdminScreen = ({route, navigation}) => {
               {waitingUsers.map((waitingUser, index) => (
                 <View key={index} style={styles.userItem}>
                   <Image
-                    source={require('assets/images/person.png')}
+                    source={{uri: waitingUser.userId.photoUrl}}
                     style={styles.profileIcon}
                   />
                   <Text style={styles.userName}>{waitingUser.name}</Text>
@@ -377,7 +381,7 @@ const TeamAdminScreen = ({route, navigation}) => {
               <View key={index} style={styles.userItem}>
                 <View style={styles.profileContainer}>
                   <Image
-                    source={require('assets/images/person.png')}
+                    source={{uri: user.userId.photoUrl}}
                     style={styles.profileIcon}
                   />
                   {user.userId._id === topWorkerId && (

@@ -2,7 +2,7 @@ const axios = require("axios");
 const { getUsersImages, findUserNameById } = require("./userService");
 const { getRoomInfo } = require("./roomService");
 
-const url = "http://192.249.29.4:5005/verify";
+const url = "http://192.249.29.35:5005/verify";
 
 exports.verify = async (imageUrl, roomId) => {
   const img1_path = imageUrl;

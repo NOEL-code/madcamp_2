@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -8,22 +8,22 @@ import {
   ScrollView,
 } from 'react-native';
 import api from '../../utils/api';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 
 const statusStyles = {
-  1: { color: '#03CF5D', text: '출석' },
-  2: { color: '#FFE600', text: '자리비움' },
-  3: { color: '#D9D9D9', text: '퇴근' },
+  1: {color: '#03CF5D', text: '출석'},
+  2: {color: '#FFE600', text: '자리비움'},
+  3: {color: '#D9D9D9', text: '퇴근'},
 };
 
 const statusBoxStyles = {
-  1: { backgroundColor: '#DFF5E9' },
-  2: { backgroundColor: '#FFF4D5' },
-  3: { backgroundColor: '#F4F4F4' },
+  1: {backgroundColor: '#DFF5E9'},
+  2: {backgroundColor: '#FFF4D5'},
+  3: {backgroundColor: '#F4F4F4'},
 };
 
-const TeamScreen = ({ route, navigation }) => {
-  const { roomId } = route.params;
+const TeamScreen = ({route, navigation}) => {
+  const {roomId} = route.params;
   const currentUser = useSelector(state => state.user);
   const [roomInfo, setRoomInfo] = useState({
     roomName: '',
@@ -43,7 +43,7 @@ const TeamScreen = ({ route, navigation }) => {
             const statusResponse = await api.get(
               `/attendance/status/${member.userId._id}`,
             );
-            return { ...member, status: statusResponse.data.status };
+            return {...member, status: statusResponse.data.status};
           }),
         );
         setRoomInfo({
@@ -70,11 +70,11 @@ const TeamScreen = ({ route, navigation }) => {
   }, [roomId]);
 
   const getStatusStyle = status => {
-    return statusStyles[status] || { color: '#000', text: '알 수 없음' };
+    return statusStyles[status] || {color: '#000', text: '알 수 없음'};
   };
 
   const getStatusBoxStyle = status => {
-    return statusBoxStyles[status] || { backgroundColor: '#EEE' };
+    return statusBoxStyles[status] || {backgroundColor: '#EEE'};
   };
 
   const currentUserStatus = roomInfo.members.find(
@@ -108,7 +108,7 @@ const TeamScreen = ({ route, navigation }) => {
         <View style={styles.userItem}>
           <View style={styles.profileContainer}>
             <Image
-              source={require('assets/images/person.png')}
+              source={{uri: currentUserStatus.userId.photoUrl}}
               style={styles.profileIcon}
             />
             {currentUserStatus.userId._id === topWorkerId && (
@@ -118,18 +118,19 @@ const TeamScreen = ({ route, navigation }) => {
               />
             )}
           </View>
+
           <Text style={styles.userName}>{currentUserStatus.userId.name}</Text>
           <View
             style={[
               styles.statusIndicatorBox,
               getStatusBoxStyle(currentUserStatus.status),
-            ]}
-          >
+            ]}>
             <View
               style={[
                 styles.statusIndicator,
                 {
-                  backgroundColor: getStatusStyle(currentUserStatus.status).color,
+                  backgroundColor: getStatusStyle(currentUserStatus.status)
+                    .color,
                 },
               ]}
             />
@@ -149,7 +150,7 @@ const TeamScreen = ({ route, navigation }) => {
             <View key={index} style={styles.userItem}>
               <View style={styles.profileContainer}>
                 <Image
-                  source={require('assets/images/person.png')}
+                  source={{uri: member.userId.photoUrl}}
                   style={styles.profileIcon}
                 />
                 {member.userId._id === topWorkerId && (
@@ -159,12 +160,13 @@ const TeamScreen = ({ route, navigation }) => {
                   />
                 )}
               </View>
+
               <Text style={styles.userName}>{member.userId.name}</Text>
               <View style={[styles.statusIndicatorBox, statusBoxStyle]}>
                 <View
                   style={[
                     styles.statusIndicator,
-                    { backgroundColor: statusStyle.color },
+                    {backgroundColor: statusStyle.color},
                   ]}
                 />
                 <Text style={styles.statusText}>{statusStyle.text}</Text>
