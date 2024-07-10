@@ -6,7 +6,7 @@ const {
   recordComeBack,
   getAttendanceByDate,
   getCurrentStatus,
-  updateStatus // 새로 추가된 함수
+  updateStatus, // 새로 추가된 함수
 } = require("../services/attendanceService");
 const { getUserById } = require('../services/userService');
 
@@ -102,3 +102,4 @@ exports.updateStatus = async (req, res) => {
     res.status(500).json({ message: 'Failed to update status', error: error.message });
   }
 };
+

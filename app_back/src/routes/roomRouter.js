@@ -10,6 +10,7 @@ const {
   deleteRoomById,
   getRoomInfo,
   getAllUsersForRoom,
+  getTopWorker
 } = require("../controllers/roomController");
 
 const router = express.Router();
@@ -33,5 +34,8 @@ router.delete("/:roomId", deleteRoomById); // 방 삭제
 router.get("/:roomId", getRoomInfo); // 특정 방의 멤버 리스트 가져오기
 
 router.get("/all-users/:roomId", getAllUsersForRoom);
+
+router.get('/:roomId/getTopWorker', getTopWorker);
+
 
 module.exports = router;

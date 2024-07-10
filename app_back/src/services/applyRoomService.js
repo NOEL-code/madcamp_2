@@ -145,6 +145,7 @@ exports.getWaitingUsersByRoomId = async (roomId) => {
     return [];
   }
 
+
   const userArray = waitingUsers.members.map((member) => ({
     id: member.userId._id,
     name: member.userId.name,
@@ -154,3 +155,4 @@ exports.getWaitingUsersByRoomId = async (roomId) => {
 
   return userArray;
 };
+

@@ -12,6 +12,10 @@ const {
   getAllUsersForRoom,
 } = require("../services/roomService");
 
+const {
+  getTopWorker
+} = require("../services/attendanceService");
+
 exports.getRooms = async (req, res) => {
   try {
     const rooms = await getRooms();
@@ -128,6 +132,7 @@ exports.getRoomInfo = async (req, res) => {
   }
 };
 
+
 exports.getAllUsers = async (req, res) => {
   const { roomId } = req.query;
 
@@ -151,3 +156,17 @@ exports.getAllUsersForRoom = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch users for room" });
   }
 };
+
+exports.getTopWorker = async (req, res) => {
+  try {
+    const topWorkerId = await getTopWorker(req.params.roomId);
+    if (!topWorkerId) {
+      return res.status(200).json({ message: 'No attendance records found or no top worker identified.' });
+    }
+    res.json({ topWorkerId });
+  } catch (error) {
+    console.error('Error getting top worker:', error);
+    res.status(500).json({ error: 'Failed to get top worker' });
+  }
+};
+

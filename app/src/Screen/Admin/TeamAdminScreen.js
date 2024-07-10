@@ -49,6 +49,7 @@ const TeamAdminScreen = ({route, navigation}) => {
   const [usersState, setUsersState] = useState([]);
   const [waitingUsers, setWaitingUsers] = useState([]);
   const [selectedTab, setSelectedTab] = useState('현황');
+  const [topWorkerId, setTopWorkerId] = useState(null);
 
   const requestSmsPermission = async () => {
     try {
@@ -72,10 +73,6 @@ const TeamAdminScreen = ({route, navigation}) => {
     }
   };
 
-  useEffect(() => {
-    requestSmsPermission();
-  }, []);
-
   const fetchRoomInfo = useCallback(async () => {
     try {
       const roomData = await getRoomInfo(roomId);
@@ -94,6 +91,16 @@ const TeamAdminScreen = ({route, navigation}) => {
     }
   }, [roomId]);
 
+  const fetchTopWorker = async () => {
+    try {
+      const response = await getTopWorker(roomId);
+      setTopWorkerId(response.data.topWorkerId);
+      console.log('Top Worker ID:', response.data.topWorkerId);
+    } catch (error) {
+      console.error('Failed to fetch top worker:', error);
+    }
+  };
+
   const fetchWaitingMembers = useCallback(async () => {
     try {
       const waitingData = await getWaitingUsers(roomId);
@@ -104,13 +111,15 @@ const TeamAdminScreen = ({route, navigation}) => {
   }, [roomId]);
 
   useEffect(() => {
+    requestSmsPermission();
     fetchRoomInfo();
+    fetchTopWorker();
     fetchWaitingMembers();
     const unsubscribe = navigation.addListener('focus', () => {
       fetchRoomInfo();
     });
     return unsubscribe;
-  }, [fetchRoomInfo, fetchWaitingMembers, navigation, roomId]);
+  }, [fetchRoomInfo, fetchTopWorker, fetchWaitingMembers, navigation, roomId]);
 
   const toggleEditMode = async () => {
     setIsEditMode(!isEditMode);
@@ -286,10 +295,18 @@ const TeamAdminScreen = ({route, navigation}) => {
                 key={index}
                 style={styles.userItem}
                 onPress={() => handleUserClick(user)}>
-                <Image
-                  source={require('assets/images/person.png')}
-                  style={styles.profileIcon}
-                />
+                <View style={styles.profileContainer}>
+                  <Image
+                    source={require('assets/images/person.png')}
+                    style={styles.profileIcon}
+                  />
+                  {user.userId._id === topWorkerId && (
+                    <Image
+                      source={require('assets/images/crown.png')}
+                      style={styles.crownIcon}
+                    />
+                  )}
+                </View>
                 <Text style={styles.userName}>{user.userId.name}</Text>
                 <View
                   style={[
@@ -358,10 +375,18 @@ const TeamAdminScreen = ({route, navigation}) => {
             </View>
             {usersState.map((user, index) => (
               <View key={index} style={styles.userItem}>
-                <Image
-                  source={require('assets/images/person.png')}
-                  style={styles.profileIcon}
-                />
+                <View style={styles.profileContainer}>
+                  <Image
+                    source={require('assets/images/person.png')}
+                    style={styles.profileIcon}
+                  />
+                  {user.userId._id === topWorkerId && (
+                    <Image
+                      source={require('assets/images/crown.png')}
+                      style={styles.crownIcon}
+                    />
+                  )}
+                </View>
                 <Text style={styles.userName}>{user.userId.name}</Text>
                 <Picker
                   selectedValue={user.status}
@@ -558,11 +583,21 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
   },
+  profileContainer: {
+    position: 'relative',
+  },
   profileIcon: {
     width: 50,
     height: 50,
     borderRadius: 25,
     marginRight: 15,
+  },
+  crownIcon: {
+    position: 'absolute',
+    top: -10,
+    left: 19,
+    width: 24,
+    height: 24,
   },
   userName: {
     flex: 1,
@@ -573,18 +608,18 @@ const styles = StyleSheet.create({
     width: 140,
     fontSize: 11,
   },
-  statusIndicator: {
-    width: 12,
-    height: 12,
-    borderRadius: 10,
-    marginRight: 10,
-  },
   statusIndicatorBox: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 20,
+  },
+  statusIndicator: {
+    width: 12,
+    height: 12,
+    borderRadius: 10,
+    marginRight: 10,
   },
   statusText: {
     fontSize: 16,
