@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Alert,
+  Linking,
 } from 'react-native';
 import api from '../../utils/api';
 import {useSelector} from 'react-redux';
@@ -84,6 +86,32 @@ const TeamScreen = ({route, navigation}) => {
     member => member.userId._id !== currentUser.id,
   );
 
+  const sendSMS = async phoneNumber => {
+    const url = `sms:${phoneNumber}`;
+    try {
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        Alert.alert('이 장치는 문자 메시지 기능을 지원하지 않습니다.');
+      }
+    } catch (error) {
+      console.error('Failed to send SMS:', error);
+    }
+  };
+
+  const handleUserClick = user => {
+    if (user.status === 2) {
+      // 자리비움 상태
+      const phoneNumber = user.userId.phoneNumber;
+      if (phoneNumber) {
+        sendSMS(phoneNumber);
+      } else {
+        Alert.alert('전화번호를 찾을 수 없습니다.');
+      }
+    }
+  };
+
   useEffect(() => {
     console.log('Current User Status:', currentUserStatus);
     console.log('Top Worker ID:', topWorkerId);
@@ -147,7 +175,10 @@ const TeamScreen = ({route, navigation}) => {
           const statusStyle = getStatusStyle(member.status);
           const statusBoxStyle = getStatusBoxStyle(member.status);
           return (
-            <View key={index} style={styles.userItem}>
+            <TouchableOpacity
+              key={index}
+              style={styles.userItem}
+              onPress={() => handleUserClick(member)}>
               <View style={styles.profileContainer}>
                 <Image
                   source={{uri: member.userId.photoUrl}}
@@ -171,7 +202,7 @@ const TeamScreen = ({route, navigation}) => {
                 />
                 <Text style={styles.statusText}>{statusStyle.text}</Text>
               </View>
-            </View>
+            </TouchableOpacity>
           );
         })}
       </ScrollView>
