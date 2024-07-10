@@ -7,8 +7,12 @@ const {
   removeMemberFromRoom,
   updateRoomDescription,
   deleteRoomById,
-  getRoomInfo
+  getRoomInfo,
 } = require("../services/roomService");
+
+const {
+  getTopWorker
+} = require("../services/attendanceService");
 
 exports.getRooms = async (req, res) => {
   try {
@@ -119,5 +123,18 @@ exports.getRoomInfo = async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.getTopWorker = async (req, res) => {
+  try {
+    const topWorkerId = await getTopWorker(req.params.roomId);
+    if (!topWorkerId) {
+      return res.status(200).json({ message: 'No attendance records found or no top worker identified.' });
+    }
+    res.json({ topWorkerId });
+  } catch (error) {
+    console.error('Error getting top worker:', error);
+    res.status(500).json({ error: 'Failed to get top worker' });
   }
 };

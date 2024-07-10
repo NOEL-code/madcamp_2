@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,31 +8,32 @@ import {
   ScrollView,
 } from 'react-native';
 import api from '../../utils/api';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 
 const statusStyles = {
-  1: {color: '#03CF5D', text: '출석'},
-  2: {color: '#FFE600', text: '자리비움'},
-  3: {color: '#D9D9D9', text: '퇴근'},
+  1: { color: '#03CF5D', text: '출석' },
+  2: { color: '#FFE600', text: '자리비움' },
+  3: { color: '#D9D9D9', text: '퇴근' },
 };
 
 const statusBoxStyles = {
-  1: {backgroundColor: '#DFF5E9'},
-  2: {backgroundColor: '#FFF4D5'},
-  3: {backgroundColor: '#F4F4F4'},
+  1: { backgroundColor: '#DFF5E9' },
+  2: { backgroundColor: '#FFF4D5' },
+  3: { backgroundColor: '#F4F4F4' },
 };
 
-const TeamScreen = ({route, navigation}) => {
-  const {roomId} = route.params;
+const TeamScreen = ({ route, navigation }) => {
+  const { roomId } = route.params;
   const currentUser = useSelector(state => state.user);
   const [roomInfo, setRoomInfo] = useState({
     roomName: '',
     subTitle: '',
     members: [],
   });
+  const [topWorkerId, setTopWorkerId] = useState(null);
 
   useEffect(() => {
-    console.log('Room ID:', roomId); // 방의 ID를 콘솔에 출력
+    console.log('Room ID:', roomId);
 
     const fetchRoomInfo = async () => {
       try {
@@ -42,7 +43,7 @@ const TeamScreen = ({route, navigation}) => {
             const statusResponse = await api.get(
               `/attendance/status/${member.userId._id}`,
             );
-            return {...member, status: statusResponse.data.status};
+            return { ...member, status: statusResponse.data.status };
           }),
         );
         setRoomInfo({
@@ -54,15 +55,26 @@ const TeamScreen = ({route, navigation}) => {
       }
     };
 
+    const fetchTopWorker = async () => {
+      try {
+        const response = await api.get(`/rooms/${roomId}/getTopWorker`);
+        setTopWorkerId(response.data.topWorkerId);
+        console.log('Top Worker ID:', response.data.topWorkerId); // 로그 추가
+      } catch (error) {
+        console.error('Failed to fetch top worker:', error);
+      }
+    };
+
     fetchRoomInfo();
+    fetchTopWorker();
   }, [roomId]);
 
   const getStatusStyle = status => {
-    return statusStyles[status] || {color: '#000', text: '알 수 없음'};
+    return statusStyles[status] || { color: '#000', text: '알 수 없음' };
   };
 
   const getStatusBoxStyle = status => {
-    return statusBoxStyles[status] || {backgroundColor: '#EEE'};
+    return statusBoxStyles[status] || { backgroundColor: '#EEE' };
   };
 
   const currentUserStatus = roomInfo.members.find(
@@ -71,6 +83,11 @@ const TeamScreen = ({route, navigation}) => {
   const otherMembers = roomInfo.members.filter(
     member => member.userId._id !== currentUser.id,
   );
+
+  useEffect(() => {
+    console.log('Current User Status:', currentUserStatus);
+    console.log('Top Worker ID:', topWorkerId);
+  }, [currentUserStatus, topWorkerId]);
 
   return (
     <View style={styles.container}>
@@ -89,22 +106,30 @@ const TeamScreen = ({route, navigation}) => {
       <Text style={styles.sectionTitle}>나의 상태</Text>
       {currentUserStatus && (
         <View style={styles.userItem}>
-          <Image
-            source={require('assets/images/person.png')}
-            style={styles.profileIcon}
-          />
+          <View style={styles.profileContainer}>
+            <Image
+              source={require('assets/images/person.png')}
+              style={styles.profileIcon}
+            />
+            {currentUserStatus.userId._id === topWorkerId && (
+              <Image
+                source={require('assets/images/crown.png')}
+                style={styles.crownIcon}
+              />
+            )}
+          </View>
           <Text style={styles.userName}>{currentUserStatus.userId.name}</Text>
           <View
             style={[
               styles.statusIndicatorBox,
               getStatusBoxStyle(currentUserStatus.status),
-            ]}>
+            ]}
+          >
             <View
               style={[
                 styles.statusIndicator,
                 {
-                  backgroundColor: getStatusStyle(currentUserStatus.status)
-                    .color,
+                  backgroundColor: getStatusStyle(currentUserStatus.status).color,
                 },
               ]}
             />
@@ -122,18 +147,24 @@ const TeamScreen = ({route, navigation}) => {
           const statusBoxStyle = getStatusBoxStyle(member.status);
           return (
             <View key={index} style={styles.userItem}>
-              <Image
-                source={require('assets/images/person.png')}
-                style={styles.profileIcon}
-              />
-
+              <View style={styles.profileContainer}>
+                <Image
+                  source={require('assets/images/person.png')}
+                  style={styles.profileIcon}
+                />
+                {member.userId._id === topWorkerId && (
+                  <Image
+                    source={require('assets/images/crown.png')}
+                    style={styles.crownIcon}
+                  />
+                )}
+              </View>
               <Text style={styles.userName}>{member.userId.name}</Text>
-
               <View style={[styles.statusIndicatorBox, statusBoxStyle]}>
                 <View
                   style={[
                     styles.statusIndicator,
-                    {backgroundColor: statusStyle.color},
+                    { backgroundColor: statusStyle.color },
                   ]}
                 />
                 <Text style={styles.statusText}>{statusStyle.text}</Text>
@@ -192,11 +223,21 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
   },
+  profileContainer: {
+    position: 'relative',
+  },
   profileIcon: {
     width: 50,
     height: 50,
     borderRadius: 25,
     marginRight: 15,
+  },
+  crownIcon: {
+    position: 'absolute',
+    top: -10,
+    left: 19,
+    width: 24,
+    height: 24,
   },
   userName: {
     flex: 1,

@@ -130,3 +130,4 @@ exports.getWaitingUsersByRoomId = async (roomId) => {
 
   return waitingUsers.members;
 };
+

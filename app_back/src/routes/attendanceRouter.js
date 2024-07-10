@@ -7,7 +7,8 @@ const {
   recordComeBack,
   getAttendanceByDate,
   getCurrentStatus,
-  updateStatus // 새로 추가된 함수
+  updateStatus, // 새로 추가된 함수
+  getTopWorker
 } = require("../controllers/attendanceController");
 const authenticateToken = require('../middlewares/authenticateToken');
 
@@ -21,5 +22,6 @@ router.post("/comeback/:userId", recordComeBack); // 복귀 기록
 router.get("/:date", authenticateToken, getAttendanceByDate); // 특정 날짜의 출결 기록 받기
 router.get("/status/:userId", authenticateToken, getCurrentStatus); // 팀원의 현재 상태 받기
 router.post("/status/:userId", authenticateToken, updateStatus); // 팀원의 상태 업데이트
+
 
 module.exports = router;

@@ -1,6 +1,7 @@
 const { Room } = require("../models/Room");
 const { getUserById } = require("./userService");
 const { sendInvite } = require("./invitedRoomService");
+const {Attendance} = require("../models/attendance")
 
 exports.getRooms = async () => {
   let rooms = await Room.find();

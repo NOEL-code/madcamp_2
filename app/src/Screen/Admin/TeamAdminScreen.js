@@ -39,6 +39,7 @@ const TeamAdminScreen = ({ route, navigation }) => {
   const [usersState, setUsersState] = useState([]);
   const [waitingUsers, setWaitingUsers] = useState([]);
   const [selectedTab, setSelectedTab] = useState('현황');
+  const [topWorkerId, setTopWorkerId] = useState(null);
 
   const fetchRoomInfo = async () => {
     try {
@@ -60,6 +61,16 @@ const TeamAdminScreen = ({ route, navigation }) => {
     }
   };
 
+  const fetchTopWorker = async () => {
+    try {
+      const response = await api.get(`/rooms/${roomId}/getTopWorker`);
+      setTopWorkerId(response.data.topWorkerId);
+      console.log('Top Worker ID:', response.data.topWorkerId);
+    } catch (error) {
+      console.error('Failed to fetch top worker:', error);
+    }
+  };
+
   const fetchWaitingUsers = async () => {
     try {
       const response = await api.get(`/apply/waiting/${roomId}`);
@@ -71,6 +82,7 @@ const TeamAdminScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     fetchRoomInfo();
+    fetchTopWorker();
     fetchWaitingUsers();
   }, [roomId]);
 
@@ -196,10 +208,18 @@ const TeamAdminScreen = ({ route, navigation }) => {
           <ScrollView>
             {usersState.map((user, index) => (
               <View key={index} style={styles.userItem}>
-                <Image
-                  source={require('assets/images/person.png')}
-                  style={styles.profileIcon}
-                />
+                <View style={styles.profileContainer}>
+                  <Image
+                    source={require('assets/images/person.png')}
+                    style={styles.profileIcon}
+                  />
+                  {user.userId._id === topWorkerId && (
+                    <Image
+                      source={require('assets/images/crown.png')}
+                      style={styles.crownIcon}
+                    />
+                  )}
+                </View>
                 <Text style={styles.userName}>{user.userId.name}</Text>
                 <View
                   style={[
@@ -270,10 +290,18 @@ const TeamAdminScreen = ({ route, navigation }) => {
             </View>
             {usersState.map((user, index) => (
               <View key={index} style={styles.userItem}>
-                <Image
-                  source={require('assets/images/person.png')}
-                  style={styles.profileIcon}
-                />
+                <View style={styles.profileContainer}>
+                  <Image
+                    source={require('assets/images/person.png')}
+                    style={styles.profileIcon}
+                  />
+                  {user.userId._id === topWorkerId && (
+                    <Image
+                      source={require('assets/images/crown.png')}
+                      style={styles.crownIcon}
+                    />
+                  )}
+                </View>
                 <Text style={styles.userName}>{user.userId.name}</Text>
                 <Picker
                   selectedValue={user.status}
@@ -468,11 +496,21 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
   },
+  profileContainer: {
+    position: 'relative',
+  },
   profileIcon: {
     width: 50,
     height: 50,
     borderRadius: 25,
     marginRight: 15,
+  },
+  crownIcon: {
+    position: 'absolute',
+    top: -10,
+    left: 19,
+    width: 24,
+    height: 24,
   },
   userName: {
     flex: 1,
@@ -483,18 +521,18 @@ const styles = StyleSheet.create({
     width: 140,
     fontSize: 11,
   },
-  statusIndicator: {
-    width: 12,
-    height: 12,
-    borderRadius: 10,
-    marginRight: 10,
-  },
   statusIndicatorBox: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 20,
+  },
+  statusIndicator: {
+    width: 12,
+    height: 12,
+    borderRadius: 10,
+    marginRight: 10,
   },
   statusText: {
     fontSize: 16,
