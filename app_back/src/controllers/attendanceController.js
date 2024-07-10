@@ -22,9 +22,10 @@ exports.getAttendance = async (req, res) => {
 };
 
 exports.recordArrival = async (req, res) => {
-  const { userId } = req.params;
+  const { userId, roomId } = req.params;
+  
   try {
-    const attendance = await recordArrival(userId);
+    const attendance = await recordArrival(userId, roomId);
     res.status(200).json({ message: '출근 기록 완료', attendance });
   } catch (error) {
     console.error('Error recording arrival:', error);
@@ -33,9 +34,9 @@ exports.recordArrival = async (req, res) => {
 };
 
 exports.recordLeave = async (req, res) => {
-  const { userId } = req.params;
+  const { userId, roomId } = req.params;
   try {
-    const attendance = await recordLeave(userId);
+    const attendance = await recordLeave(userId, roomId);
     res.status(200).json({ message: '퇴근 기록 완료', attendance });
   } catch (error) {
     console.error('Error recording leave:', error);
@@ -44,9 +45,9 @@ exports.recordLeave = async (req, res) => {
 };
 
 exports.recordGoOut = async (req, res) => {
-  const { userId } = req.params;
+  const { userId, roomId } = req.params;
   try {
-    const attendance = await recordGoOut(userId);
+    const attendance = await recordGoOut(userId, roomId);
     res.status(200).json({ message: '외출 기록 완료', attendance });
   } catch (error) {
     console.error('Error recording go out:', error);
@@ -55,9 +56,9 @@ exports.recordGoOut = async (req, res) => {
 };
 
 exports.recordComeBack = async (req, res) => {
-  const { userId } = req.params;
+  const { userId, roomId } = req.params;
   try {
-    const attendance = await recordComeBack(userId);
+    const attendance = await recordComeBack(userId, roomId);
     res.status(200).json({ message: '복귀 기록 완료', attendance });
   } catch (error) {
     console.error('Error recording come back:', error);
@@ -82,8 +83,8 @@ exports.getAttendanceByDate = async (req, res) => {
 
 exports.getCurrentStatus = async (req, res) => {
   try {
-    const userId = req.params.userId;
-    const status = await getCurrentStatus(userId);
+    const {userId, roomId} = req.params;
+    const status = await getCurrentStatus(userId, roomId);
     res.status(200).json(status);
   } catch (error) {
     console.error('Error fetching current status:', error);
@@ -92,10 +93,10 @@ exports.getCurrentStatus = async (req, res) => {
 };
 
 exports.updateStatus = async (req, res) => {
-  const { userId } = req.params;
+  const { userId, roomId } = req.params;
   const { status } = req.body;
   try {
-    await updateStatus(userId, status);
+    await updateStatus(userId, roomId, status);
     res.status(200).json({ message: 'Status updated successfully' });
   } catch (error) {
     console.error('Error updating status:', error);

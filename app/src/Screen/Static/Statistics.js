@@ -1,111 +1,69 @@
-import React, {useState, useEffect} from 'react';
-import {View, Text, StyleSheet, ScrollView} from 'react-native';
-import {Calendar} from 'react-native-calendars';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+} from 'react-native';
+import { Calendar } from 'react-native-calendars';
 import NavBar from 'Components/NavBar';
-import api from '../../utils/api'; // api 유틸리티 가져오기
+import api from '../../utils/api';  // api 유틸리티 가져오기
 
-const getMarkedDates = (workDays, selected) => {
-  const markedDates = {};
-  workDays.forEach(day => {
-    markedDates[day.date] = {dots: [{key: 'work', color: '#03CF5D'}]};
-  });
-  if (selected) {
-    markedDates[selected] = {
-      ...markedDates[selected],
-      selected: true,
-      selectedColor: '#03CF5D',
-    };
-  }
-  return markedDates;
-};
-
-const calculateTotalTime = (date, on, off, away) => {
-  const onTime = new Date(`${date}T${on}`);
-  let offTime = off ? new Date(`${date}T${off}`) : new Date();
-
-  // 현재 시간을 KST로 변환
-  if (!off) {
-    offTime.setHours(offTime.getHours() + 9);
-  }
-
-  console.log(`onTime: ${onTime}, offTime: ${offTime}`);
-
-  const totalAwayTime = away.reduce((total, period) => {
-    const awayTime = new Date(`${date}T${period.start}`);
-    const comebackTime = period.end
-      ? new Date(`${date}T${period.end}`)
-      : new Date();
-
-    // 복귀 시간이 없는 경우 현재 시간으로 설정 (KST 변환 포함)
-    if (!period.end) {
-      comebackTime.setHours(comebackTime.getHours() + 9);
-    }
-
-    console.log(`awayTime: ${awayTime}, comebackTime: ${comebackTime}`);
-    return total + (comebackTime - awayTime);
-  }, 0);
-
-  const totalTime = offTime - onTime - totalAwayTime;
-  console.log(`totalTime: ${totalTime}, totalAwayTime: ${totalAwayTime}`);
-
-  const hours = Math.floor(totalTime / (1000 * 60 * 60));
-  const minutes = Math.floor((totalTime % (1000 * 60 * 60)) / (1000 * 60));
-
-  // 마이너스 값이 나오는 경우 0으로 처리
-  const result = `${Math.max(0, hours)}시간 ${Math.max(0, minutes)}분`;
-  console.log(`Total Time: ${result}`);
-  return result;
-};
-
-const calculatePercentage = time => {
-  const [hours, minutes, seconds] = time.split(':').map(Number);
-  const timeInSeconds = hours * 3600 + minutes * 60 + seconds;
-  const nineAMInSeconds = 9 * 3600; // 9 AM in seconds
-  const dayDurationInSeconds = 15 * 3600; // From 9 AM to midnight (15 hours)
-
-  const adjustedTimeInSeconds = timeInSeconds - nineAMInSeconds;
-  return (adjustedTimeInSeconds / dayDurationInSeconds) * 100;
-};
-
-const Stat = ({navigation}) => {
+const Stat = ({ navigation }) => {
   const today = new Date().toISOString().split('T')[0]; // 현재 날짜를 yyyy-mm-dd 형식으로 가져오기
   const [selected, setSelected] = useState(today);
-  const [selectedWorkDay, setSelectedWorkDay] = useState(null);
-  const [workDays, setWorkDays] = useState([]);
+  const [markedDates, setMarkedDates] = useState({
+    [today]: { selected: true, selectedColor: '#03CF5D', dotColor: '#03CF5D', marked: true }
+  });
 
   useEffect(() => {
-    const fetchAttendance = async () => {
-      try {
-        const response = await api.get(`/attendance`);
-        const attendanceData = response.data;
+    fetchAttendanceRecords();
+  }, []);
 
-        const formattedWorkDays = attendanceData.map(record => ({
-          date: record.date,
-          on: record.arriveTime,
-          off: record.departTime,
-          away: record.leave.map(leaveRecord => ({
-            start: leaveRecord.goOut,
-            end: leaveRecord.comeBack,
-          })),
-        }));
+  const fetchAttendanceRecords = async () => {
+    try {
+      const response = await api.get('/attendance'); // API 엔드포인트에 맞게 조정
+      console.log('API response:', response.data); // 응답 데이터 로그 출력
 
-        setWorkDays(formattedWorkDays);
-        const todayWorkDay = formattedWorkDays.find(
-          workDay => workDay.date === today,
-        );
-        setSelectedWorkDay(todayWorkDay || null);
-      } catch (error) {
-        console.error('Failed to fetch attendance data:', error);
+      // 응답 데이터 구조에 맞게 변경
+      const records = response.data.records || [];
+
+      const newMarkedDates = { ...markedDates };
+
+      records.forEach(record => {
+        const date = record.date;
+        if (newMarkedDates[date]) {
+          newMarkedDates[date].marked = true;
+          newMarkedDates[date].dotColor = '#03CF5D';
+        } else {
+          newMarkedDates[date] = { marked: true, dotColor: '#03CF5D' };
+        }
+      });
+
+      console.log('Updated markedDates:', newMarkedDates); // 마킹된 날짜들 로그 출력
+      setMarkedDates(newMarkedDates);
+    } catch (error) {
+      console.error('Error fetching attendance records:', error);
+      if (error.response) {
+        console.error('Response data:', error.response.data);
+        console.error('Response status:', error.response.status);
+        console.error('Response headers:', error.response.headers);
+      } else if (error.request) {
+        console.error('Request data:', error.request);
+      } else {
+        console.error('Error message:', error.message);
       }
+    }
+  };
+
+  const handleDayPress = (day) => {
+    const newMarkedDates = {
+      ...markedDates,
+      [selected]: { marked: markedDates[selected]?.marked || false, dotColor: '#03CF5D' }, // 이전 선택된 날짜의 selected 해제
+      [day.dateString]: { selected: true, selectedColor: '#03CF5D', dotColor: '#03CF5D', marked: true } // 새로 선택된 날짜 선택
     };
-
-    fetchAttendance();
-  }, [today]);
-
-  const handleDayPress = day => {
+    setMarkedDates(newMarkedDates);
     setSelected(day.dateString);
-    const workDay = workDays.find(workDay => workDay.date === day.dateString);
-    setSelectedWorkDay(workDay || null);
   };
 
   return (
@@ -117,152 +75,36 @@ const Stat = ({navigation}) => {
             current={today}
             monthFormat={'yyyy년 MM월'}
             onDayPress={handleDayPress}
-            markingType={'multi-dot'}
-            markedDates={getMarkedDates(workDays, selected)}
+            markedDates={markedDates}
+            markingType={'dot'} // 'dot'을 사용하여 날짜에 점 표시
             theme={{
               dayTextColor: 'black',
               arrowColor: '#03CF5D',
               todayTextColor: '#03CF5D',
               selectedDayTextColor: '#ffffff',
+              selectedDayBackgroundColor: '#03CF5D',
             }}
           />
         </View>
 
         <View style={styles.detailsContainer}>
-          {selectedWorkDay ? (
-            <>
-              <Text style={styles.dateText}>
-                {new Date(selectedWorkDay.date).toLocaleDateString()}
-              </Text>
-              <Text style={styles.totalTimeText}>
-                총{' '}
-                {calculateTotalTime(
-                  selectedWorkDay.date,
-                  selectedWorkDay.on,
-                  selectedWorkDay.off,
-                  selectedWorkDay.away,
-                )}
-              </Text>
-              <View style={styles.timeRow}>
-                <Text style={styles.labelText}>출근</Text>
-                <Text style={styles.timeText}>{selectedWorkDay.on}</Text>
-                <Text style={styles.labelText}>퇴근</Text>
-                <Text style={styles.timeText}>
-                  {selectedWorkDay.off || '-'}
-                </Text>
-              </View>
-              <View style={styles.progressBarContainer}>
-                <View style={styles.progressBar}>
-                  {/* 출근부터 첫 외출 전까지 */}
-                  <View
-                    style={[
-                      styles.timeSegment,
-                      {
-                        left: `${calculatePercentage(selectedWorkDay.on)}%`,
-                        width: `${
-                          selectedWorkDay.away.length > 0
-                            ? calculatePercentage(
-                                selectedWorkDay.away[0].start,
-                              ) - calculatePercentage(selectedWorkDay.on)
-                            : calculatePercentage(
-                                selectedWorkDay.off ||
-                                  new Date().toTimeString().split(' ')[0],
-                              ) - calculatePercentage(selectedWorkDay.on)
-                        }%`,
-                        backgroundColor: '#03CF5D',
-                      },
-                    ]}
-                  />
-                  {/* 외출 복귀 후 다음 외출 전까지 */}
-                  {selectedWorkDay.away.map((period, index) => (
-                    <React.Fragment key={index}>
-                      <View
-                        style={[
-                          styles.timeSegment,
-                          {
-                            left: `${calculatePercentage(period.start)}%`,
-                            width: `${
-                              calculatePercentage(
-                                period.end ||
-                                  new Date().toTimeString().split(' ')[0],
-                              ) - calculatePercentage(period.start)
-                            }%`,
-                            backgroundColor: '#DFDFDF',
-                          },
-                        ]}
-                      />
-                      {index < selectedWorkDay.away.length - 1 ? (
-                        <View
-                          style={[
-                            styles.timeSegment,
-                            {
-                              left: `${calculatePercentage(
-                                period.end ||
-                                  new Date().toTimeString().split(' ')[0],
-                              )}%`,
-                              width: `${
-                                calculatePercentage(
-                                  selectedWorkDay.away[index + 1].start,
-                                ) -
-                                calculatePercentage(
-                                  period.end ||
-                                    new Date().toTimeString().split(' ')[0],
-                                )
-                              }%`,
-                              backgroundColor: '#03CF5D',
-                            },
-                          ]}
-                        />
-                      ) : (
-                        <View
-                          style={[
-                            styles.timeSegment,
-                            {
-                              left: `${calculatePercentage(
-                                period.end ||
-                                  new Date().toTimeString().split(' ')[0],
-                              )}%`,
-                              width: `${
-                                calculatePercentage(
-                                  selectedWorkDay.off ||
-                                    new Date().toTimeString().split(' ')[0],
-                                ) -
-                                calculatePercentage(
-                                  period.end ||
-                                    new Date().toTimeString().split(' ')[0],
-                                )
-                              }%`,
-                              backgroundColor: '#03CF5D',
-                            },
-                          ]}
-                        />
-                      )}
-                    </React.Fragment>
-                  ))}
-                </View>
-              </View>
-            </>
-          ) : (
-            <>
-              <Text style={styles.dateText}>
-                {new Date(selected).toLocaleDateString()}
-              </Text>
-              <Text style={styles.totalTimeText}>총 0시간 00분</Text>
-              <View style={styles.timeRow}>
-                <Text style={styles.labelText}>출근</Text>
-                <Text style={styles.timeText}>-</Text>
-                <Text style={styles.labelText}>퇴근</Text>
-                <Text style={styles.timeText}>-</Text>
-              </View>
-              <View style={styles.progressBarContainer}>
-                <View style={styles.progressBar} />
-              </View>
-            </>
-          )}
+          <View style={styles.timeRow}>
+            <Text style={styles.labelText}>출근</Text>
+            <Text style={styles.timeText}>10:00:00</Text>
+            <Text style={styles.labelText}>퇴근</Text>
+            <Text style={styles.timeText}>10:00:00</Text>
+          </View>
+          <View style={styles.progressBarContainer}>
+            <View style={styles.progressBar}>
+              <View
+                style={styles.timeSegment}
+              />
+            </View>
+          </View>
           <View style={styles.legendContainer}>
-            <View style={[styles.legendDot, {backgroundColor: '#03CF5D'}]} />
+            <View style={[styles.legendDot, { backgroundColor: '#03CF5D' }]} />
             <Text style={styles.legendText}>근무</Text>
-            <View style={[styles.legendDot, {backgroundColor: '#5F5F5F'}]} />
+            <View style={[styles.legendDot, { backgroundColor: '#5F5F5F' }]} />
             <Text style={styles.legendText}>자리비움</Text>
           </View>
         </View>

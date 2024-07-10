@@ -23,6 +23,7 @@ import {
   deleteRoom,
   deleteMember,
 } from '../../Service/roomAdmin';
+import api from '../../utils/api';
 
 const statusStyles = {
   1: {color: '#03CF5D', text: '출석'},
@@ -63,6 +64,7 @@ const TeamAdminScreen = ({route, navigation}) => {
           buttonPositive: 'OK',
         },
       );
+
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
         console.log('You can send SMS');
       } else {
@@ -70,6 +72,25 @@ const TeamAdminScreen = ({route, navigation}) => {
       }
     } catch (err) {
       console.warn(err);
+    }
+  };
+
+  const fetchTopWorker = async () => {
+    try {
+      const response = await api.get(`/rooms/${roomId}/getTopWorker`);
+      setTopWorkerId(response.data.topWorkerId);
+      console.log('Top Worker ID:', response.data.topWorkerId);
+    } catch (error) {
+      console.error('Failed to fetch top worker:', error);
+    }
+  };
+
+  const fetchWaitingUsers = async () => {
+    try {
+      const response = await api.get(`/apply/waiting/${roomId}`);
+      setWaitingUsers(response.data.members || []);
+    } catch (error) {
+      console.error('Failed to fetch waiting users:', error);
     }
   };
 
@@ -91,16 +112,6 @@ const TeamAdminScreen = ({route, navigation}) => {
     }
   }, [roomId]);
 
-  const fetchTopWorker = async () => {
-    try {
-      const response = await getTopWorker(roomId);
-      setTopWorkerId(response.data.topWorkerId);
-      console.log('Top Worker ID:', response.data.topWorkerId);
-    } catch (error) {
-      console.error('Failed to fetch top worker:', error);
-    }
-  };
-
   const fetchWaitingMembers = useCallback(async () => {
     try {
       const waitingData = await getWaitingUsers(roomId);
@@ -114,12 +125,15 @@ const TeamAdminScreen = ({route, navigation}) => {
     requestSmsPermission();
     fetchRoomInfo();
     fetchTopWorker();
-    fetchWaitingMembers();
+    fetchWaitingUsers();
+  }, [fetchRoomInfo, fetchWaitingMembers, roomId]);
+
+  useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       fetchRoomInfo();
     });
     return unsubscribe;
-  }, [fetchRoomInfo, fetchTopWorker, fetchWaitingMembers, navigation, roomId]);
+  }, [fetchRoomInfo, navigation]);
 
   const toggleEditMode = async () => {
     setIsEditMode(!isEditMode);
@@ -295,17 +309,19 @@ const TeamAdminScreen = ({route, navigation}) => {
                 key={index}
                 style={styles.userItem}
                 onPress={() => handleUserClick(user)}>
-                <View style={styles.profileContainer}>
-                  <Image
-                    source={require('assets/images/person.png')}
-                    style={styles.profileIcon}
-                  />
-                  {user.userId._id === topWorkerId && (
+                <View style={styles.userItem}>
+                  <View style={styles.profileContainer}>
                     <Image
-                      source={require('assets/images/crown.png')}
-                      style={styles.crownIcon}
+                      source={require('assets/images/person.png')}
+                      style={styles.profileIcon}
                     />
-                  )}
+                    {user.userId._id === topWorkerId && (
+                      <Image
+                        source={require('assets/images/crown.png')}
+                        style={styles.crownIcon}
+                      />
+                    )}
+                  </View>
                 </View>
                 <Text style={styles.userName}>{user.userId.name}</Text>
                 <View
@@ -414,7 +430,6 @@ const TeamAdminScreen = ({route, navigation}) => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

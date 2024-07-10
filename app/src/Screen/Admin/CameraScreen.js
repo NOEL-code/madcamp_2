@@ -53,7 +53,8 @@ const CameraScreen = ({route, navigation}) => {
     }
     try {
       const response = await api.post(
-        `/attendance/${action}/${selectedUserId}`,
+        `/attendance/${action}/${selectedUserId}/${roomId}`,
+        {roomId}
       );
       if (response.status === 200) {
         console.log(`success: ${action} recorded!`);

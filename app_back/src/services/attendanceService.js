@@ -16,13 +16,13 @@ exports.getAttendance = async (userId) => {
   }
 };
 
-exports.recordArrival = async (userId) => {
+exports.recordArrival = async (userId, roomId) => {
   const today = new Date();
   const todayString = today.toLocaleDateString("en-CA");
   const currentTimeString = today.toTimeString().split(" ")[0];
 
   let attendance = await Attendance.findOneAndUpdate(
-    { userId, "records.date": { $ne: todayString } },
+    { userId, roomId, "records.date": { $ne: todayString } },
     {
       $push: { records: { date: todayString, arriveTime: currentTimeString } },
     },
@@ -32,6 +32,7 @@ exports.recordArrival = async (userId) => {
   if (!attendance) {
     attendance = new Attendance({
       userId,
+      roomId,
       records: [{ date: todayString, arriveTime: currentTimeString }]
     });
     await attendance.save();
@@ -75,31 +76,37 @@ const calTot = (date, on, off, away) => {
   };
 };
 
-exports.recordLeave = async (userId) => {
+exports.recordLeave = async (userId, roomId) => {
   try {
     const today = new Date();
     const todayString = today.toLocaleDateString("en-CA");
     const currentTimeString = today.toTimeString().split(" ")[0];
 
-    // 오늘 날짜의 출석 기록이 있는지 확인
-    const attendance = await Attendance.findOneAndUpdate(
-      { userId, "records.date": todayString },
-      {
-        $set: { "records.$.departTime": currentTimeString },
-      },
-      { new: true }
-    );
+    // 오늘 날짜의 해당 roomId의 출석 기록이 있는지 확인
+    const attendance = await Attendance.findOne({
+      userId,
+      roomId,
+      "records.date": todayString
+    });
 
     if (!attendance) {
-      // 출석 기록이 없다면 에러를 반환
-      throw new Error('No attendance record found for today');
-      
+      return {
+        message: '오늘 날짜의 출석 기록이 없습니다.',
+        success: false,
+      };
     }
 
-    const dayRecord = attendance.records.find(record => record.date ==todayString);
+    const dayRecord = attendance.records.find(record => record.date === todayString);
     console.log('dayRecord:', dayRecord);
+
     if (dayRecord) {
-      const {hours, minutes} = calTot(dayRecord.date, dayRecord.arriveTime, dayRecord.departTime, dayRecord.leave);
+      dayRecord.departTime = currentTimeString;
+
+      if (!dayRecord.workHours) {
+        dayRecord.workHours = { hours: 0, minutes: 0 };
+      }
+
+      const { hours, minutes } = calTot(dayRecord.date, dayRecord.arriveTime, dayRecord.departTime, dayRecord.leave);
       console.log('time', hours, minutes);
       dayRecord.workHours.hours = hours;
       dayRecord.workHours.minutes = minutes;
@@ -107,27 +114,28 @@ exports.recordLeave = async (userId) => {
       await attendance.save();
     }
 
-    //이까지가 퇴근 기록한거임
-    //이제 출근, 외출시간 받아와야돼
-    const user = await getUserById(userId);
-
     return {
-      ...attendance.toObject(),
-      userName: user.name,
+      message: '퇴근 시간이 기록되었습니다.',
+      success: true,
+      attendance,
     };
   } catch (error) {
     console.error('Error recording leave:', error);
-    throw new Error('Unable to record leave');
+    return {
+      message: '퇴근 시간 기록에 실패했습니다.',
+      success: false,
+      error: error.message,
+    };
   }
 };
 
-exports.recordGoOut = async (userId) => {
+exports.recordGoOut = async (userId, roomId) => {
   const today = new Date();
   const todayString = today.toLocaleDateString("en-CA");
   const currentTimeString = today.toTimeString().split(" ")[0];
 
   const attendance = await Attendance.findOneAndUpdate(
-    { userId, "records.date": todayString },
+    { userId, roomId, "records.date": todayString },
     { $push: { "records.$.leave": { goOut: currentTimeString } } },
     { new: true }
   );
@@ -140,7 +148,7 @@ exports.recordGoOut = async (userId) => {
   };
 };
 
-exports.recordComeBack = async (userId) => {
+exports.recordComeBack = async (userId, roomId) => {
   const today = new Date();
   const todayString = today.toLocaleDateString("en-CA");
   const currentTimeString = today.toTimeString().split(" ")[0];
@@ -148,6 +156,7 @@ exports.recordComeBack = async (userId) => {
   const attendance = await Attendance.findOneAndUpdate(
     {
       userId,
+      roomId,
       "records.date": todayString,
       "records.leave.goOut": { $ne: null },
       "records.leave.comeBack": null,
@@ -190,11 +199,11 @@ exports.getAttendanceByDate = async (userId, date) => {
   };
 };
 
-exports.getCurrentStatus = async (userId) => {
+exports.getCurrentStatus = async (userId, roomId) => {
   const today = new Date();
   const todayString = today.toLocaleDateString("en-CA");
 
-  const attendance = await Attendance.findOne({ userId, "records.date": todayString });
+  const attendance = await Attendance.findOne({ userId, roomId, "records.date": todayString });
 
   if (!attendance) {
     return { status: 3 }; // 퇴근 (출석 기록 없음)
@@ -216,7 +225,7 @@ exports.getCurrentStatus = async (userId) => {
   return { status: 3 }; // 퇴근 (퇴근 기록 있음)
 };
 
-exports.updateStatus = async (userId, status) => {
+exports.updateStatus = async (userId, roomId, status) => {
   try {
     if (status === 1) {
       // 출석으로 변경되는 경우 출근 기록을 추가
@@ -225,7 +234,7 @@ exports.updateStatus = async (userId, status) => {
       const currentTimeString = today.toTimeString().split(" ")[0];
 
       let attendance = await Attendance.findOneAndUpdate(
-        { userId, "records.date": { $ne: todayString } },
+        { userId, roomId, "records.date": { $ne: todayString } },
         {
           $push: { records: { date: todayString, arriveTime: currentTimeString } },
         },
@@ -246,7 +255,7 @@ exports.updateStatus = async (userId, status) => {
       const currentTimeString = today.toTimeString().split(" ")[0];
 
       await Attendance.findOneAndUpdate(
-        { userId, "records.date": todayString },
+        { userId, roomId, "records.date": todayString },
         { $push: { "records.$.leave": { goOut: currentTimeString } } },
         { new: true }
       );
@@ -257,7 +266,7 @@ exports.updateStatus = async (userId, status) => {
       const currentTimeString = today.toTimeString().split(" ")[0];
 
       await Attendance.findOneAndUpdate(
-        { userId, "records.date": todayString },
+        { userId, roomId, "records.date": todayString },
         {
           $set: { "records.$.departTime": currentTimeString },
         },

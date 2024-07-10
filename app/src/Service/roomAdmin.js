@@ -11,12 +11,12 @@ export const updateRoomDescription = async (roomId, req) => {
 };
 
 export const getAttendanceStatus = async userId => {
-  const response = await api.get(`/attendance/status/${userId}`);
+  const response = await api.get(`/attendance/status/${userId}/${roomId}`);
   return response.data;
 };
 
 export const updateAttendanceStatus = async (userId, status) => {
-  const response = await api.post(`/attendance/status/${userId}`, {status});
+  const response = await api.post(`/attendance/status/${userId}/${roomId}`, {status});
   return response.data;
 };
 
