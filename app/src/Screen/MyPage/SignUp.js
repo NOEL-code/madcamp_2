@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -7,14 +7,14 @@ import {
   StyleSheet,
   ScrollView,
   TextInput,
-  Alert
+  Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { launchImageLibrary } from 'react-native-image-picker';
-import { PERMISSIONS, request, check, RESULTS } from 'react-native-permissions';
+import {launchImageLibrary} from 'react-native-image-picker';
+import {PERMISSIONS, request, check, RESULTS} from 'react-native-permissions';
 import api from '../../utils/api'; // api 설정 파일 불러오기
 
-const SignUp = ({ navigation }) => {
+const SignUp = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -32,45 +32,45 @@ const SignUp = ({ navigation }) => {
           type: photo.type,
           name: photo.fileName,
         });
-  
+
         console.log('Uploading image...');
         const uploadResponse = await api.post('/users/create/image', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         });
-  
+
         console.log('Image uploaded:', uploadResponse.data);
         photoUrl = uploadResponse.data.imageUrl;
       }
-  
+
       console.log('Registering user...');
       const response = await api.post('/users/register', {
         userEmail: email,
         userPassword: password,
         name: name,
         phoneNumber: phoneNumber,
-        photoUrl: photoUrl
+        photoUrl: photoUrl,
       });
-  
+
       console.log('User registered:', response.data);
-      const { accessToken, refreshToken } = response.data;
-  
+      const {accessToken, refreshToken} = response.data;
+
       if (!accessToken || !refreshToken) {
         throw new Error('Invalid response from server');
       }
-  
+
       await AsyncStorage.setItem('accessToken', accessToken);
       await AsyncStorage.setItem('refreshToken', refreshToken);
       navigation.navigate('LogIn');
     } catch (error) {
       console.error('SignUp error', error);
-  
+
       if (error.response) {
         console.log('Error response data:', error.response.data); // 오류 응답 데이터 로그
         Alert.alert(
           '회원가입 실패',
-          error.response.data.message || '회원가입 중 오류가 발생했습니다.'
+          error.response.data.message || '회원가입 중 오류가 발생했습니다.',
         );
       } else {
         Alert.alert('회원가입 실패', '서버와의 통신에 문제가 발생했습니다.');
@@ -177,7 +177,7 @@ const SignUp = ({ navigation }) => {
         <TouchableOpacity onPress={handleImageChange}>
           <View style={styles.imagePicker}>
             {photo ? (
-              <Image source={{ uri: photo.uri }} style={styles.imagePreview} />
+              <Image source={{uri: photo.uri}} style={styles.imagePreview} />
             ) : (
               <Text style={styles.imagePickerText}>사진 선택</Text>
             )}

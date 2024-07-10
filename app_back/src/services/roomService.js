@@ -101,6 +101,24 @@ exports.addMembersToRoom = async (roomId, userIds) => {
   return { ...updatedRoom._doc, members: membersWithNames };
 };
 
+exports.addMemberToRoom = async (roomId, userId) => {
+  const updatedRoom = await Room.findByIdAndUpdate(
+    roomId,
+    {
+      $addToSet: {
+        members: { userId },
+      },
+    },
+    { new: true }
+  );
+
+  if (!updatedRoom) {
+    throw new Error("Room not found");
+  }
+
+  return updatedRoom;
+};
+
 exports.updateRoomDescription = async (roomId, roomName, roomDescription) => {
   const updatedRoom = await Room.findByIdAndUpdate(
     roomId,

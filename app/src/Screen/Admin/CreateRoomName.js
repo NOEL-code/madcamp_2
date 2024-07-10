@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -9,14 +9,14 @@ import {
   Modal,
   ScrollView,
 } from 'react-native';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import api from '../../utils/api';
 
-const CreateRoomNameScreen = ({ navigation }) => {
+const CreateRoomNameScreen = ({navigation}) => {
   const [roomName, setRoomName] = useState('');
   const [roomDescription, setDescription] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
-  const { memberIds } = useSelector(state => state.createRoom);
+  const {memberIds} = useSelector(state => state.createRoom);
   const currentUser = useSelector(state => state.user); // currentUser를 가져옴
 
   console.log(memberIds);
@@ -38,13 +38,13 @@ const CreateRoomNameScreen = ({ navigation }) => {
           roomName,
           roomDescription,
           host: currentUser.id,
-          members: memberIds.map(id => ({ userId: id })),
+          members: memberIds.map(id => ({userId: id})),
         });
         const createdRoom = response.data; // 생성된 방의 데이터를 받아옴
         setModalVisible(true);
         setTimeout(() => {
           setModalVisible(false);
-          navigation.navigate('TeamAdmin', { roomId: createdRoom._id }); // 생성된 방의 ID로 TeamAdminScreen으로 이동
+          navigation.navigate('TeamAdmin', {roomId: createdRoom._id}); // 생성된 방의 ID로 TeamAdminScreen으로 이동
         }, 2000); // 2초 후에 모달을 닫고 화면 전환
       } catch (error) {
         console.error('Failed to create room:', error);

@@ -1,5 +1,6 @@
 const { applyRoomHistory } = require("../models/applyRoomHistory");
 const { getUserById } = require("./userService");
+const { addMemberToRoom } = require("./roomService");
 const Room = require("../models/Room");
 
 exports.getApplyHistory = async () => {
@@ -67,7 +68,9 @@ exports.applyRoom = async (userId, roomId) => {
 };
 
 exports.cancelApplication = async (userId, roomId) => {
-  console.log(`Cancelling application for userId: ${userId}, roomId: ${roomId}`);
+  console.log(
+    `Cancelling application for userId: ${userId}, roomId: ${roomId}`
+  );
   let updatedRoom = await applyRoomHistory.findOneAndUpdate(
     { roomId, "members.userId": userId },
     { $set: { "members.$.status": 4 } },
@@ -77,23 +80,37 @@ exports.cancelApplication = async (userId, roomId) => {
   return updatedRoom;
 };
 
-exports.acceptApplication = async (userId, roomId) => {
-  let updatedRoom = await applyRoomHistory.findOneAndUpdate(
-    { roomId, "members.userId": userId },
-    { $set: { "members.$.status": 2 } },
-    { new: true }
-  );
+exports.acceptApplication = async (roomId, userId) => {
+  try {
+    let updatedRoom = await applyRoomHistory.findOneAndUpdate(
+      { roomId, "members.userId": userId },
+      { $set: { "members.$.status": 2 } },
+      { new: true }
+    );
+    const room = await addMemberToRoom(roomId, userId);
 
-  const user = await getUserById(userId);
+    if (!updatedRoom) {
+      throw new Error("Room or user not found");
+    }
 
-  return {
-    roomId: updatedRoom.roomId,
-    members: updatedRoom.members.map((member) => ({
-      userId: member.userId,
-      name: member.userId === userId ? user.name : undefined,
-      status: member.status,
-    })),
-  };
+    const user = await getUserById(userId);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    return {
+      roomId: updatedRoom.roomId,
+      members: updatedRoom.members.map((member) => ({
+        userId: member.userId,
+        name: member.userId.equals(userId) ? user.name : undefined,
+        status: member.status,
+      })),
+    };
+  } catch (error) {
+    console.error("Error in acceptApplication:", error.message);
+    throw error;
+  }
 };
 
 exports.rejectApplication = async (userId, roomId) => {
@@ -118,15 +135,22 @@ exports.rejectApplication = async (userId, roomId) => {
 
 exports.getWaitingUsersByRoomId = async (roomId) => {
   console.log(`Fetching waiting users for roomId: ${roomId}`);
-  const waitingUsers = await applyRoomHistory.findOne(
-    { roomId },
-    { members: { $elemMatch: { status: 1 } } }
-  ).populate('members.userId', 'name'); // userId 필드를 통해 유저 이름을 포함하여 인구합니다.
 
-  if (!waitingUsers) {
+  const waitingUsers = await applyRoomHistory
+    .findOne({ roomId }, { members: { $elemMatch: { status: 1 } } })
+    .populate("members.userId", "name"); // userId 필드를 통해 유저 이름을 포함하여 인구합니다.
+
+  if (!waitingUsers || !waitingUsers.members) {
     console.log("No waiting users found");
-    return null;
+    return [];
   }
 
-  return waitingUsers.members;
+  const userArray = waitingUsers.members.map((member) => ({
+    id: member.userId._id,
+    name: member.userId.name,
+  }));
+
+  console.log(userArray);
+
+  return userArray;
 };

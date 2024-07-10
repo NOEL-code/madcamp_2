@@ -7,9 +7,20 @@ import {
   TextInput,
   StyleSheet,
   ScrollView,
+  Alert,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
-import api from '../../utils/api';
+import {
+  getRoomInfo,
+  updateRoomDescription,
+  getAttendanceStatus,
+  updateAttendanceStatus,
+  acceptUserApplication,
+  rejectUserApplication,
+  getWaitingUsers,
+  deleteRoom,
+  deleteMember,
+} from '../../Service/roomAdmin';
 
 const statusStyles = {
   1: {color: '#03CF5D', text: '출석'},
@@ -39,51 +50,60 @@ const TeamAdminScreen = ({route, navigation}) => {
 
   const fetchRoomInfo = useCallback(async () => {
     try {
-      const response = await api.get(`/rooms/${roomId}`);
+      const roomData = await getRoomInfo(roomId);
       const membersWithStatus = await Promise.all(
-        response.data.members.map(async member => {
-          const statusResponse = await api.get(
-            `/attendance/status/${member.userId._id}`,
-          );
-          return {...member, status: statusResponse.data.status};
+        roomData.members.map(async member => {
+          const statusData = await getAttendanceStatus(member.userId._id);
+          return {...member, status: statusData.status};
         }),
       );
-      setRoomInfo(response.data);
-      setTitle(response.data.roomName);
-      setSubTitle(response.data.roomDescription);
+      setRoomInfo(roomData);
+      setTitle(roomData.roomName);
+      setSubTitle(roomData.roomDescription);
       setUsersState(membersWithStatus);
-      setWaitingUsers(response.data.waitingList || []);
     } catch (error) {
       console.error('Failed to fetch room info:', error);
     }
   }, [roomId]);
 
+  const fetchWaitingMembers = useCallback(async () => {
+    try {
+      const waitingData = await getWaitingUsers(roomId);
+      setWaitingUsers(waitingData.members);
+    } catch (err) {
+      console.error('Error fetching waiting members:', err);
+    }
+  }, [roomId]);
+
   useEffect(() => {
     fetchRoomInfo();
+    fetchWaitingMembers();
     const unsubscribe = navigation.addListener('focus', () => {
       fetchRoomInfo();
     });
     return unsubscribe;
-  }, [fetchRoomInfo, navigation]);
+  }, [fetchRoomInfo, fetchWaitingMembers, navigation, roomId]);
 
-  const toggleEditMode = () => {
+  const toggleEditMode = async () => {
     setIsEditMode(!isEditMode);
-
     if (isEditMode) {
-      const req = {
-        roomName: title,
-        roomDescription: subTitle,
-      };
-      const response = api.put(`/rooms/${roomId}`, req);
-
-      console.log(response);
+      try {
+        const req = {
+          roomName: title,
+          roomDescription: subTitle,
+        };
+        await updateRoomDescription(roomId, req);
+        console.log('Room description updated successfully');
+      } catch (error) {
+        console.error('Failed to update room description:', error);
+      }
     }
   };
 
   const handleStatusChange = async (value, index) => {
     const userId = usersState[index].userId._id;
     try {
-      await api.post(`/attendance/status/${userId}`, {status: value});
+      await updateAttendanceStatus(userId, value);
       const newUsers = [...usersState];
       newUsers[index].status = value;
       setUsersState(newUsers);
@@ -92,9 +112,47 @@ const TeamAdminScreen = ({route, navigation}) => {
     }
   };
 
-  const deleteUser = index => {
-    const newUsers = usersState.filter((_, i) => i !== index);
-    setUsersState(newUsers);
+  const handleAcceptUser = async (userId, index) => {
+    try {
+      await acceptUserApplication(roomId, userId);
+      const newWaitingUsers = waitingUsers.filter((_, i) => i !== index);
+      setWaitingUsers(newWaitingUsers);
+      fetchRoomInfo();
+    } catch (error) {
+      console.error('Failed to accept user:', error);
+    }
+  };
+
+  const handleRejectUser = async (userId, index) => {
+    try {
+      await rejectUserApplication(roomId, userId);
+      const newWaitingUsers = waitingUsers.filter((_, i) => i !== index);
+      setWaitingUsers(newWaitingUsers);
+    } catch (error) {
+      console.error('Failed to reject user:', error);
+    }
+  };
+
+  const handleDeleteRoom = async () => {
+    try {
+      await deleteRoom(roomId);
+      Alert.alert('방이 삭제되었습니다.');
+      navigation.goBack();
+    } catch (error) {
+      console.error('Failed to delete room:', error);
+      Alert.alert('방 삭제에 실패했습니다.');
+    }
+  };
+
+  const deleteUser = async index => {
+    const userId = usersState[index].userId._id;
+    try {
+      await deleteMember(roomId, userId);
+      const newUsers = usersState.filter((_, i) => i !== index);
+      setUsersState(newUsers);
+    } catch (error) {
+      console.error('Failed to delete user:', error);
+    }
   };
 
   const getStatusStyle = status => {
@@ -152,7 +210,7 @@ const TeamAdminScreen = ({route, navigation}) => {
               styles.tabText,
               selectedTab === '현황' && styles.selectedTabText,
             ]}>
-            팀 현황
+            인원 현황
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -163,7 +221,7 @@ const TeamAdminScreen = ({route, navigation}) => {
               styles.tabText,
               selectedTab === '편집' && styles.selectedTabText,
             ]}>
-            팀 편집
+            인원 편집
           </Text>
         </TouchableOpacity>
       </View>
@@ -221,17 +279,21 @@ const TeamAdminScreen = ({route, navigation}) => {
                     style={styles.profileIcon}
                   />
                   <Text style={styles.userName}>{waitingUser.name}</Text>
-                  <TouchableOpacity style={styles.refuse}>
+                  <TouchableOpacity
+                    style={styles.refuse}
+                    onPress={() => handleRejectUser(waitingUser.id, index)}>
                     <Text style={styles.refuseText}>거절</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.accept}>
+                  <TouchableOpacity
+                    style={styles.accept}
+                    onPress={() => handleAcceptUser(waitingUser.id, index)}>
                     <Text style={styles.acceptText}>승인</Text>
                   </TouchableOpacity>
                 </View>
               ))}
             </View>
             <View style={styles.teamListContainer}>
-              <Text style={styles.teamText}>팀 명단</Text>
+              <Text style={styles.teamText}>인원 명단</Text>
               <TouchableOpacity
                 style={styles.button}
                 onPress={() => navigation.navigate('inviteRoom')}>
@@ -259,8 +321,10 @@ const TeamAdminScreen = ({route, navigation}) => {
               </View>
             ))}
             <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.deleteButton}>
-                <Text style={styles.deleteButtonText}>팀 삭제하기</Text>
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={handleDeleteRoom}>
+                <Text style={styles.deleteButtonText}>방 삭제하기</Text>
               </TouchableOpacity>
             </View>
           </ScrollView>

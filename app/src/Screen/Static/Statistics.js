@@ -1,18 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-} from 'react-native';
-import { Calendar } from 'react-native-calendars';
+import React, {useState, useEffect} from 'react';
+import {View, Text, StyleSheet, ScrollView} from 'react-native';
+import {Calendar} from 'react-native-calendars';
 import NavBar from 'Components/NavBar';
-import api from '../../utils/api';  // api 유틸리티 가져오기
+import api from '../../utils/api'; // api 유틸리티 가져오기
 
 const getMarkedDates = (workDays, selected) => {
   const markedDates = {};
   workDays.forEach(day => {
-    markedDates[day.date] = { dots: [{ key: 'work', color: '#03CF5D' }] };
+    markedDates[day.date] = {dots: [{key: 'work', color: '#03CF5D'}]};
   });
   if (selected) {
     markedDates[selected] = {
@@ -37,20 +32,22 @@ const calculateTotalTime = (date, on, off, away) => {
 
   const totalAwayTime = away.reduce((total, period) => {
     const awayTime = new Date(`${date}T${period.start}`);
-    const comebackTime = period.end ? new Date(`${date}T${period.end}`) : new Date();
-    
+    const comebackTime = period.end
+      ? new Date(`${date}T${period.end}`)
+      : new Date();
+
     // 복귀 시간이 없는 경우 현재 시간으로 설정 (KST 변환 포함)
     if (!period.end) {
       comebackTime.setHours(comebackTime.getHours() + 9);
     }
-    
+
     console.log(`awayTime: ${awayTime}, comebackTime: ${comebackTime}`);
     return total + (comebackTime - awayTime);
   }, 0);
 
   const totalTime = offTime - onTime - totalAwayTime;
   console.log(`totalTime: ${totalTime}, totalAwayTime: ${totalAwayTime}`);
-  
+
   const hours = Math.floor(totalTime / (1000 * 60 * 60));
   const minutes = Math.floor((totalTime % (1000 * 60 * 60)) / (1000 * 60));
 
@@ -70,7 +67,7 @@ const calculatePercentage = time => {
   return (adjustedTimeInSeconds / dayDurationInSeconds) * 100;
 };
 
-const Stat = ({ navigation }) => {
+const Stat = ({navigation}) => {
   const today = new Date().toISOString().split('T')[0]; // 현재 날짜를 yyyy-mm-dd 형식으로 가져오기
   const [selected, setSelected] = useState(today);
   const [selectedWorkDay, setSelectedWorkDay] = useState(null);
@@ -93,7 +90,9 @@ const Stat = ({ navigation }) => {
         }));
 
         setWorkDays(formattedWorkDays);
-        const todayWorkDay = formattedWorkDays.find(workDay => workDay.date === today);
+        const todayWorkDay = formattedWorkDays.find(
+          workDay => workDay.date === today,
+        );
         setSelectedWorkDay(todayWorkDay || null);
       } catch (error) {
         console.error('Failed to fetch attendance data:', error);
@@ -148,7 +147,9 @@ const Stat = ({ navigation }) => {
                 <Text style={styles.labelText}>출근</Text>
                 <Text style={styles.timeText}>{selectedWorkDay.on}</Text>
                 <Text style={styles.labelText}>퇴근</Text>
-                <Text style={styles.timeText}>{selectedWorkDay.off || '-'}</Text>
+                <Text style={styles.timeText}>
+                  {selectedWorkDay.off || '-'}
+                </Text>
               </View>
               <View style={styles.progressBarContainer}>
                 <View style={styles.progressBar}>
@@ -160,10 +161,13 @@ const Stat = ({ navigation }) => {
                         left: `${calculatePercentage(selectedWorkDay.on)}%`,
                         width: `${
                           selectedWorkDay.away.length > 0
-                            ? calculatePercentage(selectedWorkDay.away[0].start) -
-                              calculatePercentage(selectedWorkDay.on)
-                            : calculatePercentage(selectedWorkDay.off || new Date().toTimeString().split(' ')[0]) -
-                              calculatePercentage(selectedWorkDay.on)
+                            ? calculatePercentage(
+                                selectedWorkDay.away[0].start,
+                              ) - calculatePercentage(selectedWorkDay.on)
+                            : calculatePercentage(
+                                selectedWorkDay.off ||
+                                  new Date().toTimeString().split(' ')[0],
+                              ) - calculatePercentage(selectedWorkDay.on)
                         }%`,
                         backgroundColor: '#03CF5D',
                       },
@@ -178,8 +182,10 @@ const Stat = ({ navigation }) => {
                           {
                             left: `${calculatePercentage(period.start)}%`,
                             width: `${
-                              calculatePercentage(period.end || new Date().toTimeString().split(' ')[0]) -
-                              calculatePercentage(period.start)
+                              calculatePercentage(
+                                period.end ||
+                                  new Date().toTimeString().split(' ')[0],
+                              ) - calculatePercentage(period.start)
                             }%`,
                             backgroundColor: '#DFDFDF',
                           },
@@ -190,10 +196,18 @@ const Stat = ({ navigation }) => {
                           style={[
                             styles.timeSegment,
                             {
-                              left: `${calculatePercentage(period.end || new Date().toTimeString().split(' ')[0])}%`,
+                              left: `${calculatePercentage(
+                                period.end ||
+                                  new Date().toTimeString().split(' ')[0],
+                              )}%`,
                               width: `${
-                                calculatePercentage(selectedWorkDay.away[index + 1].start) -
-                                calculatePercentage(period.end || new Date().toTimeString().split(' ')[0])
+                                calculatePercentage(
+                                  selectedWorkDay.away[index + 1].start,
+                                ) -
+                                calculatePercentage(
+                                  period.end ||
+                                    new Date().toTimeString().split(' ')[0],
+                                )
                               }%`,
                               backgroundColor: '#03CF5D',
                             },
@@ -204,10 +218,19 @@ const Stat = ({ navigation }) => {
                           style={[
                             styles.timeSegment,
                             {
-                              left: `${calculatePercentage(period.end || new Date().toTimeString().split(' ')[0])}%`,
+                              left: `${calculatePercentage(
+                                period.end ||
+                                  new Date().toTimeString().split(' ')[0],
+                              )}%`,
                               width: `${
-                                calculatePercentage(selectedWorkDay.off || new Date().toTimeString().split(' ')[0]) -
-                                calculatePercentage(period.end || new Date().toTimeString().split(' ')[0])
+                                calculatePercentage(
+                                  selectedWorkDay.off ||
+                                    new Date().toTimeString().split(' ')[0],
+                                ) -
+                                calculatePercentage(
+                                  period.end ||
+                                    new Date().toTimeString().split(' ')[0],
+                                )
                               }%`,
                               backgroundColor: '#03CF5D',
                             },
@@ -237,9 +260,9 @@ const Stat = ({ navigation }) => {
             </>
           )}
           <View style={styles.legendContainer}>
-            <View style={[styles.legendDot, { backgroundColor: '#03CF5D' }]} />
+            <View style={[styles.legendDot, {backgroundColor: '#03CF5D'}]} />
             <Text style={styles.legendText}>근무</Text>
-            <View style={[styles.legendDot, { backgroundColor: '#5F5F5F' }]} />
+            <View style={[styles.legendDot, {backgroundColor: '#5F5F5F'}]} />
             <Text style={styles.legendText}>자리비움</Text>
           </View>
         </View>

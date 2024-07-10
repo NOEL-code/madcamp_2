@@ -10,7 +10,7 @@ import {
   Modal,
   Alert,
 } from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
+import {useSelector} from 'react-redux';
 import api from '../../utils/api';
 
 const JoinRoomScreen = ({navigation}) => {
@@ -19,7 +19,6 @@ const JoinRoomScreen = ({navigation}) => {
   const [selectedRoomIndex, setSelectedRoomIndex] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [appliedRooms, setAppliedRooms] = useState([]);
-  const dispatch = useDispatch();
   const currentUser = useSelector(state => state.user);
 
   useEffect(() => {
