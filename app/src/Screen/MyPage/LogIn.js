@@ -50,40 +50,38 @@ const LogIn = ({navigation}) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>로그인</Text>
-      <Text style ={styles.subTitle}>환영합니다!</Text>
+      <Text style={styles.subTitle}>환영합니다!</Text>
 
-        <View style={styles.inputWrapper}>
-          <TextInput
-            style={styles.input}
-            placeholder="이메일"
-            placeholderTextColor="#C7C7CD"
-            value={email}
-            onChangeText={setEmail}
-          />
-        </View>
-        <View style={styles.inputWrapper}>
-          <TextInput
-            style={styles.input}
-            placeholder="비밀번호"
-            placeholderTextColor="#C7C7CD"
-            secureTextEntry={true}
-            value={password}
-            onChangeText={setPassword}
-          />
-        </View>
+      <View style={styles.inputWrapper}>
+        <TextInput
+          style={styles.input}
+          placeholder="이메일"
+          placeholderTextColor="#C7C7CD"
+          value={email}
+          onChangeText={setEmail}
+        />
+      </View>
+      <View style={styles.inputWrapper}>
+        <TextInput
+          style={styles.input}
+          placeholder="비밀번호"
+          placeholderTextColor="#C7C7CD"
+          secureTextEntry={true}
+          value={password}
+          onChangeText={setPassword}
+        />
+      </View>
 
       <TouchableOpacity style={styles.logInButton} onPress={handleLogin}>
         <Text style={styles.logInButtonText}>로그인</Text>
       </TouchableOpacity>
 
       <View style={styles.signUpContainer}>
-      <Text style = {styles.question}>아직 회원이 아니신가요?</Text>
-      <TouchableOpacity
-        onPress={() => navigation.navigate('SignUp')}>
-        <Text style={styles.signUpText}>회원가입</Text>
-      </TouchableOpacity>
+        <Text style={styles.question}>아직 회원이 아니신가요?</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+          <Text style={styles.signUpText}>회원가입</Text>
+        </TouchableOpacity>
       </View>
-      
     </View>
   );
 };
@@ -98,34 +96,37 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: -50,
   },
-  title: { // 로그인
+  title: {
+    // 로그인
     fontSize: 30,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 10,
   },
-  subTitle: { // 환영합니다 
+  subTitle: {
+    // 환영합니다
     fontSize: 18,
     textAlign: 'center',
     marginBottom: 40,
   },
-  inputWrapper: { // 아이디 비번 입력창임 ㅋㅋ
+  inputWrapper: {
+    // 아이디 비번 입력창임 ㅋㅋ
     marginBottom: 15,
   },
   input: {
-    height: 70,
-    width: 350,
+    height: 60,
+    width: 280,
     borderColor: '#E5E5EA',
     borderWidth: 2,
-    borderRadius: 35,
+    borderRadius: 30,
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 30,
   },
   logInButton: {
     marginTop: 10,
     marginBottom: 30,
-    width: 350,
-    height: 70,
+    width: 280,
+    height: 60,
     backgroundColor: '#03CF5D',
     borderRadius: 35,
     justifyContent: 'center',
@@ -139,22 +140,23 @@ const styles = StyleSheet.create({
   signUpContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-
   },
-  question: { // 아직 회원이 아니신가요? 
+  question: {
+    // 아직 회원이 아니신가요?
     color: '#5F5F5F',
     fontsize: 10,
     marginBottom: 5,
-    alignItems: 'center'
+    alignItems: 'center',
   },
-  signUpText: { // 회원가입
+  signUpText: {
+    // 회원가입
     color: '#5F5F5F',
     borderBottomWidth: 1,
     borderBottomColor: '#5F5F5F',
     fontsize: 10,
     alignItems: 'center',
-    fontWeight: 'bold'
-  }
+    fontWeight: 'bold',
+  },
 });
 
 export default LogIn;
