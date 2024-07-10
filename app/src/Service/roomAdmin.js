@@ -44,3 +44,24 @@ export const deleteMember = async (roomId, userId) => {
   const response = await api.delete(`/rooms/${roomId}/member/${userId}`);
   return response.data;
 };
+
+export const getAllUsersForRoom = async roomId => {
+  try {
+    const response = await api.get(`/rooms/all-users/${roomId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching users for room:', error);
+    throw error;
+  }
+};
+
+export const addMembersToRoom = async (roomId, userIds) => {
+  try {
+    console.log(userIds);
+    const response = await api.post(`/rooms/${roomId}/members`, {userIds});
+    return response.data;
+  } catch (error) {
+    console.error('Error inviting members:', error);
+    throw error;
+  }
+};

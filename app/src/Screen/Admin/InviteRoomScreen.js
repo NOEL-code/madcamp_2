@@ -8,20 +8,26 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
+import {getAllUsersForRoom, addMembersToRoom} from '../../Service/roomAdmin';
 
-const initialUsers = [
-  {name: '정우성', selected: false},
-  {name: '이수민', selected: false},
-  {name: '정재현', selected: false},
-  {name: '카리나', selected: false},
-  {name: '윈터', selected: false},
-  {name: '최예나', selected: false},
-];
-
-const InviteRoomScreen = ({navigation}) => {
-  const [users, setUsers] = useState(initialUsers);
+const InviteRoomScreen = ({route, navigation}) => {
+  const {roomId} = route.params;
+  const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('');
   const [selectedCount, setSelectedCount] = useState(0);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const fetchedUsers = await getAllUsersForRoom(roomId);
+        setUsers(fetchedUsers.map(user => ({...user, selected: false})));
+      } catch (error) {
+        console.error('Failed to fetch users:', error);
+      }
+    };
+
+    fetchUsers();
+  }, [roomId]);
 
   const handleSelect = index => {
     const newUsers = [...users];
@@ -34,12 +40,23 @@ const InviteRoomScreen = ({navigation}) => {
     setSelectedCount(count);
   }, [users]);
 
-  const filteredUsers = users.filter(user => user.name.includes(search));
+  const filteredUsers = users.filter(
+    user => user.name && user.name.includes(search),
+  );
+
+  const handleNext = async () => {
+    if (selectedCount > 0) {
+      const userIds = users.filter(user => user.selected).map(user => user._id);
+      console.log(userIds);
+      await addMembersToRoom(roomId, userIds);
+      navigation.navigate('TeamAdmin', {roomId});
+    }
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate('TeamAdmin')}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
             source={require('assets/images/back.png')}
             style={styles.backIcon}
@@ -47,11 +64,7 @@ const InviteRoomScreen = ({navigation}) => {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>멤버 초대</Text>
         <TouchableOpacity
-          onPress={() => {
-            if (selectedCount > 0) {
-              navigation.navigate('TeamAdmin');
-            }
-          }}
+          onPress={handleNext}
           disabled={selectedCount === 0}
           style={[
             styles.headerButton,

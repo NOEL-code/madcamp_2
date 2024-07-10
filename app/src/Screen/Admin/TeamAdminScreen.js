@@ -8,6 +8,8 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  Linking,
+  PermissionsAndroid,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import {
@@ -47,6 +49,32 @@ const TeamAdminScreen = ({route, navigation}) => {
   const [usersState, setUsersState] = useState([]);
   const [waitingUsers, setWaitingUsers] = useState([]);
   const [selectedTab, setSelectedTab] = useState('현황');
+
+  const requestSmsPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.SEND_SMS,
+        {
+          title: 'SMS Permission',
+          message: 'This app needs access to send SMS messages.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('You can send SMS');
+      } else {
+        console.log('SMS permission denied');
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
+  useEffect(() => {
+    requestSmsPermission();
+  }, []);
 
   const fetchRoomInfo = useCallback(async () => {
     try {
@@ -155,6 +183,31 @@ const TeamAdminScreen = ({route, navigation}) => {
     }
   };
 
+  const sendSMS = async phoneNumber => {
+    const url = `sms:${phoneNumber}`;
+    try {
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        Alert.alert('이 장치는 문자 메시지 기능을 지원하지 않습니다.');
+      }
+    } catch (error) {
+      console.error('Failed to send SMS:', error);
+    }
+  };
+
+  const handleUserClick = async user => {
+    if (user.status === 2) {
+      const phoneNumber = user.userId.phoneNumber;
+      if (phoneNumber) {
+        sendSMS(phoneNumber);
+      } else {
+        Alert.alert('전화번호를 찾을 수 없습니다.');
+      }
+    }
+  };
+
   const getStatusStyle = status => {
     return statusStyles[status] || {color: '#000', text: '알 수 없음'};
   };
@@ -229,7 +282,10 @@ const TeamAdminScreen = ({route, navigation}) => {
         <>
           <ScrollView>
             {usersState.map((user, index) => (
-              <View key={index} style={styles.userItem}>
+              <TouchableOpacity
+                key={index}
+                style={styles.userItem}
+                onPress={() => handleUserClick(user)}>
                 <Image
                   source={require('assets/images/person.png')}
                   style={styles.profileIcon}
@@ -250,7 +306,7 @@ const TeamAdminScreen = ({route, navigation}) => {
                     {getStatusStyle(user.status).text}
                   </Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
             <View style={styles.cameraContainer}>
               <TouchableOpacity
@@ -296,7 +352,7 @@ const TeamAdminScreen = ({route, navigation}) => {
               <Text style={styles.teamText}>인원 명단</Text>
               <TouchableOpacity
                 style={styles.button}
-                onPress={() => navigation.navigate('inviteRoom')}>
+                onPress={() => navigation.navigate('inviteRoom', {roomId})}>
                 <Text style={styles.buttonText}>+ 학생초대</Text>
               </TouchableOpacity>
             </View>

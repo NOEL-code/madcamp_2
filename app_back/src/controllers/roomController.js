@@ -8,6 +8,8 @@ const {
   updateRoomDescription,
   deleteRoomById,
   getRoomInfo,
+  getAllUsers,
+  getAllUsersForRoom,
 } = require("../services/roomService");
 
 exports.getRooms = async (req, res) => {
@@ -82,14 +84,17 @@ exports.deleteRoomById = async (req, res) => {
 
 exports.addMembersToRoom = async (req, res) => {
   const { roomId } = req.params;
-  const { memberIds } = req.body;
+  const { userIds } = req.body;
+
+  console.log(roomId);
+  console.log(userIds);
 
   try {
-    const updatedRoom = await addMembersToRoom(roomId, memberIds);
+    const updatedRoom = await addMembersToRoom(roomId, userIds);
     res.status(200).json(updatedRoom);
   } catch (err) {
     console.error(err.message);
-    res.status500.json({ message: "Server error" });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -120,5 +125,29 @@ exports.getRoomInfo = async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.getAllUsers = async (req, res) => {
+  const { roomId } = req.query;
+
+  try {
+    const users = await getAllUsers(roomId);
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ message: "Failed to fetch users" });
+  }
+};
+
+exports.getAllUsersForRoom = async (req, res) => {
+  const { roomId } = req.params;
+
+  try {
+    const users = await getAllUsersForRoom(roomId);
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Error fetching users for room:", error);
+    res.status(500).json({ message: "Failed to fetch users for room" });
   }
 };

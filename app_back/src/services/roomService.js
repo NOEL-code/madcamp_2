@@ -1,6 +1,7 @@
 const { Room } = require("../models/Room");
 const { getUserById } = require("./userService");
 const { sendInvite } = require("./invitedRoomService");
+const { User } = require("../models/User");
 
 exports.getRooms = async () => {
   let rooms = await Room.find();
@@ -75,8 +76,8 @@ exports.removeMemberFromRoom = async (roomId, userId) => {
 
   return { ...updatedRoom._doc, members: membersWithNames };
 };
-
 exports.addMembersToRoom = async (roomId, userIds) => {
+  console.log(userIds);
   const updatedRoom = await Room.findByIdAndUpdate(
     roomId,
     {
@@ -144,9 +145,62 @@ exports.updateRoomDescription = async (roomId, roomName, roomDescription) => {
 };
 
 exports.getRoomInfo = async (roomId) => {
-  const room = await Room.findById(roomId).populate("members.userId");
+  const room = await Room.findById(roomId).populate(
+    "members.userId",
+    "name phoneNumber"
+  );
   if (!room) {
     throw new Error("Room not found");
   }
   return room;
+};
+
+exports.getAllUsers = async (roomId) => {
+  try {
+    const room = await Room.findById(roomId).populate("members.userId");
+    if (!room) {
+      throw new Error("Room not found");
+    }
+
+    const memberIds = room.members.map((member) =>
+      member.userId._id.toString()
+    );
+    const hostId = room.host.toString();
+
+    const users = await User.find(
+      { _id: { $nin: [...memberIds, hostId] } },
+      "name _id"
+    );
+
+    return users;
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    throw new Error("Failed to fetch users");
+  }
+};
+
+exports.getAllUsersForRoom = async (roomId) => {
+  try {
+    const room = await Room.findById(roomId).populate("members.userId");
+    if (!room) {
+      throw new Error("Room not found");
+    }
+
+    const memberIds = room.members.map((member) =>
+      member.userId._id.toString()
+    );
+    const hostId = room.host.toString();
+
+    const users = await User.find();
+    const filteredUsers = users.filter(
+      (user) =>
+        !memberIds.includes(user._id.toString()) &&
+        user._id.toString() !== hostId
+    );
+
+    return filteredUsers;
+  } catch (error) {
+    console.error("Error fetching users for room:", error);
+    throw error;
+  }
 };
