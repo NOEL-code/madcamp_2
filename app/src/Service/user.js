@@ -23,6 +23,7 @@ export const fetchLogin = async (email, password) => {
 };
 
 export const fetchImage = async (formData, user, dispatch) => {
+  console.log(user);
   try {
     const res = await api.post('/users/update/image', formData, {
       headers: {

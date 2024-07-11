@@ -146,6 +146,7 @@ exports.getUsers = async () => {
   const resUsers = users.map((user) => ({
     id: user._id,
     userName: user.name,
+    photoUrl: user.photoUrl,
   }));
 
   console.log("getUsers service successful, users:", resUsers);
@@ -291,6 +292,7 @@ exports.getUsers = async () => {
   const resUsers = users.map((user) => ({
     id: user._id,
     userName: user.name,
+    photoUrl: user.photoUrl,
   }));
 
   console.log("getUsers service successful, users:", resUsers);

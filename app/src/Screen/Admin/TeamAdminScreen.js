@@ -102,19 +102,19 @@ const TeamAdminScreen = ({route, navigation}) => {
   }, [roomId]);
 
   useEffect(() => {
-    const fetchTopWorker = async () => {
-      try {
-        const response = await getTopWorker(roomId);
-        setTopWorkerId(response.data.topWorkerId);
-        console.log('Top Worker ID:', response.data.topWorkerId);
-      } catch (error) {
-        console.error('Failed to fetch top worker:', error);
-      }
-    };
+    // const fetchTopWorker = async () => {
+    //   try {
+    //     const response = await getTopWorker(roomId);
+    //     setTopWorkerId(response.data.topWorkerId);
+    //     console.log('Top Worker ID:', response.data.topWorkerId);
+    //   } catch (error) {
+    //     console.error('Failed to fetch top worker:', error);
+    //   }
+    // };
 
     requestSmsPermission();
     fetchRoomInfo();
-    fetchTopWorker();
+    // fetchTopWorker();
     fetchWaitingMembers();
 
     const unsubscribe = navigation.addListener('focus', () => {
@@ -177,7 +177,7 @@ const TeamAdminScreen = ({route, navigation}) => {
     try {
       await deleteRoom(roomId);
       Alert.alert('방이 삭제되었습니다.');
-      navigation.goBack();
+      navigation.navigate('Main');
     } catch (error) {
       console.error('Failed to delete room:', error);
       Alert.alert('방 삭제에 실패했습니다.');
@@ -228,10 +228,11 @@ const TeamAdminScreen = ({route, navigation}) => {
     return statusBoxStyles[status] || {backgroundColor: '#EEE'};
   };
 
+  console.log(waitingUsers);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => navigation.navigate('Main')}>
           <Image
             source={require('assets/images/back.png')}
             style={styles.backIcon}
@@ -352,7 +353,7 @@ const TeamAdminScreen = ({route, navigation}) => {
               {waitingUsers.map((waitingUser, index) => (
                 <View key={index} style={styles.userItem}>
                   <Image
-                    source={{uri: waitingUser.userId.photoUrl}}
+                    source={{uri: waitingUser.photoUrl}}
                     style={styles.profileIcon}
                   />
                   <Text style={styles.userName}>{waitingUser.name}</Text>

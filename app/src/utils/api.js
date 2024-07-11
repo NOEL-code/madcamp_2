@@ -5,7 +5,7 @@ const api = axios.create({
   // baseURL: 'http://172.10.7.110:80/api', // 백엔드 API 서버 주소로 설정
 
   // baseURL: 'http://10.0.2.2:3000/api', // 백엔드 API 서버 주소로 설정
-  baseURL: 'http://192.249.29.35:3000/api', // 백엔드 API 서버 주소로 설정
+  baseURL: 'http://192.249.29.7:3000/api', // 백엔드 API 서버 주소로 설정
 
   headers: {
     'Content-Type': 'application/json',

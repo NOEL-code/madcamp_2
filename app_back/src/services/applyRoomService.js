@@ -138,21 +138,20 @@ exports.getWaitingUsersByRoomId = async (roomId) => {
 
   const waitingUsers = await applyRoomHistory
     .findOne({ roomId }, { members: { $elemMatch: { status: 1 } } })
-    .populate("members.userId", "name"); // userId 필드를 통해 유저 이름을 포함하여 인구합니다.
+    .populate("members.userId", "name photoUrl"); // userId 필드를 통해 유저 이름을 포함하여 인구합니다.
 
   if (!waitingUsers || !waitingUsers.members) {
     console.log("No waiting users found");
     return [];
   }
 
-
   const userArray = waitingUsers.members.map((member) => ({
     id: member.userId._id,
     name: member.userId.name,
+    photoUrl: member.userId.photoUrl,
   }));
 
   console.log(userArray);
 
   return userArray;
 };
-
